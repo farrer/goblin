@@ -19,6 +19,11 @@
 */
 
 #include "cursor.h"
+
+#if KOBOLD_PLATFORM != KOBOLD_PLATFORM_IOS &&\
+    KOBOLD_PLATFORM != KOBOLD_PLATFORM_ANDROID
+
+
 #include <OGRE/RTShaderSystem/OgreRTShaderSystem.h>
 namespace Goblin
 {
@@ -258,4 +263,9 @@ int Cursor::relMouseY = 0;
 int Cursor::mouseWheel = 0;
 bool Cursor::mouseButtonReleased[MAX_MOUSE_BUTTONS];
 
+
 }
+
+
+#endif
+

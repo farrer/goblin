@@ -1,11 +1,11 @@
-# Locate Kobold library
+# Locate Vorbisfile library
 # This module defines
-# KOBOLD_LIBRARY, the name of the library to link against
-# KOBOLD_FOUND, if false, do not try to link to KOBOLD
+# VORBISFILE_LIBRARY, the name of the library to link against
+# VORBISFILE_FOUND, if false, do not try to link to VORBISFILE
 # 
-# KOBOLD_INCLUDE_DIR, where to find koboldconfig.h
+# VORBISFILE_INCLUDE_DIR, where to find vorbisfile/vorbisfile.h
 #
-# $KOBOLDDIR - enviroment variable
+# $VORBISFILEDIR - enviroment variable
 #
 # Created by Farrer. This was influenced by the FindSDL_image.cmake module.
 
@@ -20,31 +20,31 @@
 # See the License for more information.
 #=============================================================================
 
-FIND_PATH(KOBOLD_INCLUDE_DIR NAMES koboldconfig.h kobold/koboldcofig.h
+FIND_PATH(VORBISFILE_INCLUDE_DIR tremor/ivorbisfile.h
   HINTS
-  $ENV{KOBOLDDIR}
-  PATH_SUFFIXES include include/kobold
+  $ENV{VORBISFILEDIR}
+  PATH_SUFFIXES include
   PATHS
   ~/Library/Frameworks
   /Library/Frameworks
-  /usr/local/include/kobold
-  /usr/include/kobold
+  /usr/local/include/vorbisfile
+  /usr/include/vorbisfile
   /usr/local/include
   /usr/include
-  /sw/include/kobold # Fink
+  /sw/include/vorbisfile # Fink
   /sw/include
-  /opt/local/include/kobold # DarwinPorts
+  /opt/local/include/vorbisfile # DarwinPorts
   /opt/local/include
-  /opt/csw/include/kodold # Blastwave
+  /opt/csw/include/vorbisfile # Blastwave
   /opt/csw/include 
-  /opt/include/kobold
+  /opt/include/vorbisfile
   /opt/include
 )
 
-FIND_LIBRARY(KOBOLD_LIBRARY 
-  NAMES kobold
+FIND_LIBRARY(VORBISFILE_LIBRARY 
+  NAMES tremor
   HINTS
-  $ENV{KOBOLDDIR}
+  $ENV{VORBISFILEDIR}
   PATH_SUFFIXES lib64 lib
   PATHS
   ~/Library/Frameworks
@@ -59,5 +59,6 @@ FIND_LIBRARY(KOBOLD_LIBRARY
 
 INCLUDE(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
 
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(KOBOLD
-   REQUIRED_VARS KOBOLD_LIBRARY KOBOLD_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(VORBISFILE
+                                  REQUIRED_VARS 
+                                  VORBISFILE_LIBRARY VORBISFILE_INCLUDE_DIR)

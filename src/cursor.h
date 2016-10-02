@@ -21,6 +21,11 @@
 #ifndef _goblin_Cursor_h
 #define _goblin_Cursor_h
 
+#include <kobold/platform.h>
+
+#if KOBOLD_PLATFORM != KOBOLD_PLATFORM_IOS &&\
+    KOBOLD_PLATFORM != KOBOLD_PLATFORM_ANDROID
+
 #include <OGRE/Overlay/OgreOverlay.h>
 #include <OGRE/Overlay/OgreOverlayManager.h>
 #include <OGRE/Overlay/OgreOverlayContainer.h>
@@ -103,6 +108,8 @@ class Cursor
 };
 
 }
+
+#endif
 
 #endif
 

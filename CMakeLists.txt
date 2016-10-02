@@ -28,19 +28,35 @@ if(UNIX)
    endif(${GOBLIN_DEBUG})
 endif(UNIX)
 
-# Find mandatory packages
-FIND_PACKAGE(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIR})
+#Find Packages
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+   # For android, must build statically.
+   set(GOBLIN_STATIC True)
+   set(OGRE_STATIC True)
+   # Use Tremor instead of Vorbis and Vorbis File
+   FIND_PACKAGE(Tremor REQUIRED)
+   include_directories(${VORBISFILE_INCLUDE_DIR})
+else(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+   # SDL2 is only used on non android systems
+   FIND_PACKAGE(SDL2 REQUIRED)
+   include_directories(${SDL2_INCLUDE_DIR})
+   # Vorbis and vorbis file 
+   FIND_PACKAGE(Vorbis REQUIRED)
+   include_directories(${VORBIS_INCLUDE_DIR})
+   FIND_PACKAGE(Vorbisfile REQUIRED)
+   include_directories(${VORBISFILE_INCLUDE_DIR})
+endif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+
 FIND_PACKAGE(OpenAL REQUIRED)
 include_directories(${OPENAL_INCLUDE_DIR})
 FIND_PACKAGE(Ogg REQUIRED)
 include_directories(${OGG_INCLUDE_DIR})
-FIND_PACKAGE(Vorbis REQUIRED)
-include_directories(${VORBIS_INCLUDE_DIR})
-FIND_PACKAGE(Vorbisfile REQUIRED)
-include_directories(${VORBISFILE_INCLUDE_DIR})
 FIND_PACKAGE(OGRE REQUIRED)
 include_directories(${OGRE_INCLUDE_DIR})
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+   include_directories(${OGRE_INCLUDE_DIR}/RenderSystems/GLES2/)
+   include_directories(${OGRE_INCLUDE_DIR}/RenderSystems/GLES2/Android/)
+endif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
 FIND_PACKAGE(Kobold REQUIRED)
 include_directories(${KOBOLD_INCLUDE_DIR})
 
@@ -54,6 +70,7 @@ configure_file("./src/goblinconfig.h.in" "./src/goblinconfig.h")
 
 # Include headers and files
 include(sources.cmake)
+  
 
 # Build the library with defined mode (static or shared)
 if(${GOBLIN_STATIC})

@@ -34,3 +34,11 @@ src/textbox.h
 src/texttitle.h
 )
 
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+set(GOBLIN_SOURCES
+   ${GOBLIN_SOURCES}
+   src/jni/ActivityJNI.cpp
+)
+endif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+ 
+
