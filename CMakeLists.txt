@@ -86,4 +86,9 @@ set_target_properties(goblin PROPERTIES VERSION ${VERSION}
 install(FILES ${GOBLIN_CONFIG_FILE} DESTINATION include/goblin)
 install(FILES ${GOBLIN_HEADERS} DESTINATION include/goblin)
 install(TARGETS goblin DESTINATION lib)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+   set(JAVA_FILES src/jni/ActivityJNI.java src/jni/MainJNIActivity.java)
+   install(FILES ${JAVA_FILES} DESTINATION share/goblin)
+endif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+
 
