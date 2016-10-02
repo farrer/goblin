@@ -26,6 +26,15 @@ Usually, you build Goblin with the following commands:
 **cd** build  
 cmake ..  
 make  
+make install
+
+### Building for Android
+
+To build for Android, the CMake command call must set the needed NDK variables:
+
+cmake -DCMAKE\_TOOLCHAIN\_FILE=../CMakeModules/android.toolchain.cmake -DANDROID\_NDK=path\_to\_Android\_Ndk -DCMAKE\_BUILD\_TYPE=Release -DANDROID\_ABI="armeabi-v7a" -DANDROID\_NATIVE\_API\_LEVEL=12 ..
+
+Change those parameters to your needs.
 
 
 ### Options
