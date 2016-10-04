@@ -123,8 +123,11 @@ class BaseApp
 
    protected:
 
-      /*! return application Unix name (all lower case, without spaces). */
+      /*! \return application Unix name (all lower case, without spaces). */
       virtual Ogre::String getApplicationUnixName()=0;
+
+      /*! \return base data directory name (usually "data"). */
+      virtual Ogre::String getBaseDataDir() = 0;
 
       /*! Do specific initialization for the implementation.
        * \return true on success, false to abort the initialization. */

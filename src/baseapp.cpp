@@ -378,15 +378,17 @@ bool BaseApp::initShaderSystem(Ogre::String cacheDir)
 bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
                      Ogre::uint32 wZ, Ogre::Real wScale)
 {
+   Ogre::String baseDataDir = getBaseDataDir();
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE ||\
     OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-   Ogre::String path = Ogre::macBundlePath() + Ogre::String("/data/");
+   Ogre::String path = Ogre::macBundlePath() + Ogre::String("/" + baseDataDir +
+                       Ogre::String("/");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-   Ogre::String path = "/data/";
+   Ogre::String path = Ogre::String("/") + baseDataDir + Ogre::String("/");
 #else
    //TODO: when installed somewhare, we must use it (ie: 
    // /usr/local/share, for example
-   Ogre::String path = "../data/";
+   Ogre::String path = baseDataDir + Ogre::String("/");
 #endif
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
