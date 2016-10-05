@@ -24,6 +24,7 @@
 #include <kobold/sound.h>
 #include <kobold/userinfo.h>
 #include <kobold/i18n.h>
+#include <kobold/log.h>
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
     OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
@@ -85,6 +86,9 @@ BaseApp::BaseApp()
    /* Set a new seed */
    srand((unsigned int)time(NULL));
    updateTimer.reset();
+
+   /* Init kobold log to use Ogre::Log */
+   Kobold::Log::init(true);
 }
 
 /***********************************************************************
