@@ -18,14 +18,15 @@
  along with Goblin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _goblin_Cursor_h
-#define _goblin_Cursor_h
+#ifndef _goblin_cursor_h
+#define _goblin_cursor_h
 
 #include <kobold/platform.h>
 
 #if KOBOLD_PLATFORM != KOBOLD_PLATFORM_IOS &&\
     KOBOLD_PLATFORM != KOBOLD_PLATFORM_ANDROID
 
+#include <kobold/mouse.h>
 #include <OGRE/Overlay/OgreOverlay.h>
 #include <OGRE/Overlay/OgreOverlayManager.h>
 #include <OGRE/Overlay/OgreOverlayContainer.h>
@@ -33,12 +34,9 @@
 #include <OGRE/OgreMaterialManager.h>
 #include <OGRE/OgreTextureManager.h>
 #include <OGRE/OgreRenderWindow.h>
-#include <SDL2/SDL.h>
 
 namespace Goblin
 {
-
-#define MAX_MOUSE_BUTTONS    3
 
 /*! A mouse Cursor class.*/
 class Cursor
@@ -91,16 +89,6 @@ class Cursor
       
       static Ogre::Real windowX;
       static Ogre::Real windowY;
-
-      static Uint8 mButton;  /**< Current button states */
-      static int mouseX;     /**< Current mouse X position */
-      static int mouseY;     /**< Current mouse Y position */
-      static int relMouseX;  /**< Relative mouse X move from last get */
-      static int relMouseY;  /**< Relative mouse Y move from last get */
-      static int mouseWheel; /**< Mouse Wheel relative state */
-      
-      /*! Release state for each button */
-      static bool mouseButtonReleased[MAX_MOUSE_BUTTONS];
 
       /*! Load Cursor file 
        * \param fileName -> file name of Cursor */
