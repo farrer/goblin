@@ -101,8 +101,8 @@ BaseApp::~BaseApp()
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS && \
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
    Ogre::LogManager::getSingleton().getDefaultLog()->logMessage(
-         "   Finishing Goblin::Cursor...");
-   Goblin::Cursor::finish();
+         "   Finishing Kobold::Mouse...");
+   Kobold::Mouse::finish();
 #endif
 
 #ifdef _GOBLIN_SHOW_FPS_
@@ -571,7 +571,7 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
    /* Initialize mouse cursor cursor */
-   Goblin::Cursor::init(ogreWindow);
+   Kobold::Mouse::init();
 #endif
    
    /* Load i18 files */
@@ -604,6 +604,7 @@ void BaseApp::getInput()
    Kobold::MultiTouchController::update();
 
    /* Verify touch single input (as mouse) */
+   rightButtonPressed = false; //TODO: alternate pressing for multitouch
    if(Kobold::MultiTouchController::totalTouches() >= 1)
    {
       Kobold::MultiTouchController::getTouch(0, tInfo);
@@ -636,19 +637,19 @@ void BaseApp::getInput()
 
    /* Get Keyboard State */
    Kobold::Keyboard::updateState();
-   Goblin::Cursor::update();
+   Kobold::Mouse::update();
    /* Set mouse coordinates */
-   leftButtonPressed = Goblin::Cursor::isLeftButtonPressed();
-   //rightButtonPressed = Goblin::Cursor::isRightButtonPressed();
-   mouseX = Goblin::Cursor::getX();
-   mouseY = Goblin::Cursor::getY();
+   leftButtonPressed = Kobold::Mouse::isLeftButtonPressed();
+   rightButtonPressed = Kobold::Mouse::isRightButtonPressed();
+   mouseX = Kobold::Mouse::getX();
+   mouseY = Kobold::Mouse::getY();
 
    /* Let's update things by events (usually, only used for text editing and
     * mouse release states) */
    SDL_Event event;
    while(SDL_PollEvent(&event))
    {
-      Goblin::Cursor::updateByEvent(event);
+      Kobold::Mouse::updateByEvent(event);
       if(Kobold::Keyboard::isEditingText())
       {
          Kobold::Keyboard::updateByEvent(event);
