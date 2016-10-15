@@ -19,7 +19,7 @@
 */
 
 #include "ibutton.h"
-#include <kobold/sound.h>
+#include <kosound/sound.h>
 
 using namespace Goblin;
 
@@ -172,7 +172,7 @@ int Ibutton::verifyEvents(int mouseX, int mouseY, bool leftButtonPressed)
             event = IBUTTON_EVENT_PRESSED;
             if(havePressedSound)
             {
-               Kobold::Sound::addSoundEffect(SOUND_NO_LOOP, pressedSound);
+               Kosound::Sound::addSoundEffect(SOUND_NO_LOOP, pressedSound);
             }
          }
          else

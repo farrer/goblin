@@ -59,6 +59,9 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
 endif(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
 FIND_PACKAGE(Kobold REQUIRED)
 include_directories(${KOBOLD_INCLUDE_DIR})
+FIND_PACKAGE(Kosound REQUIRED)
+include_directories(${KOSOUND_INCLUDE_DIR})
+
 
 # Include directories: src and the binary src (as generating config.h there)
 include_directories(${PROJECT_SOURCE_DIR}/src)

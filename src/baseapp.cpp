@@ -21,7 +21,7 @@
 #include "baseapp.h"
 #include "camera.h"
 #include "screeninfo.h"
-#include <kobold/sound.h>
+#include <kosound/sound.h>
 #include <kobold/userinfo.h>
 #include <kobold/i18n.h>
 #include <kobold/log.h>
@@ -143,7 +143,7 @@ BaseApp::~BaseApp()
       shaderGenerator->destroy();
    }
 
-   Kobold::Sound::finish();
+   Kosound::Sound::finish();
    
    if(ogreRoot)
    {
@@ -489,7 +489,7 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
 #endif
 
    /* Initialize the sound system */
-   Kobold::Sound::init();
+   Kosound::Sound::init();
 
    /* Set the screen information. */
    Goblin::ScreenInfo::init(ogreWindow, wScale, 
@@ -714,13 +714,13 @@ void BaseApp::run()
          ogreWindow->update();
 
          /* Reset the 'listener' position to current camera */
-         Kobold::Sound::setListenerPosition(Goblin::Camera::getCenterX(),
+         Kosound::Sound::setListenerPosition(Goblin::Camera::getCenterX(),
                Goblin::Camera::getCenterY(), Goblin::Camera::getCenterZ(),
                Goblin::Camera::getTheta(), Goblin::Camera::getPhi(), 
                Goblin::Camera::getZoom());
          
          /* Flush the sounds and music */
-         Kobold::Sound::flush();
+         Kosound::Sound::flush();
          
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
