@@ -28,6 +28,11 @@ if(UNIX)
    endif(${GOBLIN_DEBUG})
 endif(UNIX)
 
+if(APPLE)
+   set(GOBLIN_STATIC True)
+   set(OGRE_STATIC True)
+endif(APPLE)
+
 #Find Packages
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
    # For android, must build statically.
