@@ -12,6 +12,7 @@ Goblin is released under GNU Lesser General Public License v3.0 or later
 
  * Ogre3D 1.10 [http://www.ogre3d.org/]
  * Kobold [https://github.com/farrer/kobold]
+ * Kosound [https://github.com/farrer/kosound]
  * SDL2 [https://libsdl.org/download-2.0.php]
  * OpenAL [http://kcat.strangesoft.net/openal.html]
  * Ogg [https://xiph.org/downloads/]

@@ -35,7 +35,7 @@
    #include <kobold/multitouchcontroller.h>
 #else
    #include <SDL2/SDL.h>
-   #include "cursor.h"
+   #include <kobold/mouse.h>
    #include <kobold/keyboard.h>
 #endif
 
@@ -205,10 +205,11 @@ class BaseApp
 #endif
       Goblin::MaterialListener* materialListener; /**< Material to shader */
 
-      int mouseX;                            /**< X position of single input */
-      int mouseY;                            /**< Y position of single input */
-      bool leftButtonPressed;                /**< If single input pressed */
-      bool backRunning;                      /**< If app is background */ 
+      int mouseX;                     /**< X position of single input */
+      int mouseY;                     /**< Y position of single input */
+      bool leftButtonPressed;         /**< If single input pressed */
+      bool rightButtonPressed;        /**< If single input alternate pressed */
+      bool backRunning;               /**< If app is background */ 
       bool receivedCameraInput; /**< If camera received input on last check */
       unsigned long timeElapsed; /**< Time elapsed before new call to render. */
 };

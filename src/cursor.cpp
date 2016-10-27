@@ -124,22 +124,10 @@ void Cursor::loadCursor(Ogre::String fileName)
  *****************************************************************/
 void Cursor::update()
 {
-   /* Get mouse state */
-   relMouseX = mouseX;
-   relMouseY = mouseY;
-   mButton = SDL_GetMouseState(&mouseX, &mouseY);
-   relMouseX -= mouseX;
-   relMouseY -= mouseY;
-
-   /* Clear event related states */
-   mouseWheel = 0;
-   for(int i = 0; i < MAX_MOUSE_BUTTONS; i++)
-   {
-      mouseButtonReleased[i] = false;
-   }
+   Kobold::Mouse::update();
 
    /* Update mouse container rendererer */
-   ogreCursorContainer->setPosition(mouseX / windowX, mouseY / windowY);
+   ogreCursorContainer->setPosition(getX() / windowX, getY() / windowY);
 }
 
 /*****************************************************************
@@ -147,18 +135,7 @@ void Cursor::update()
  *****************************************************************/
 void Cursor::updateByEvent(SDL_Event event)
 {
-   if(event.type == SDL_MOUSEWHEEL)
-   {
-      /* Add or dec the amount moved */
-      mouseWheel += event.wheel.y;
-   }
-   else if(event.type == SDL_MOUSEBUTTONUP)
-   {
-      if(event.button.button <= MAX_MOUSE_BUTTONS)
-      {
-         mouseButtonReleased[event.button.button - 1] = true;
-      }
-   }
+   Kobold::Mouse::updateByEvent(event);
 }
 
 /*****************************************************************
@@ -166,7 +143,7 @@ void Cursor::updateByEvent(SDL_Event event)
  *****************************************************************/
 int Cursor::getX()
 {
-   return mouseX;
+   return Kobold::Mouse::getX();
 }
 
 /*****************************************************************
@@ -174,7 +151,7 @@ int Cursor::getX()
  *****************************************************************/
 int Cursor::getY()
 {
-   return mouseY;
+   return Kobold::Mouse::getY();
 }
 
 /*****************************************************************
@@ -182,7 +159,7 @@ int Cursor::getY()
  *****************************************************************/
 int Cursor::getRelativeX()
 {
-   return relMouseX;
+   return Kobold::Mouse::getRelativeX();
 }
 
 /*****************************************************************
@@ -190,7 +167,7 @@ int Cursor::getRelativeX()
  *****************************************************************/
 int Cursor::getRelativeY()
 {
-   return relMouseY;
+   return Kobold::Mouse::getRelativeY();
 }
 
 /*****************************************************************
@@ -198,7 +175,7 @@ int Cursor::getRelativeY()
  *****************************************************************/
 int Cursor::getRelativeWheel()
 {
-   return mouseWheel;
+   return Kobold::Mouse::getRelativeWheel();
 }
 
 /*****************************************************************
@@ -206,7 +183,7 @@ int Cursor::getRelativeWheel()
  *****************************************************************/
 bool Cursor::isLeftButtonPressed()
 {
-   return mButton & SDL_BUTTON(1);
+   return Kobold::Mouse::isLeftButtonPressed();
 }
 
 /*****************************************************************
@@ -214,7 +191,7 @@ bool Cursor::isLeftButtonPressed()
  *****************************************************************/
 bool Cursor::isMiddleButtonPressed()
 {
-   return mButton & SDL_BUTTON(2);
+   return Kobold::Mouse::isMiddleButtonPressed();
 }
 
 /*****************************************************************
@@ -222,7 +199,7 @@ bool Cursor::isMiddleButtonPressed()
  *****************************************************************/
 bool Cursor::isRightButtonPressed()
 {
-   return mButton & SDL_BUTTON(3);
+   return Kobold::Mouse::isRightButtonPressed();
 }
 
 /*****************************************************************
@@ -230,12 +207,7 @@ bool Cursor::isRightButtonPressed()
  *****************************************************************/
 bool Cursor::checkButtonRelease(int buttonNumber)
 {
-   if(buttonNumber < MAX_MOUSE_BUTTONS)
-   {
-      return mouseButtonReleased[buttonNumber];
-   }
-
-   return false;
+   return Kobold::Mouse::checkButtonRelease(buttonNumber);
 }
 
 /*****************************************************************
@@ -255,14 +227,6 @@ Ogre::TexturePtr Cursor::cursorTexture;
 Ogre::MaterialPtr Cursor::cursorMaterial;
 Ogre::Real Cursor::windowX;
 Ogre::Real Cursor::windowY;
-Uint8 Cursor::mButton;
-int Cursor::mouseX = -1;
-int Cursor::mouseY = -1;
-int Cursor::relMouseX = 0;
-int Cursor::relMouseY = 0;
-int Cursor::mouseWheel = 0;
-bool Cursor::mouseButtonReleased[MAX_MOUSE_BUTTONS];
-
 
 }
 
