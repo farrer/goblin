@@ -385,7 +385,7 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
    Ogre::String baseDataDir = getBaseDataDir();
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE ||\
     OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-   Ogre::String path = Ogre::macBundlePath() + Ogre::String("/" + baseDataDir +
+   Ogre::String path = Ogre::macBundlePath() + Ogre::String("/") + baseDataDir +
                        Ogre::String("/");
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
    Ogre::String path = Ogre::String("/") + baseDataDir + Ogre::String("/");
