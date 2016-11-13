@@ -26,7 +26,7 @@ using namespace Goblin;
  *                             Constructor                             *
  ***********************************************************************/
 Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
-            Ogre::SceneManager* sceneManager, Ogre::SceneNode* parentNode)
+            Ogre::SceneManager* sceneManager, Model3d* parent)
 {
    visible = true;
 
@@ -36,9 +36,9 @@ Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
    /* Create the model and scene node */
    model = ogreSceneManager->createEntity(modelName, modelFile);
 
-   if(parentNode)
+   if(parent)
    {
-      node = parentNode->createChildSceneNode();
+      node = parent->node->createChildSceneNode();
    }
    else
    {

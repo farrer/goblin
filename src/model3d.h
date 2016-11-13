@@ -36,7 +36,7 @@ class Model3d
    public:
       /*! Constructor */
       Model3d(Ogre::String modelName, Ogre::String modelFile,
-            Ogre::SceneManager* sceneManager, Ogre::SceneNode* parentNode=NULL);
+            Ogre::SceneManager* sceneManager, Model3d* parent=NULL);
       /*! Destructor */
       ~Model3d();
 
@@ -58,8 +58,6 @@ class Model3d
 
       /* Get current model position */
       Ogre::Vector3 getPosition();
-      /*! \return Ogre::SceneNode related to the model */
-      Ogre::SceneNode* getSceneNode() { return node;};
 
       /*! Set current model scale */
       void setScale(Ogre::Real x, Ogre::Real y, Ogre::Real z);
