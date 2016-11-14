@@ -176,8 +176,9 @@ class BaseApp
        * Usually, ignored by iOS and Android systems. */
       virtual bool shouldQuit()=0;
    
-      /*! Update user input system's. */
-      void getInput();
+      /*! Update user input system's.
+       * \return if should quit the application. */
+      bool getInput();
 
       /*! Initialize the shader system */
       bool initShaderSystem(Ogre::String userDir);

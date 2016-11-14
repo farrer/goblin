@@ -594,9 +594,10 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
 /***********************************************************************
  *                             getInput                                *
  ***********************************************************************/
-void BaseApp::getInput()
+bool BaseApp::getInput()
 {
    bool shouldDoCameraInput = true;
+   bool quit = false;
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
     OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
@@ -654,6 +655,11 @@ void BaseApp::getInput()
       {
          Kobold::Keyboard::updateByEvent(event);
       }
+      /* Let's check quit event */
+      if(event.type == SDL_QUIT)
+      {
+         quit = true;
+      }
    }
    shouldDoCameraInput = !Kobold::Keyboard::isEditingText();
 
@@ -664,6 +670,8 @@ void BaseApp::getInput()
       /* Do the camera input (if defined) */
       receivedCameraInput = Goblin::Camera::doMove();
    }
+
+   return quit;
 }
 
 /***********************************************************************
@@ -697,7 +705,7 @@ void BaseApp::run()
          updateTimer.reset();
          
          /* Get input from multitouch, mouse or keyboard. */
-         getInput();
+         exit |= getInput();
 
 #ifdef _GOBLIN_SHOW_FPS_
          fpsDisplay->update();
