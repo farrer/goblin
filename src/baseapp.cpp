@@ -558,15 +558,15 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
       return false;
    }
 
-   /* Load things from resource. */
-   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
- 
    /* Create the BTSOCCER camera */
    Goblin::Camera::init(ogreSceneManager, ogreWindow);
    
    /* Set viewport to use shaders */
    Goblin::Camera::getViewport()->setMaterialScheme(
          Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+
+   /* Load things from resource. */
+   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
