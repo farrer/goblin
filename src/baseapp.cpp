@@ -679,6 +679,7 @@ bool BaseApp::getInput()
  ***********************************************************************/
 void BaseApp::run()
 {  
+   bool exit = false;
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
     OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
    if(backRunning)
@@ -695,7 +696,6 @@ void BaseApp::run()
    
    /* The main loop (note: for IOS, only a single run, as the nstimer
     *  takes control. Android, similar case.) */
-   bool exit = false;
    while(!exit)
    {
       timeElapsed = updateTimer.getMilliseconds();
