@@ -43,6 +43,10 @@ class Model3d
       /*! Change the model material */
       void setMaterial(Ogre::String materialName);
 
+      /*! Set current orientation along Y axys.
+       * \param yawValue new value for Y orientation.
+       * \note this function won't change pitch and roll */
+      void setOrientation(Ogre::Real yawValue);
       /*! Set current orientation */
       void setOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 
             Ogre::Real rollValue);

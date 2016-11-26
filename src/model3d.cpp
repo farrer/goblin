@@ -69,6 +69,15 @@ void Model3d::setMaterial(Ogre::String materialName)
 /***********************************************************************
  *                           setOrientation                            *
  ***********************************************************************/
+void Model3d::setOrientation(Ogre::Real yawValue)
+{
+   node->yaw(Ogre::Radian(Ogre::Degree(yawValue-ori[1].getValue())));
+   ori[1].setCurrent(yawValue);
+}
+
+/***********************************************************************
+ *                           setOrientation                            *
+ ***********************************************************************/
 void Model3d::setOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 
             Ogre::Real rollValue)
 {
