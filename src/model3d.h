@@ -78,6 +78,11 @@ class Model3d
       /*! Verify if is visible or not */
       bool isVisible();
 
+      /*! Check if the SceneNode is owned by the model or not.
+       * \param node SceneNode to check.
+       * \return if node is the SceneNode of this Model or not */
+      bool ownSceneNode(Ogre::SceneNode* node);
+
    protected:
       Ogre::SceneManager* ogreSceneManager;  /**< Scene manager in use */
 

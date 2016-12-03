@@ -136,7 +136,7 @@ Ogre::Vector3 Model3d::getPosition()
    res.y = pos[1].getValue();
    res.z = pos[2].getValue();
 
-   return(res);
+   return res;
 }
 
 /***********************************************************************
@@ -198,7 +198,15 @@ void Model3d::show()
  ***********************************************************************/
 bool Model3d::isVisible()
 {
-   return(visible);
+   return visible;
+}
+
+/***********************************************************************
+ *                            ownSceneNode                             *
+ ***********************************************************************/
+bool Model3d::ownSceneNode(Ogre::SceneNode* node)
+{
+   return this->node == node;
 }
 
 /***********************************************************************
