@@ -189,7 +189,6 @@ class BaseApp
       Ogre::OverlaySystem* ogreOverlaySystem;/**< Ogre overlays */
       Ogre::RTShader::ShaderGenerator* shaderGenerator; /**< shaders */
       Ogre::Timer updateTimer; /**< Timer to calculate frame interval */
-      Ogre::Light* mainLight; /**< Main light used */
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
     OGRE_PLATFORM == OGRE_PLATFORM_ANDROID

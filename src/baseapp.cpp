@@ -558,7 +558,7 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
       return false;
    }
 
-   /* Create the BTSOCCER camera */
+   /* Define the camera */
    Goblin::Camera::init(ogreSceneManager, ogreWindow);
    
    /* Set viewport to use shaders */
@@ -583,11 +583,7 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
    fpsDisplay->setType(Goblin::FpsDisplay::TYPE_LAST);
    fpsDisplay->setPosition(0, 728);
 #endif
-   
-   /* Create a light */
-   mainLight = ogreSceneManager->createLight("MainLight");
-   mainLight->setPosition(20,80,50);
-
+ 
    return doInit();
 }
 
