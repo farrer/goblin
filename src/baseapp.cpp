@@ -374,7 +374,13 @@ bool BaseApp::initShaderSystem(Ogre::String cacheDir)
    return false;
 }
 
-
+/***********************************************************************
+ *                           getShadowTechinque                        *
+ ***********************************************************************/
+Ogre::ShadowTechnique BaseApp::getShadowTechnique()
+{
+   return Ogre::SHADOWTYPE_NONE;
+}
 
 /***********************************************************************
  *                                 create                              *
@@ -480,13 +486,8 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
    //FIXME: we should do some check if need to use another scene manager.
    ogreSceneManager = ogreRoot->createSceneManager(Ogre::ST_GENERIC);
    
-   /* Set shadows (iOS and Android without it) */
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
-    OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-   ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
-#else
-   ogreSceneManager->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
-#endif
+   /* Set shadow technique to desired one (defaults to no shadows) */
+   ogreSceneManager->setShadowTechnique(getShadowTechnique());
 
    /* Initialize the sound system */
    Kosound::Sound::init();

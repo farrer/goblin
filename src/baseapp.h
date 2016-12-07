@@ -156,6 +156,10 @@ class BaseApp
        * foreground when this function is called. */
       virtual void doSendToForeground()=0;
 
+      /*! \return Shadow Technique to use.
+       * \note defaults to Ogre::SHADOWTYPE_NONE. */ 
+      virtual Ogre::ShadowTechnique getShadowTechnique();
+
       enum Orientation
       {
          LANDSCAPE,
