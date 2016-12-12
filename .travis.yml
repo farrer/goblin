@@ -8,7 +8,7 @@ os:
 script:
    - mkdir build 
    - cd build 
-   - cmake ..
+   - cmake -DOGRE_DEPENDENCIES_DIR=../../ogredeps/build/ogredeps -DOGRE_STATIC=1 ..
    - make
 before_install:
    #install newer cmake
@@ -81,7 +81,7 @@ before_install:
    - cd kobold
    - mkdir build
    - cd build
-   - cmake ..
+   - cmake -DOGRE_DEPENDENCIES_DIR=../../ogredeps/build/ogredeps -DOGRE_STATIC=1 ..
    - make -j5
    - sudo make install
    - cd ../../
@@ -91,7 +91,7 @@ before_install:
    - cd kosound
    - mkdir build
    - cd build
-   - cmake ..
+   - cmake -DOGRE_DEPENDENCIES_DIR=../../ogredeps/build/ogredeps -DOGRE_STATIC=1 ..
    - make -j5
    - sudo make install
    - cd ../../
