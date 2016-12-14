@@ -125,19 +125,8 @@ Ogre::Real Camera::limitValue(Ogre::Real v, Ogre::Real min, Ogre::Real max)
 void Camera::set(Ogre::Real x, Ogre::Real y, Ogre::Real z, 
       Ogre::Real p, Ogre::Real t, Ogre::Real zo)
 {
-   /* Verify limits */
-   if(limitedArea)
-   {
-      x = limitValue(x, minArea.x, maxArea.x);
-      y = limitValue(y, minArea.y, maxArea.y);
-      z = limitValue(z, minArea.z, maxArea.z);
-   }
-   
    /* Set values */
-   state.center.x = x;
-   state.center.y = y;
-   state.center.z = z;
-
+   setPosition(Ogre::Vector3(x, y, z), false);
    state.phi = rangeValue(p);
    state.theta = t;
    state.zoom = zo;
@@ -153,6 +142,34 @@ void Camera::set(Ogre::Real x, Ogre::Real y, Ogre::Real z,
 
    /* finally do the lookat */
    lookAt();
+}
+
+/***********************************************************************
+ *                           setPosition                               *
+ ***********************************************************************/
+void Camera::setPosition(Ogre::Vector3 pos, bool doLookAt)
+{
+   float x = pos.x;
+   float y = pos.y;
+   float z = pos.z;
+
+   /* Verify limits */
+   if(limitedArea)
+   {
+      x = limitValue(x, minArea.x, maxArea.x);
+      y = limitValue(y, minArea.y, maxArea.y);
+      z = limitValue(z, minArea.z, maxArea.z);
+   }
+   
+   /* Set values */
+   state.center.x = x;
+   state.center.y = y;
+   state.center.z = z;
+
+   if(doLookAt)
+   {
+      lookAt();
+   }
 }
 
 /***********************************************************************

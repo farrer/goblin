@@ -79,6 +79,12 @@ class Camera
       static void set(Ogre::Real x, Ogre::Real y, Ogre::Real z, 
             Ogre::Real p, Ogre::Real t, Ogre::Real zo);
 
+      /*! Instantaneous set Camera to a new position 
+       * \param pos new camera position
+       * \param doLookAt if true, will define the lookAt, false,
+       *        the definition will be done later. */
+      static void setPosition(Ogre::Vector3 pos, bool doLookAt=true);
+
       /*! Set a Target position/orientation to the Camera
        * \note: Camera will follow a calculated path from current
        *        position/orientation to the Target defined here. */
