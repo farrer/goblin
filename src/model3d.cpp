@@ -76,6 +76,18 @@ void Model3d::setOrientation(Ogre::Real yawValue)
 }
 
 /***********************************************************************
+ *                                getYaw                               *
+ ***********************************************************************/
+Ogre::Real Model3d::getYaw()
+{
+   return ori[1].getValue();
+}
+Ogre::Real Model3d::getOrientation()
+{
+   return getYaw();
+}
+
+/***********************************************************************
  *                           setOrientation                            *
  ***********************************************************************/
 void Model3d::setOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 

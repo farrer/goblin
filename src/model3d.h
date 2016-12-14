@@ -54,6 +54,11 @@ class Model3d
       void setTargetOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 
             Ogre::Real rollValue);
 
+      /*! \return current model's yaw (Y) angle */
+      Ogre::Real getYaw();
+      /*! Same as #getYaw()  */
+      Ogre::Real getOrientation();
+
       /* Set model's next position */
       void setTargetPosition(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ);
       /*! Set model's current position */
