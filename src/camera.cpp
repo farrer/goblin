@@ -674,7 +674,7 @@ bool Camera::applyAccelerationsAndMove()
       centerYAc = 0.0f;
       centerZAc = 0.0f;
 
-      /* Do the look-up */
+      /* Do the look-at */
       lookAt();
 
       return(true);
@@ -772,7 +772,7 @@ bool Camera::applyAccelerationsAndMove()
       lookAt();
    }
 
-   return(moved);
+   return moved;
 }
 
 /***********************************************************************
@@ -859,7 +859,7 @@ void Camera::setCurrentPhi(Ogre::Real value)
  ***********************************************************************/
 bool Camera::isVisible(Ogre::AxisAlignedBox bbox)
 {
-   return(ogreCamera->isVisible(bbox));
+   return ogreCamera->isVisible(bbox);
 }
    
 /***********************************************************************
@@ -925,7 +925,7 @@ Ogre::Real Camera::rangeValue(Ogre::Real v)
       v -= 360;
    }
    
-   return(v);
+   return v;
 }
 
 /***********************************************************************
