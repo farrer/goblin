@@ -712,7 +712,8 @@ void BaseApp::run()
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
          exit |= shouldQuit();
 #endif
-         /* Update the window */
+         /* Render the frame and update the window */
+         ogreRoot->renderOneFrame();
          ogreWindow->update();
 
          /* Reset the 'listener' position to current camera */
