@@ -19,8 +19,22 @@
 */
 
 #include "model3d.h"
+#include "baseapp.h"
+
+#include <OGRE/OgreSkeleton.h>
+#include <OGRE/OgreSkeletonInstance.h>
+
+#include <kobold/log.h>
+
+#include <assert.h>
 
 using namespace Goblin;
+
+///////////////////////////////////////////////////////////////////////////
+//                                                                       //
+//                                Model3d                                //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
 
 /***********************************************************************
  *                             Constructor                             *
@@ -264,4 +278,298 @@ void Model3d::update()
    }
 }
 
+///////////////////////////////////////////////////////////////////////////
+//                                                                       //
+//                            AnimationInfo                              //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+
+/***********************************************************************
+ *                             Constructor                             *
+ ***********************************************************************/
+AnimatedModel3d::AnimationInfo::AnimationInfo()
+{
+   animationState = NULL;
+   fadingIn = false;
+   fadingOut = false;
+}
+
+/***********************************************************************
+ *                              Destructor                             *
+ ***********************************************************************/
+AnimatedModel3d::AnimationInfo::~AnimationInfo()
+{
+}
+
+/***********************************************************************
+ *                         setAnimationState                           *
+ ***********************************************************************/
+void AnimatedModel3d::AnimationInfo::setAnimationState(
+      Ogre::AnimationState* animationState)
+{
+   this->animationState = animationState;
+   this->animationState->setEnabled(false);
+}
+
+/***********************************************************************
+ *                         getAnimationState                           *
+ ***********************************************************************/
+Ogre::AnimationState* AnimatedModel3d::AnimationInfo::getAnimationState()
+{
+   return animationState;
+}
+
+/***********************************************************************
+ *                             isFadingIn                              *
+ ***********************************************************************/
+bool AnimatedModel3d::AnimationInfo::isFadingIn()
+{
+   return fadingIn;
+}
+
+/***********************************************************************
+ *                            isFadingOut                              *
+ ***********************************************************************/
+bool AnimatedModel3d::AnimationInfo::isFadingOut()
+{
+   return fadingOut;
+}
+
+/***********************************************************************
+ *                            setFadingIn                              *
+ ***********************************************************************/
+void AnimatedModel3d::AnimationInfo::setFadingIn(bool value)
+{
+   fadingIn = value;
+}
+
+/***********************************************************************
+ *                            setFadingOut                             *
+ ***********************************************************************/
+void AnimatedModel3d::AnimationInfo::setFadingOut(bool value)
+{
+   fadingOut = value;
+}
+
+///////////////////////////////////////////////////////////////////////////
+//                                                                       //
+//                           AnimatedModel3d                             //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+
+
+/*! Animation crossfade speed in % of full weight per second */
+#define ANIM_FADE_SPEED 7.5f
+/*! Animation update rate (in seconds). */
+#define ANIM_UPDATE_RATE (BASE_APP_UPDATE_RATE / 1000.0f)
+
+/***********************************************************************
+ *                             Constructor                             *
+ ***********************************************************************/
+AnimatedModel3d::AnimatedModel3d(Ogre::String modelName, 
+                      Ogre::String modelFile, Ogre::SceneManager* sceneManager, 
+                      int totalAnimations, Model3d* parent)
+                :Model3d(modelName, modelFile, sceneManager, parent)
+{
+   assert(totalAnimations > 0);
+   this->totalAnimations = totalAnimations;
+   this->baseAnimation = NULL;
+   this->animations = new AnimationInfo[totalAnimations];
+   this->baseAnimationIndex = -1;
+   this->looping = false;
+   this->previousAnimationIndex = -1;
+   this->timer = 0;
+   this->totalFadings = 0;
+
+   /* Define animation blend */
+   model->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
+
+   /* Let's define each animation pointer */
+   Ogre::AnimationStateSet* anims = model->getAllAnimationStates();
+   int i=0;
+   for(Ogre::AnimationStateIterator iter = anims->getAnimationStateIterator();
+       iter.hasMoreElements(); iter.moveNext())
+   {
+      if(i < totalAnimations)
+      {
+         animations[i].setAnimationState(iter.peekNextValue());
+      }
+      
+      i++;
+   }
+
+   /* Check total got */
+   if(i != totalAnimations)
+   {
+      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR, 
+            "Warning: got %d animations for model '%s' but was expecting %d",
+            i, modelFile.c_str(), totalAnimations);
+   }
+}
+
+/***********************************************************************
+ *                              Destructor                             *
+ ***********************************************************************/
+AnimatedModel3d::~AnimatedModel3d()
+{
+   delete[] animations;
+}
+
+/***********************************************************************
+ *                                update                               *
+ ***********************************************************************/
+void AnimatedModel3d::update()
+{
+   Model3d::update();
+
+   timer += ANIM_UPDATE_RATE;
+
+   /* Check finish non-looping animations */
+   if((!looping) && (baseAnimation) && 
+      (timer > baseAnimation->getAnimationState()->getLength()))
+   {
+      /* A non looping animation just finished, let's reset to previous
+       * looping one. */
+      setBaseAnimation(previousAnimationIndex, true); 
+   }
+
+   /* Update base animation time */
+   if(baseAnimation)
+   {
+      baseAnimation->getAnimationState()->addTime(ANIM_UPDATE_RATE);
+   }
+
+   assert(totalFadings >= 0);
+   if(totalFadings > 0)
+   {
+      doFadeInAndFadeOut();
+   }
+}
+
+/***********************************************************************
+ *                           doFadeInAndOut                            *
+ ***********************************************************************/
+void AnimatedModel3d::doFadeInAndFadeOut()
+{
+   /* let's apply the fade-in - fade-out */
+   Ogre::Real newWeight;
+   for(int i = 0; i < totalAnimations; i++)
+   {
+      if(animations[i].isFadingIn())
+      {
+         /* Increment its weight, untill full. */
+         newWeight = animations[i].getAnimationState()->getWeight() +
+                  ANIM_UPDATE_RATE * ANIM_FADE_SPEED;
+         if(newWeight >= 0.98f)
+         {
+            /* Done fading-in */
+            animations[i].getAnimationState()->setWeight(1.0f);
+            animations[i].setFadingIn(false);
+            totalFadings--;
+         }
+         else
+         {
+            animations[i].getAnimationState()->setWeight(newWeight);
+         }
+      }
+      else if (animations[i].isFadingOut())
+      {
+         /* Decrement its weight, until irrelevant */
+         newWeight = animations[i].getAnimationState()->getWeight() - 
+            ANIM_UPDATE_RATE * ANIM_FADE_SPEED;          
+         animations[i].getAnimationState()->setWeight(
+               Ogre::Math::Clamp<Ogre::Real>(newWeight, 0, 1));
+         if (newWeight <= 0)
+         {
+            /* Done fading out */
+            animations[i].getAnimationState()->setEnabled(false);
+            animations[i].setFadingOut(false);
+            totalFadings--;
+         }
+      }
+   }
+
+}
+
+/***********************************************************************
+ *                           getBaseAnimation                          *
+ ***********************************************************************/
+int AnimatedModel3d::getCurrentAnimation()
+{
+   return baseAnimationIndex;
+}
+
+/***********************************************************************
+ *                           setBaseAnimation                          *
+ ***********************************************************************/
+void AnimatedModel3d::setBaseAnimation(int index, bool loop, bool reset)
+{
+   if(index == baseAnimationIndex)
+   {
+      /* Setting to the current animation, no need to do anything. */
+      return;
+   }
+
+   /* Check if have a previous animation to fade-out */
+   if(baseAnimation)
+   {
+      if(baseAnimation->isFadingIn())
+      {
+         baseAnimation->setFadingIn(false);
+         totalFadings--;
+      }
+      if(!baseAnimation->isFadingOut())
+      {
+         baseAnimation->setFadingOut(true);
+         totalFadings++;
+      }
+   }
+
+   /* Update last looping animation, if needed */
+   if((!loop) && (looping))
+   {
+      previousAnimationIndex = baseAnimationIndex;
+   }
+   looping = loop;
+
+   /* If not looping, we must set our internal timer */
+   if(!loop)
+   {
+      timer = 0;
+   }
+
+   /* Define new current index */
+   baseAnimationIndex = index;
+
+   /* Define new base animation */
+   if((index >= 0) && (index < totalAnimations))
+   {
+      baseAnimation = &animations[index]; 
+
+      /* Enable it */
+      baseAnimation->getAnimationState()->setEnabled(true);
+      baseAnimation->getAnimationState()->setLoop(loop);
+      baseAnimation->getAnimationState()->setWeight(0.0f);
+
+      /* Check fade-in and fade-out (and its totals) */
+      if(baseAnimation->isFadingOut())
+      {
+         baseAnimation->setFadingOut(false);
+         totalFadings--;
+      }
+      if(!baseAnimation->isFadingIn())
+      {
+         baseAnimation->setFadingIn(true);
+         totalFadings++;
+      }
+      if(reset)
+      {
+         baseAnimation->getAnimationState()->setTimePosition(0);
+      }
+   }
+   else
+   {
+      baseAnimation = NULL;
+   }
+}
 

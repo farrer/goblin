@@ -34,11 +34,15 @@ namespace Goblin
 class Model3d
 {
    public:
-      /*! Constructor */
+      /*! Constructor 
+       * \param modelName model's name (unique)
+       * \param modelFile filename of model's to load
+       * \param sceneManager pointer to Ogre's used SceneManager
+       * \param parent pointer to model's parent, if any. */
       Model3d(Ogre::String modelName, Ogre::String modelFile,
             Ogre::SceneManager* sceneManager, Model3d* parent=NULL);
       /*! Destructor */
-      ~Model3d();
+      virtual ~Model3d();
 
       /*! Change the model material */
       void setMaterial(Ogre::String materialName);
@@ -74,7 +78,7 @@ class Model3d
       void setTargetScale(Ogre::Real x, Ogre::Real y, Ogre::Real z);
 
       /*! Update model's position */
-      void update();
+      virtual void update();
 
       /*! hide model */
       void hide();
@@ -101,6 +105,88 @@ class Model3d
       bool visible;             /**< If is visible or not */
 };
 
+/*! A 3d model with animations. This kind must have an Ogre::Skeleton attached
+ * to it with some animations.
+ * \note AnimatedModel3d must have its 'Idle' animation as the one at first 
+ *       index (0). */
+class AnimatedModel3d : public Model3d
+{
+   public:
+      /*! Constructor 
+       * \param modelName model's name (unique)
+       * \param modelFile filename of model's to load
+       * \param sceneManager pointer to Ogre's used SceneManager
+       * \param totalAnimations total animations supported by the model
+       *        (usually it's a value common to all AnimatedModels of some
+       *        kind in a game, thus received here as parameter).
+       * \param parent pointer to model's parent, if any. */
+      AnimatedModel3d(Ogre::String modelName, Ogre::String modelFile,
+            Ogre::SceneManager* sceneManager, int totalAnimations,
+            Model3d* parent=NULL);
+      /*! Destructor */
+      virtual ~AnimatedModel3d();
+
+      /*! Update model's position and animations. */
+      virtual void update();
+
+      /*! Set model's base animation
+       * \param index index of model's new base animation
+       * \param loop if the animation should loop at its end.
+       * \param reset if will reset animation to its '0' time position 
+       * \note to set to no animations, just call it with an index < 0. */
+      void setBaseAnimation(int index, bool loop, bool reset = false);
+
+      /*! \return current base animation */
+      int getCurrentAnimation();
+
+   private:
+      /*! Animation information for AnimatedModel3d animation mixer */
+      class AnimationInfo
+      {
+         public:
+            /*! Constructor */
+            AnimationInfo();
+            /*! Destructor */
+            ~AnimationInfo();
+
+            /*! Set related Ogre::AnimationState pointer */
+            void setAnimationState(Ogre::AnimationState* animationState);
+
+            /*! \return Ogre::AnimationState related to this animation */
+            Ogre::AnimationState* getAnimationState();
+
+            /*! \return if animation is fading in */
+            bool isFadingIn();
+            /*! \return if animation is fading out */
+            bool isFadingOut();
+            /*! Set if animation is fading in */
+            void setFadingIn(bool value);
+            /*! Set if animation is fading out */
+            void setFadingOut(bool value);
+
+         private:
+            Ogre::AnimationState* animationState;
+            bool fadingIn;
+            bool fadingOut;
+      };
+
+      /*! Update fade-in and fade-out to animation states */
+      void doFadeInAndFadeOut();
+
+      int totalAnimations; /**< Total number of animations */
+      
+      int baseAnimationIndex; /**< Current base animation index */
+      AnimationInfo* baseAnimation;    /**< Current base animation used */
+      bool looping; /**< If current animation is a lopping one */
+
+      int previousAnimationIndex; /**< Index of the previous looping 
+                                    animation (one that we should return to
+                                    when the current isn't a looping one) */
+      int totalFadings; /**< Total fading-in or fading-out active */
+
+      AnimationInfo* animations; /**< Model animations */
+      Ogre::Real timer; /**< Timer reference for our animations */
+};
 
 }
 

@@ -47,9 +47,6 @@
    #include <time.h>
 #endif
 
-#define NORMAL_FPS 30
-#define UPDATE_RATE (1000.0f / NORMAL_FPS) /**< Update Rate in ms */
-
 
 using namespace Goblin;
 
@@ -696,7 +693,7 @@ void BaseApp::run()
    while(!exit)
    {
       timeElapsed = updateTimer.getMilliseconds();
-      if(timeElapsed > UPDATE_RATE)
+      if(timeElapsed > BASE_APP_UPDATE_RATE)
       {
 #endif
          updateTimer.reset();
@@ -730,9 +727,9 @@ void BaseApp::run()
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
       }
-      else if((UPDATE_RATE - 1) - ((long)timeElapsed) > 0 )
+      else if((BASE_APP_UPDATE_RATE - 1) - ((long)timeElapsed) > 0 )
       {
-         Kobold::timer_Delay((UPDATE_RATE - 1) - ((long)timeElapsed));
+         Kobold::timer_Delay((BASE_APP_UPDATE_RATE - 1) - ((long)timeElapsed));
       }
       timeElapsed = updateTimer.getMilliseconds();
    }

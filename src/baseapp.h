@@ -58,6 +58,12 @@
 namespace Goblin
 {
 
+#define BASE_APP_NORMAL_FPS 30
+/*! Update Rate in ms */
+#define BASE_APP_UPDATE_RATE (1000.0f / BASE_APP_NORMAL_FPS) 
+
+
+
 /*! The basic class for all applications. This class implements - and 
  * abstract - the initialization and runing for all supported targets. */
 class BaseApp
