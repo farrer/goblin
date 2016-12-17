@@ -39,6 +39,7 @@
    #include <kobold/keyboard.h>
 #endif
 
+#include "goblinconfig.h"
 #include "fpsdisplay.h"
 #include "materiallistener.h"
 
@@ -55,14 +56,12 @@
    #include <OGRE/OgreArchiveManager.h>
 #endif
 
+#if OGRE_VERSION_MAJOR != 1
+   #include <OGRE/Compositor/OgreCompositorWorkspace.h>
+#endif
+
 namespace Goblin
 {
-
-#define BASE_APP_NORMAL_FPS 30
-/*! Update Rate in ms */
-#define BASE_APP_UPDATE_RATE (1000.0f / BASE_APP_NORMAL_FPS) 
-
-
 
 /*! The basic class for all applications. This class implements - and 
  * abstract - the initialization and runing for all supported targets. */
@@ -162,9 +161,11 @@ class BaseApp
        * foreground when this function is called. */
       virtual void doSendToForeground()=0;
 
+#if OGRE_VERSION_MAJOR == 1
       /*! \return Shadow Technique to use.
        * \note defaults to Ogre::SHADOWTYPE_NONE. */ 
       virtual Ogre::ShadowTechnique getShadowTechnique();
+#endif
 
       enum Orientation
       {
@@ -214,6 +215,10 @@ class BaseApp
       Goblin::FpsDisplay* fpsDisplay;        /**< The FPS displayer */
 #endif
       Goblin::MaterialListener* materialListener; /**< Material to shader */
+
+#if OGRE_VERSION_MAJOR != 1
+      Ogre::CompositorWorkspace* ogreWorkspace; /**< Compositor workspace */
+#endif
 
       int mouseX;                     /**< X position of single input */
       int mouseY;                     /**< Y position of single input */

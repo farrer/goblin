@@ -106,7 +106,9 @@ class Camera
       static void getCameraToViewportRay(Ogre::Real x, Ogre::Real y, 
             Ogre::Ray* outRay);
    
-      static Ogre::Viewport* getViewport(){return(ogreViewport);};
+      static Ogre::Viewport* getViewport(){return ogreViewport;};
+
+      static Ogre::Camera* getOgreCamera(){return ogreCamera;};
 
       /*! Push current camera state
        * \note -> it only supports one push/pop (ie: no push-push-pop-pop) */

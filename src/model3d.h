@@ -27,6 +27,8 @@
 
 #include <kobold/target.h>
 
+#include "goblinconfig.h"
+
 namespace Goblin
 {
 

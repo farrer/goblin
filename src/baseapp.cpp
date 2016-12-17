@@ -48,6 +48,10 @@
 #endif
 
 
+#if OGRE_VERSION_MAJOR != 1
+   #include <OGRE/Compositor/OgreCompositorManager2.h>
+#endif
+
 using namespace Goblin;
 
 /***********************************************************************
@@ -122,6 +126,19 @@ BaseApp::~BaseApp()
             "   Finishing ogreOverlaySystem...");
       delete ogreOverlaySystem;
    }
+
+#if OGRE_VERSION_MAJOR != 1
+   if(ogreWorkspace)
+   {
+      ogreWorkspace = NULL;
+      Ogre::CompositorManager2* compositorManager = 
+         ogreRoot->getCompositorManager2();
+      if(compositorManager)
+      {
+         compositorManager->removeAllWorkspaces();
+      }
+   }
+#endif
 
    if(shaderGenerator)
    {
@@ -328,7 +345,7 @@ bool BaseApp::createRoot()
    ogreRoot->addRenderSystem(rs);
 #else
     /* FIXME: harcoded directory. */
-   ogreRoot->loadPlugin("/usr/lib/OGRE/RenderSystem_GL");
+   ogreRoot->loadPlugin("/usr/lib/OGRE/RenderSystem_GL_d");
    rs = ogreRoot->getRenderSystemByName("OpenGL Rendering Subsystem");
 #endif
 
@@ -351,6 +368,7 @@ bool BaseApp::createRoot()
  ***********************************************************************/
 bool BaseApp::initShaderSystem(Ogre::String cacheDir)
 {
+   Kobold::Log::add(Kobold::Log::LOG_LEVEL_NORMAL, "Initing shader system...");
    if(Ogre::RTShader::ShaderGenerator::initialize())
    {
       shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
@@ -368,9 +386,12 @@ bool BaseApp::initShaderSystem(Ogre::String cacheDir)
       return true;
    }
    
+   Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR, 
+         "Error: Couldn't init shader system!");
    return false;
 }
 
+#if OGRE_VERSION_MAJOR == 1
 /***********************************************************************
  *                           getShadowTechinque                        *
  ***********************************************************************/
@@ -378,6 +399,7 @@ Ogre::ShadowTechnique BaseApp::getShadowTechnique()
 {
    return Ogre::SHADOWTYPE_NONE;
 }
+#endif
 
 /***********************************************************************
  *                                 create                              *
@@ -480,12 +502,30 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
 #endif
 
    /* Create the scene manager */
+#if OGRE_VERSION_MAJOR == 1
    //FIXME: we should do some check if need to use another scene manager.
    ogreSceneManager = ogreRoot->createSceneManager(Ogre::ST_GENERIC);
-   
+
    /* Set shadow technique to desired one (defaults to no shadows) */
    ogreSceneManager->setShadowTechnique(getShadowTechnique());
+#else
+   /* define num threads to use */
+   const size_t numThreads = std::max<size_t>(1, 
+         Ogre::PlatformInformation::getNumLogicalCores());
 
+   Ogre::InstancingThreadedCullingMethod threadedCullingMethod = 
+      Ogre::INSTANCING_CULLING_SINGLETHREAD;
+
+   if(numThreads > 1)
+   {
+      /* Should use the threaded culling */
+      threadedCullingMethod = Ogre::INSTANCING_CULLING_THREADED;
+   }
+
+   ogreSceneManager = ogreRoot->createSceneManager(Ogre::ST_GENERIC, 
+         numThreads, threadedCullingMethod);
+#endif
+   
    /* Initialize the sound system */
    Kosound::Sound::init();
 
@@ -565,6 +605,20 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
 
    /* Load things from resource. */
    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
+   /* Init the compositor system */
+#if OGRE_VERSION_MAJOR != 1
+   Ogre::CompositorManager2 *compositorManager = 
+      ogreRoot->getCompositorManager2();
+   const Ogre::IdString workspaceName("Goblin Workspace");
+   if(!compositorManager->hasWorkspaceDefinition(workspaceName))
+   {
+      compositorManager->createBasicWorkspaceDef(workspaceName, 
+            Ogre::ColourValue(0.0f, 0.0f, 0.0f), Ogre::IdString());
+   }
+   ogreWorkspace = compositorManager->addWorkspace(ogreSceneManager,
+         ogreWindow, Goblin::Camera::getOgreCamera(), workspaceName, true);
+#endif
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
@@ -714,7 +768,11 @@ void BaseApp::run()
 #endif
          /* Render the frame and update the window */
          ogreRoot->renderOneFrame();
+#if OGRE_VERSION_MAJOR == 1
          ogreWindow->update();
+#else
+         ogreWindow->swapBuffers();
+#endif
 
          /* Reset the 'listener' position to current camera */
          Kosound::Sound::setListenerPosition(Goblin::Camera::getCenterX(),

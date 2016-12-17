@@ -87,12 +87,18 @@ void Camera::init(Ogre::SceneManager* ogreSceneManager,
    lookAt();
 
    /* And create the viewport */
+#if OGRE_VERSION_MAJOR == 1
    ogreViewport = ogreRenderWindow->addViewport(ogreCamera);
    ogreViewport->setBackgroundColour(Ogre::ColourValue(0.0f, 0.0f, 0.0f, 1.0f));
+#else
+   ogreViewport = ogreRenderWindow->addViewport();
+#endif
 
    ogreCamera->setAspectRatio(Ogre::Real(ogreViewport->getActualWidth()) / 
                               Ogre::Real(ogreViewport->getActualHeight()));
+#if OGRE_VERSION_MAJOR == 1
    ogreViewport->setCamera(ogreCamera);
+#endif
    //ogreCamera->setLodBias(1000.0f);
    
    ogreViewport->setMaterialScheme(

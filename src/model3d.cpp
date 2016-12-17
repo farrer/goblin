@@ -19,10 +19,11 @@
 */
 
 #include "model3d.h"
-#include "baseapp.h"
 
 #include <OGRE/OgreSkeleton.h>
-#include <OGRE/OgreSkeletonInstance.h>
+#if OGRE_VERSION_MAJOR == 1
+   #include <OGRE/OgreSkeletonInstance.h>
+#endif
 
 #include <kobold/log.h>
 
@@ -48,7 +49,18 @@ Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
    ogreSceneManager = sceneManager;
 
    /* Create the model and scene node */
+#if OGRE_VERSION_MAJOR == 1
    model = ogreSceneManager->createEntity(modelName, modelFile);
+#else
+   model = ogreSceneManager->createEntity(modelFile);
+   if(!model)
+   {
+      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR, 
+               "Couldn't create entity '%s' ('%s'), is it a v2 mesh?",
+               modelFile.c_str(), modelName.c_str());
+   }
+   model->setName(modelName);
+#endif
 
    if(parent)
    {
@@ -56,7 +68,13 @@ Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
    }
    else
    {
+#if OGRE_VERSION_MAJOR == 1
       node = ogreSceneManager->getRootSceneNode()->createChildSceneNode();
+#else
+      //TODO: set if static or dynamic!
+      node = ogreSceneManager->getRootSceneNode()->createChildSceneNode(
+            Ogre::SCENE_DYNAMIC);
+#endif
    }
    node->attachObject(model);
 }
@@ -381,8 +399,10 @@ AnimatedModel3d::AnimatedModel3d(Ogre::String modelName,
    this->timer = 0;
    this->totalFadings = 0;
 
+#if OGRE_VERSION_MAJOR == 1
    /* Define animation blend */
    model->getSkeleton()->setBlendMode(Ogre::ANIMBLEND_CUMULATIVE);
+#endif
 
    /* Let's define each animation pointer */
    Ogre::AnimationStateSet* anims = model->getAllAnimationStates();

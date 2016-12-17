@@ -19,6 +19,12 @@
 */
 
 #include "fpsdisplay.h"
+
+#if OGRE_VERSION_MAJOR != 1
+   #include <OGRE/OgreFrameStats.h>
+   #include <OGRE/OgreRoot.h>
+#endif
+
 using namespace Goblin;
 
 #define FPS_DISPLAY_UPDATE_TIME  1000 /* 1s */
@@ -32,7 +38,7 @@ FpsDisplay::FpsDisplay(Ogre::Overlay* ogreOverlay,
            :TextBox(0, 0, 64, 32, "", "FpsDisplay", ogreOverlay, fontName, 18)
 {
    ogreWindow = renderWindow;
-   setText(Ogre::StringConverter::toString(ogreWindow->getAverageFPS()));
+   updateText();
    type = TYPE_AVERAGE;
    lastUpdated.reset();
 }
@@ -45,28 +51,13 @@ FpsDisplay::~FpsDisplay()
 }
 
 /***********************************************************************
- *                                setType                              *
+ *                              upadateText                            *
  ***********************************************************************/
-void FpsDisplay::setType(int t)
+void FpsDisplay::updateText()
 {
-   type = t;
-}
-
-/***********************************************************************
- *                                update                               *
- ***********************************************************************/
-void FpsDisplay::update()
-{
-   TextBox::update();
-   if( (lastUpdated.getMilliseconds() < FPS_DISPLAY_UPDATE_TIME) &&
-       (type != TYPE_LAST) )
-   {
-      /* No need to update yet */
-      return;
-   }
-   lastUpdated.reset();
-
    Ogre::String fps;
+
+#if OGRE_VERSION_MAJOR == 1
    switch(type)
    {
       default:
@@ -97,7 +88,67 @@ void FpsDisplay::update()
    fps += Ogre::String(" (") + 
           Ogre::StringConverter::toString(ogreWindow->getBatchCount()) +
           Ogre::String(")");
+#else
+   Ogre::RenderTarget::FrameStats stats = ogreWindow->getStatistics();
+   const Ogre::FrameStats* frameStats = 
+      Ogre::Root::getSingleton().getFrameStats();
+   switch(type)
+   {
+      default:
+      case TYPE_AVERAGE:
+      {
+         fps = Ogre::StringConverter::toString(frameStats->getAvgFps(), 4);
+      }
+      break;
+      case TYPE_WORST:
+      {
+         fps = Ogre::StringConverter::toString(frameStats->getWorstTime(), 4);
+      }
+      break;
+      case TYPE_BEST:
+      {
+         fps = Ogre::StringConverter::toString(frameStats->getBestTime(), 4);
+      }
+      break;
+      case TYPE_LAST:
+      {
+         fps = Ogre::StringConverter::toString(frameStats->getFps(), 4);
+      }
+      break;
+   }
+
+   fps += Ogre::String(" ") + 
+          Ogre::StringConverter::toString(stats.triangleCount);
+   fps += Ogre::String(" (") + 
+          Ogre::StringConverter::toString(stats.batchCount) +
+          Ogre::String(")");
+#endif
 
    setText(fps);
+}
+
+/***********************************************************************
+ *                                setType                              *
+ ***********************************************************************/
+void FpsDisplay::setType(int t)
+{
+   type = t;
+}
+
+/***********************************************************************
+ *                                update                               *
+ ***********************************************************************/
+void FpsDisplay::update()
+{
+   TextBox::update();
+   if( (lastUpdated.getMilliseconds() < FPS_DISPLAY_UPDATE_TIME) &&
+       (type != TYPE_LAST) )
+   {
+      /* No need to update yet */
+      return;
+   }
+   updateText();
+
+   lastUpdated.reset();
 }
 

@@ -55,7 +55,10 @@ class FpsDisplay: public TextBox
       /*! Update the FpsDisplay */
       void update();
 
-   protected:
+   private:
+      /*! update the text with current values */
+      void updateText();
+
       Ogre::RenderWindow* ogreWindow; /**< Current Ogre Window */
       Kobold::Timer lastUpdated;      /**< last updated type */
       int type;
