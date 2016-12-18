@@ -41,39 +41,53 @@ using namespace Goblin;
  *                             Constructor                             *
  ***********************************************************************/
 Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
-            Ogre::SceneManager* sceneManager, Model3d* parent)
+      Ogre::SceneManager* sceneManager, Model3dType type, Model3d* parent)
 {
-   visible = true;
+   this->visible = true;
 
    /* Set the scene manager to use */
-   ogreSceneManager = sceneManager;
+   this->ogreSceneManager = sceneManager;
 
    /* Create the model and scene node */
 #if OGRE_VERSION_MAJOR == 1
-   model = ogreSceneManager->createEntity(modelName, modelFile);
+   this->model = ogreSceneManager->createEntity(modelName, modelFile);
 #else
-   model = ogreSceneManager->createEntity(modelFile);
-   if(!model)
+   /* Let's define which scene type to use */
+   if(type == MODEL_STATIC)
+   {
+      sceneType = Ogre::SCENE_STATIC;
+   }
+   else
+   {
+      sceneType = Ogre::SCENE_DYNAMIC;
+   }
+   this->model = ogreSceneManager->createEntity(modelFile, 
+         Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+         sceneType);
+   if(!this->model)
    {
       Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR, 
-               "Couldn't create entity '%s' ('%s'), is it a v2 mesh?",
-               modelFile.c_str(), modelName.c_str());
+            "Error: Couldn't create entity '%s' ('%s')!",
+            modelFile.c_str(), modelName.c_str());
    }
-   model->setName(modelName);
+   this->model->setName(modelName);
 #endif
 
    if(parent)
    {
+#if OGRE_VERSION_MAJOR == 1
       node = parent->node->createChildSceneNode();
+#else
+      node = parent->node->createChildSceneNode(sceneType);
+#endif
    }
    else
    {
 #if OGRE_VERSION_MAJOR == 1
       node = ogreSceneManager->getRootSceneNode()->createChildSceneNode();
 #else
-      //TODO: set if static or dynamic!
       node = ogreSceneManager->getRootSceneNode()->createChildSceneNode(
-            Ogre::SCENE_DYNAMIC);
+            sceneType);
 #endif
    }
    node->attachObject(model);
@@ -88,6 +102,28 @@ Model3d::~Model3d()
    node->detachObject(model);
    ogreSceneManager->destroySceneNode(node);
    ogreSceneManager->destroyEntity(model);
+}
+
+/***********************************************************************
+ *                         notifyStaticDirty                           *
+ ***********************************************************************/
+void Model3d::notifyStaticDirty()
+{
+#if OGRE_VERSION_MAJOR != 1
+   assert(sceneType == Ogre::SCENE_STATIC);
+   ogreSceneManager->notifyStaticDirty(node);
+#endif
+}
+
+/***********************************************************************
+ *                             isStatic                                *
+ ***********************************************************************/
+bool Model3d::isStatic()
+{
+#if OGRE_VERSION_MAJOR != 1
+   return sceneType == Ogre::SCENE_STATIC;
+#endif
+   return false;
 }
 
 /***********************************************************************
@@ -142,6 +178,10 @@ void Model3d::setOrientation(Ogre::Real pitchValue, Ogre::Real yawValue,
 void Model3d::setTargetOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 
             Ogre::Real rollValue)
 {
+#if OGRE_VERSION_MAJOR != 1
+   assert(sceneType == Ogre::SCENE_DYNAMIC);
+#endif
+
    /* Define Target */
    ori[0].setTarget(pitchValue);
    ori[1].setTarget(yawValue);
@@ -188,6 +228,10 @@ Ogre::Vector3 Model3d::getPosition()
  ***********************************************************************/
 void Model3d::setTargetPosition(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ)
 {
+#if OGRE_VERSION_MAJOR != 1
+   assert(sceneType == Ogre::SCENE_DYNAMIC);
+#endif
+
    /* Set Target */
    pos[0].setTarget(pX);
    pos[1].setTarget(pY);
@@ -213,6 +257,10 @@ void Model3d::setScale(Ogre::Real x, Ogre::Real y, Ogre::Real z)
  ***********************************************************************/
 void Model3d::setTargetScale(Ogre::Real x, Ogre::Real y, Ogre::Real z)
 {
+#if OGRE_VERSION_MAJOR != 1
+   assert(sceneType == Ogre::SCENE_DYNAMIC);
+#endif
+
    /* Set Target */
    scala[0].setTarget(x);
    scala[1].setTarget(y);
@@ -258,6 +306,10 @@ bool Model3d::ownSceneNode(Ogre::SceneNode* node)
  ***********************************************************************/
 void Model3d::update()
 {
+#if OGRE_VERSION_MAJOR != 1
+   assert(sceneType == Ogre::SCENE_DYNAMIC);
+#endif
+
    /* Update position */
    if( (pos[0].needUpdate()) || (pos[1].needUpdate()) || (pos[2].needUpdate()) )
    {
@@ -387,7 +439,8 @@ void AnimatedModel3d::AnimationInfo::setFadingOut(bool value)
 AnimatedModel3d::AnimatedModel3d(Ogre::String modelName, 
                       Ogre::String modelFile, Ogre::SceneManager* sceneManager, 
                       int totalAnimations, Model3d* parent)
-                :Model3d(modelName, modelFile, sceneManager, parent)
+                :Model3d(modelName, modelFile, sceneManager, MODEL_DYNAMIC,
+                         parent)
 {
    assert(totalAnimations > 0);
    this->totalAnimations = totalAnimations;

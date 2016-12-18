@@ -36,13 +36,26 @@ namespace Goblin
 class Model3d
 {
    public:
+
+      enum Model3dType
+      {
+         MODEL_STATIC = 0,
+         MODEL_DYNAMIC
+      };
+
       /*! Constructor 
        * \param modelName model's name (unique)
        * \param modelFile filename of model's to load
        * \param sceneManager pointer to Ogre's used SceneManager
-       * \param parent pointer to model's parent, if any. */
+       * \param type model type (static or dynamic)
+       * \param parent pointer to model's parent, if any.
+       * \note on STATIC objects, one must call notifyDirty()
+       *       to apply position/orientation changes.
+       * \note calling update (and thus using targets for static models
+       *       is forbidden). */
       Model3d(Ogre::String modelName, Ogre::String modelFile,
-            Ogre::SceneManager* sceneManager, Model3d* parent=NULL);
+            Ogre::SceneManager* sceneManager, Model3dType type, 
+            Model3d* parent=NULL);
       /*! Destructor */
       virtual ~Model3d();
 
@@ -79,6 +92,13 @@ class Model3d
       /*! Set next model scale */
       void setTargetScale(Ogre::Real x, Ogre::Real y, Ogre::Real z);
 
+      /*! Notify that a static model had its position or 
+       * orientation changed. 
+       * \note should only be called for STATIC models.
+       * \note read Ogre 2.x manual for why to try to call on the same 
+       *       frame.*/
+      void notifyStaticDirty();
+
       /*! Update model's position */
       virtual void update();
 
@@ -88,6 +108,10 @@ class Model3d
       void show();
       /*! Verify if is visible or not */
       bool isVisible();
+
+      /*! \return if the model is static or dynamic 
+       * \note only makes sense when using Ogre 2.x */
+      bool isStatic();
 
       /*! Check if the SceneNode is owned by the model or not.
        * \param node SceneNode to check.
@@ -104,7 +128,11 @@ class Model3d
       Kobold::Target ori[3];    /**< Orientation angles */
       Kobold::Target scala[3];  /**< Target scale for model */
 
-      bool visible;             /**< If is visible or not */
+#if OGRE_VERSION_MAJOR != 1
+      Ogre::SceneMemoryMgrTypes sceneType;    /**< Model's scene type */
+#endif
+
+      bool visible;        /**< If is visible or not */
 };
 
 /*! A 3d model with animations. This kind must have an Ogre::Skeleton attached
