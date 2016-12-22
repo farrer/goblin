@@ -28,7 +28,16 @@
 #include <OGRE/Overlay/OgreOverlay.h>
 #include <OGRE/Overlay/OgreOverlaySystem.h>
 #include <OGRE/Overlay/OgreOverlayManager.h>
-#include <OGRE/RTShaderSystem/OgreRTShaderSystem.h>
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+   #include <OGRE/RTShaderSystem/OgreRTShaderSystem.h>
+   #include "materiallistener.h"
+#else
+   #include <OGRE/Hlms/Unlit/OgreHlmsUnlit.h>
+   #include <OGRE/Hlms/Pbs/OgreHlmsPbs.h>
+   #include <OGRE/OgreHlmsManager.h>
+#endif
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS || \
     OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
@@ -41,7 +50,6 @@
 
 #include "goblinconfig.h"
 #include "fpsdisplay.h"
-#include "materiallistener.h"
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
    #include <jni.h>
@@ -191,14 +199,29 @@ class BaseApp
        * \return if should quit the application. */
       bool getInput();
 
-      /*! Initialize the shader system */
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+      /*! Initialize the RTSS */
       bool initShaderSystem(Ogre::String userDir);
+      
+      Ogre::RTShader::ShaderGenerator* shaderGenerator; /**< RTSS */
+      Goblin::MaterialListener* materialListener; /**< Material to shader */
+#else 
+      /*! Register the HLMS system */
+      bool registerHLMS(Ogre::String hlmsPath);
+#endif
 
       Ogre::Root* ogreRoot;                  /**< Ogre root */
       Ogre::RenderWindow* ogreWindow;        /**< Ogre Window */
       Ogre::SceneManager* ogreSceneManager;  /**< Ogre Scene Manager */
-      Ogre::OverlaySystem* ogreOverlaySystem;/**< Ogre overlays */
-      Ogre::RTShader::ShaderGenerator* shaderGenerator; /**< shaders */
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+      Ogre::OverlaySystem* ogreOverlaySystem; /**< Ogre overlays */
+#else
+      Ogre::v1::OverlaySystem* ogreOverlaySystem; /**< Ogre overlays */
+#endif
+      
       Ogre::Timer updateTimer; /**< Timer to calculate frame interval */
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
@@ -214,7 +237,6 @@ class BaseApp
 #ifdef _GOBLIN_SHOW_FPS_
       Goblin::FpsDisplay* fpsDisplay;        /**< The FPS displayer */
 #endif
-      Goblin::MaterialListener* materialListener; /**< Material to shader */
 
 #if OGRE_VERSION_MAJOR != 1
       Ogre::CompositorWorkspace* ogreWorkspace; /**< Compositor workspace */

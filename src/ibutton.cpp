@@ -19,6 +19,9 @@
 */
 
 #include "ibutton.h"
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
 #include <kosound/sound.h>
 
 using namespace Goblin;
@@ -203,4 +206,6 @@ int Ibutton::verifyEvents(int mouseX, int mouseY, bool leftButtonPressed)
 
    return(event);
 }
+
+#endif
 

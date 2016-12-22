@@ -21,6 +21,12 @@
 #ifndef _goblin_Image_h
 #define _goblin_Image_h
 
+
+#include <OGRE/OgrePrerequisites.h>
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
+
 #include <OGRE/OgreString.h>
 #include <OGRE/Overlay/OgreOverlay.h>
 #include <OGRE/Overlay/OgreOverlayManager.h>
@@ -34,7 +40,8 @@
 namespace Goblin
 {
 
-/*! An Image to be seen at an ogre overlay */
+/*! An Image to be seen at an ogre overlay 
+ * \note deprecated: Should use Farso instead.*/
 class Image: public GuiObject
 {
    public:
@@ -87,6 +94,8 @@ class Image: public GuiObject
 };
 
 }
+
+#endif
 
 #endif
 

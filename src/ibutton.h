@@ -21,6 +21,10 @@
 #ifndef _ibutton_h
 #define _ibutton_h
 
+#include <OGRE/OgrePrerequisites.h>
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
 #include "image.h"
 #include "textbox.h"
 
@@ -32,7 +36,8 @@ namespace Goblin
 #define IBUTTON_EVENT_ON_PRESS     2
 #define IBUTTON_EVENT_PRESSED      3
 
-/*! The Ibutton class is an Image used as a selectable button. */
+/*! The Ibutton class is an Image used as a selectable button.
+ * \note deprecated: Should use Farso instead.*/
 class Ibutton: public Image
 {
    public:
@@ -96,6 +101,7 @@ class Ibutton: public Image
 
 }
 
+#endif
 
 #endif
 

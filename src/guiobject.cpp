@@ -19,6 +19,10 @@
 */
 
 #include "guiobject.h"
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
 #include "screeninfo.h"
 
 namespace Goblin
@@ -401,3 +405,6 @@ bool GuiObject::isUpdating()
 int GuiObject::internalCounter = 0;
 
 }
+
+#endif
+

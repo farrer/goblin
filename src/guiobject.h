@@ -21,6 +21,11 @@
 #ifndef _goblin_gui_object_h
 #define _goblin_gui_object_h
 
+#include <OGRE/OgrePrerequisites.h>
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
 #include <OGRE/OgreString.h>
 #include <OGRE/Overlay/OgreOverlay.h>
 #include <OGRE/Overlay/OgreOverlayManager.h>
@@ -56,7 +61,8 @@ class GuiObjectChild : public Kobold::ListElement
       Ogre::Vector2 offset; /**< Child offset position */
 };
 
-/*! The basic object for gui usage */
+/*! The basic object for gui usage 
+ * \note deprecated: Should use Farso instead.*/
 class GuiObject : protected Kobold::List
 {
    public:
@@ -69,7 +75,7 @@ class GuiObject : protected Kobold::List
          TYPE_TEXT_TITLE,
          TYPE_IBAR
       };
-   
+ 
       /*! Constructor
        * \ogreOverlay -> overlay to show image in */
       GuiObject(Ogre::Overlay* ogreOverlay, int type,
@@ -174,6 +180,7 @@ class GuiObject : protected Kobold::List
 
 }
 
+#endif
 
 #endif
 

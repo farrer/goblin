@@ -21,7 +21,15 @@
 #ifndef _goblin_model_3d_h
 #define _goblin_model_3d_h
 
-#include <OGRE/OgreEntity.h>
+#include <OGRE/OgrePrerequisites.h>
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+   #include <OGRE/OgreEntity.h>
+#else
+   #include <OGRE/OgreItem.h>
+   #include <OGRE/Animation/OgreSkeletonAnimation.h>
+#endif
 #include <OGRE/OgreSceneNode.h>
 #include <OGRE/OgreSceneManager.h>
 
@@ -122,7 +130,13 @@ class Model3d
       Ogre::SceneManager* ogreSceneManager;  /**< Scene manager in use */
 
       Ogre::SceneNode* node;    /**< Scene Node */
-      Ogre::Entity* model;      /**< Model */
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+      Ogre::Entity* model;  /**< Model's Ogre::Entity */
+#else
+      Ogre::Item* model;    /**< Model's Ogre::Item */
+#endif
 
       Kobold::Target pos[3];    /**< Target position for model */
       Kobold::Target ori[3];    /**< Orientation angles */
@@ -146,13 +160,16 @@ class AnimatedModel3d : public Model3d
        * \param modelName model's name (unique)
        * \param modelFile filename of model's to load
        * \param sceneManager pointer to Ogre's used SceneManager
+       * \param animationNames vector with name of each animation
+       *        supported by the model. The access order (index) will be 
+       *        defined by the index of this vector.
        * \param totalAnimations total animations supported by the model
        *        (usually it's a value common to all AnimatedModels of some
        *        kind in a game, thus received here as parameter).
        * \param parent pointer to model's parent, if any. */
       AnimatedModel3d(Ogre::String modelName, Ogre::String modelFile,
-            Ogre::SceneManager* sceneManager, int totalAnimations,
-            Model3d* parent=NULL);
+            Ogre::SceneManager* sceneManager, Ogre::String* animationNames,
+            int totalAnimations, Model3d* parent=NULL);
       /*! Destructor */
       virtual ~AnimatedModel3d();
 
@@ -179,11 +196,29 @@ class AnimatedModel3d : public Model3d
             /*! Destructor */
             ~AnimationInfo();
 
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
             /*! Set related Ogre::AnimationState pointer */
-            void setAnimationState(Ogre::AnimationState* animationState);
-
+            void setAnimation(Ogre::AnimationState* animation);
             /*! \return Ogre::AnimationState related to this animation */
-            Ogre::AnimationState* getAnimationState();
+            Ogre::AnimationState* getAnimation();
+#else 
+            /*! Set related Ogre::SkeletonAnimation pointer */
+            void setAnimation(Ogre::SkeletonAnimation* animation);
+            /*! \return Ogre::SkeletonAnimation related to this animation */
+            Ogre::SkeletonAnimation* getAnimation();
+#endif
+
+            /*! \return if the animation is elapsed or not */
+            bool isElapsed(Ogre::Real curTimer);
+
+            /*! \return current global weight of the animation */
+            Ogre::Real getWeight();
+            /*! Set current animation global weight */
+            void setWeight(Ogre::Real weight);
+
+            /*! Set current frame/time to 0 */
+            void reset();
 
             /*! \return if animation is fading in */
             bool isFadingIn();
@@ -195,7 +230,12 @@ class AnimatedModel3d : public Model3d
             void setFadingOut(bool value);
 
          private:
-            Ogre::AnimationState* animationState;
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+            Ogre::AnimationState* animation;
+#else
+            Ogre::SkeletonAnimation* animation;
+#endif
             bool fadingIn;
             bool fadingOut;
       };

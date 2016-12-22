@@ -20,13 +20,17 @@
 
 #include "camera.h"
 #include "screeninfo.h"
-#include <OGRE/RTShaderSystem/OgreRTShaderSystem.h>
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+   #include <OGRE/RTShaderSystem/OgreRTShaderSystem.h>
+#endif
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
     OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
    #include <kobold/multitouchcontroller.h>
 #else
-   #include "cursor.h"
+   #include <kobold/mouse.h>
    #include <kobold/keyboard.h>
 #endif
 
@@ -100,11 +104,14 @@ void Camera::init(Ogre::SceneManager* ogreSceneManager,
    ogreViewport->setCamera(ogreCamera);
 #endif
    //ogreCamera->setLodBias(1000.0f);
-   
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
    ogreViewport->setMaterialScheme(
          Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);   
    Ogre::RTShader::ShaderGenerator::getSingletonPtr()->invalidateScheme(
          Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+#endif
                                                       
 }
 
@@ -454,21 +461,21 @@ bool Camera::verifyMultiTouchInput()
 bool Camera::verifyMouseInput()
 {
    /* Middle Mouse Button Rotation Control */
-   if(Goblin::Cursor::isMiddleButtonPressed())
+   if(Kobold::Mouse::isMiddleButtonPressed())
    {
       /* Do the move */
-      thetaAc = (Goblin::Cursor::getRelativeY());
+      thetaAc = (Kobold::Mouse::getRelativeY());
       /* X axis is inverted */
-      phiAc = (-Goblin::Cursor::getRelativeX());
+      phiAc = (-Kobold::Mouse::getRelativeX());
 
       return true;
    }
 
    /* Verify mouse wheel */
-   if(Goblin::Cursor::getRelativeWheel() != 0)
+   if(Kobold::Mouse::getRelativeWheel() != 0)
    {
       /* Inverted! */
-      zoomAc -= (Goblin::Cursor::getRelativeWheel() / 100.0f);
+      zoomAc -= (Kobold::Mouse::getRelativeWheel() / 100.0f);
       return true;
    }
 

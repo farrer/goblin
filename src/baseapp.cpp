@@ -50,6 +50,8 @@
 
 #if OGRE_VERSION_MAJOR != 1
    #include <OGRE/Compositor/OgreCompositorManager2.h>
+   #include <OGRE/OgreArchive.h>
+   #include <OGRE/OgreArchiveManager.h>
 #endif
 
 using namespace Goblin;
@@ -77,8 +79,11 @@ BaseApp::BaseApp()
    ogreSceneManager = NULL;
    ogreWindow = NULL;
    ogreOverlaySystem = NULL;
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
    shaderGenerator = NULL;
    materialListener = NULL;
+#endif
 
    leftButtonPressed = false;
    mouseX = 0;
@@ -97,12 +102,10 @@ BaseApp::BaseApp()
  ***********************************************************************/
 BaseApp::~BaseApp()
 {
-   Ogre::LogManager::getSingleton().getDefaultLog()->logMessage(
-         "Finishing BaseApp...");
+   Kobold::Log::add("Finishing BaseApp...");
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS && \
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
-   Ogre::LogManager::getSingleton().getDefaultLog()->logMessage(
-         "   Finishing Kobold::Mouse...");
+   Kobold::Log::add("   Finishing Kobold::Mouse...");
    Kobold::Mouse::finish();
 #endif
 
@@ -122,8 +125,7 @@ BaseApp::~BaseApp()
 
    if(ogreOverlaySystem)
    {
-      Ogre::LogManager::getSingleton().getDefaultLog()->logMessage(
-            "   Finishing ogreOverlaySystem...");
+      Kobold::Log::add("   Finishing ogreOverlaySystem...");
       delete ogreOverlaySystem;
    }
 
@@ -140,10 +142,11 @@ BaseApp::~BaseApp()
    }
 #endif
 
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
    if(shaderGenerator)
    {
-      Ogre::LogManager::getSingleton().getDefaultLog()->logMessage(
-            "   Finishing Shaders...");
+      Kobold::Log::add("   Finishing Shaders...");
       /* Restore default scheme. */
       Ogre::MaterialManager::getSingleton().setActiveScheme(
             Ogre::MaterialManager::DEFAULT_SCHEME_NAME);
@@ -156,13 +159,13 @@ BaseApp::~BaseApp()
       }
       shaderGenerator->destroy();
    }
+#endif
 
    Kosound::Sound::finish();
    
    if(ogreRoot)
    {
-      Ogre::LogManager::getSingleton().getDefaultLog()->logMessage(
-         "   Finishing Root...");
+      Kobold::Log::add("   Finishing Root...");
       delete ogreRoot;
    }
 
@@ -242,9 +245,8 @@ void BaseApp::initAssetManager(JNIEnv* env, jobject assetManager,
    }
    else
    {
-      Ogre::LogManager::getSingleton().getDefaultLog()->logMessage(
-            "Couldn't retrieve the asset manager from java!",
-            Ogre::LML_CRITICAL); 
+      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+            "Error: Couldn't retrieve the asset manager from java!");
    }
 
    Kobold::UserInfo::setAndroidDirectories(env, userHome, cacheDir);
@@ -343,16 +345,21 @@ bool BaseApp::createRoot()
       OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
    rs = new Ogre::GLES2RenderSystem();
    ogreRoot->addRenderSystem(rs);
-#else
+#elif OGRE_VERSION_MAJOR == 1 || \
+     (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
     /* FIXME: harcoded directory. */
    ogreRoot->loadPlugin("/usr/lib/OGRE/RenderSystem_GL_d");
    rs = ogreRoot->getRenderSystemByName("OpenGL Rendering Subsystem");
+#else
+    /* FIXME: harcoded directory. */
+   ogreRoot->loadPlugin("/usr/lib/OGRE/RenderSystem_GL3Plus_d");
+   rs = ogreRoot->getRenderSystemByName("OpenGL 3+ Rendering Subsystem");
 #endif
 
    if(!rs)
    {
-      Ogre::LogManager::getSingleton().getDefaultLog()->logMessage(
-            "Couldn't define render system!", Ogre::LML_CRITICAL);
+      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+            "FATAL: Couldn't define render system!");
       return false;
    }
    ogreRoot->setRenderSystem(rs);
@@ -363,6 +370,8 @@ bool BaseApp::createRoot()
    return true;
 }
 
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
 /***********************************************************************
  *                              initRTSS                               *
  ***********************************************************************/
@@ -390,6 +399,37 @@ bool BaseApp::initShaderSystem(Ogre::String cacheDir)
          "Error: Couldn't init shader system!");
    return false;
 }
+#else
+/***********************************************************************
+ *                         registerHLMS                                *
+ ***********************************************************************/
+bool BaseApp::registerHLMS(Ogre::String hlmsPath)
+{
+   Ogre::Archive* archiveLibrary = 
+      Ogre::ArchiveManager::getSingletonPtr()->load(
+         hlmsPath + "common/glsl", "FileSystem", true );
+
+   Ogre::ArchiveVec library;
+   library.push_back(archiveLibrary);
+
+   Ogre::Archive* archiveUnlit = Ogre::ArchiveManager::getSingletonPtr()->load(
+         hlmsPath + "unlit/glsl", "FileSystem", true );
+
+   Ogre::HlmsUnlit* hlmsUnlit = new Ogre::HlmsUnlit(archiveUnlit, &library);
+   Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
+
+   Ogre::Archive* archivePbs = Ogre::ArchiveManager::getSingletonPtr()->load(
+         hlmsPath + "pbs/glsl", "FileSystem", true );
+
+   Ogre::HlmsPbs* hlmsPbs = new Ogre::HlmsPbs(archivePbs, &library);
+   Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
+
+   /* TODO: check if we need to restrict texture size (the examples from
+    * Ogre only do it for DX11). */
+
+   return true;
+}
+#endif
 
 #if OGRE_VERSION_MAJOR == 1
 /***********************************************************************
@@ -451,8 +491,6 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
    SDL_GetWindowWMInfo(sdlWindow, &wmInfo);
 #endif
 
-
-
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
    if(!createRoot())
    {
@@ -476,7 +514,11 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
 #endif
    opts[Ogre::String("RTT Preferred Mode")] = Ogre::String("FBO");
    opts[Ogre::String("Vsync")] = Ogre::String("No");
-   opts[Ogre::String("sRGB Gamma Conversion")] = Ogre::String("No");
+
+#if OGRE_VERSION_MAJOR > 2 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR > 0)
+   opts[Ogre::String("gamma")] = Ogre::String("true");
+#endif
 
    /* Create the window */
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
@@ -524,6 +566,10 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
 
    ogreSceneManager = ogreRoot->createSceneManager(Ogre::ST_GENERIC, 
          numThreads, threadedCullingMethod);
+
+   /* Set sane defaults for proper shadow mapping */
+   ogreSceneManager->setShadowDirectionalLightExtrusionDistance(500.0f);
+   ogreSceneManager->setShadowFarDistance(500.0f);  
 #endif
    
    /* Initialize the sound system */
@@ -534,7 +580,13 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
          getMinWidthToUseDoubleSizedGui());
 
    /* Create the ogre overlay system */
+   //FIXME: make overlay optional!
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
    ogreOverlaySystem = new Ogre::OverlaySystem();
+#else
+   ogreOverlaySystem = new Ogre::v1::OverlaySystem();
+#endif
    ogreSceneManager->addRenderQueueListener(ogreOverlaySystem); 
 
    /* Create input */
@@ -586,23 +638,29 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
          path + shaderDir, type);
 
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
    /* Initialize the shader system */
    if(!initShaderSystem(Kobold::UserInfo::getCacheDirectory()))
    {
-      //Error!
-      Ogre::LogManager::getSingleton().logMessage(
-            "Couldn't init shader System!");
-      
+      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+            "Error: Couldn't init shader System!");
       return false;
    }
-
+#else
+   /* Let's setup HLMS to use */
+   //FIXME: when using mobile (metal), if we'll support.
+   if(!registerHLMS(path + "hlms/"))
+   {
+      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+            "Error: Couldn't register HLMS to use!");
+      return false;
+   }
+#endif
+ 
    /* Define the camera */
    Goblin::Camera::init(ogreSceneManager, ogreWindow);
    
-   /* Set viewport to use shaders */
-   Goblin::Camera::getViewport()->setMaterialScheme(
-         Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
-
    /* Load things from resource. */
    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 

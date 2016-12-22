@@ -21,6 +21,11 @@
 #ifndef _goblin_text_box_h
 #define _goblin_text_box_h
 
+#include <OGRE/OgrePrerequisites.h>
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
 #include <OGRE/OgreString.h>
 #include <OGRE/Overlay/OgreOverlay.h>
 #include <OGRE/Overlay/OgreOverlayManager.h>
@@ -34,7 +39,8 @@
 namespace Goblin
 {
 
-/*! A box with a text on the 2d screen */
+/*! A box with a text on the 2d screen
+ * \note deprecated: Should use Farso instead.*/
 class TextBox : public GuiObject
 {
    public:
@@ -89,5 +95,6 @@ class TextBox : public GuiObject
 
 }
 
+#endif
 #endif
 

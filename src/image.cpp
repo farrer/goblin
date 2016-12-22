@@ -19,6 +19,10 @@
 */
 
 #include "image.h"
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
+
 #include "screeninfo.h"
 
 #include <OGRE/RTShaderSystem/OgreRTShaderSystem.h>
@@ -235,4 +239,6 @@ Ogre::String Image::getFileName()
 }
 
 }
+
+#endif
 

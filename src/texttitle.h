@@ -21,6 +21,12 @@
 #ifndef _goblin_text_title_h
 #define _goblin_text_title_h
 
+#include <OGRE/OgrePrerequisites.h>
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
+
 #include "textbox.h"
 #include <kobold/timer.h>
 
@@ -33,7 +39,8 @@ namespace Goblin
 {
 
 /*! The text title is used to show BIG animated texts on screen,
- * usually for level titles and "You Win" messages. */
+ * usually for level titles and "You Win" messages.
+ * \note deprecated: Should use Farso instead.*/
 class TextTitle
 {
    public:
@@ -67,6 +74,8 @@ class TextTitle
 };
 
 }
+
+#endif
 
 #endif
 

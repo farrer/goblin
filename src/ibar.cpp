@@ -19,6 +19,11 @@
 */
 
 #include "ibar.h"
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
+
 #include <OGRE/OgreMath.h>
 
 using namespace Goblin;
@@ -137,3 +142,5 @@ bool Ibar::isVisible()
 {
    return(imageLeft->isVisible() && imageRight->isVisible());
 }
+
+#endif

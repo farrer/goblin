@@ -21,6 +21,9 @@
 #ifndef _goblin_cursor_h
 #define _goblin_cursor_h
 
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
 #include <kobold/platform.h>
 
 #if KOBOLD_PLATFORM != KOBOLD_PLATFORM_IOS &&\
@@ -96,6 +99,8 @@ class Cursor
 };
 
 }
+
+#endif
 
 #endif
 

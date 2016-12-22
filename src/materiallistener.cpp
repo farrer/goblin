@@ -18,6 +18,11 @@
  along with Goblin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <OGRE/OgrePrerequisites.h>
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
 #include "materiallistener.h"
 
 using namespace Goblin;
@@ -125,6 +130,6 @@ bool MaterialListener::beforeIlluminationPassesCleared( Ogre::Technique* tech)
    return false;
 }
 
-
+#endif
 
 

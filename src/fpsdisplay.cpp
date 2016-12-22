@@ -20,6 +20,9 @@
 
 #include "fpsdisplay.h"
 
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
 #if OGRE_VERSION_MAJOR != 1
    #include <OGRE/OgreFrameStats.h>
    #include <OGRE/OgreRoot.h>
@@ -151,4 +154,6 @@ void FpsDisplay::update()
 
    lastUpdated.reset();
 }
+
+#endif
 

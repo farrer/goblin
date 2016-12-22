@@ -21,13 +21,18 @@
 #ifndef _ibar_h
 #define _ibar_h
 
+#include <OGRE/OgrePrerequisites.h>
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
 #include "guiobject.h"
 #include "image.h"
 
 namespace Goblin
 {
 
-/*! Class that implements a progress bar  */
+/*! Class that implements a progress bar 
+ * \note deprecated: Should use Farso instead.*/
 class Ibar
 {
    public:
@@ -77,6 +82,8 @@ class Ibar
 };
 
 }
+
+#endif
 
 #endif
 

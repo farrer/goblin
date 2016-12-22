@@ -20,6 +20,9 @@
 
 #include "texttitle.h"
 
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
 namespace Goblin
 {
 
@@ -121,3 +124,6 @@ bool TextTitle::isDone()
 }
 
 }
+
+#endif
+

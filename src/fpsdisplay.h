@@ -21,6 +21,11 @@
 #ifndef _goblin_fps_display_h
 #define _goblin_fps_display_h
 
+#include <OGRE/OgrePrerequisites.h>
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
 #include <OGRE/OgreRenderWindow.h>
 
 #include <kobold/timer.h>
@@ -30,7 +35,8 @@ namespace Goblin
 {
 
 /*! The FPS display class shows the FPS (Average or Current)
- * on the screen */
+ * on the screen 
+ * \note deprecated: Should use Farso instead.*/
 class FpsDisplay: public TextBox
 {
    public:
@@ -68,6 +74,7 @@ class FpsDisplay: public TextBox
 
 }
 
+#endif
 
 #endif
 

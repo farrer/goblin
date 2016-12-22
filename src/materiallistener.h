@@ -21,6 +21,11 @@
 #ifndef _goblin_material_listener_h
 #define _goblin_material_listener_h
 
+#include <OGRE/Ogre/Prerequisites.h>
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
 #include <OGRE/RTShaderSystem/OgreRTShaderSystem.h>
 #include <OGRE/OgreMaterialManager.h>
 #include <OGRE/OgreTechnique.h>
@@ -60,6 +65,8 @@ class MaterialListener: public Ogre::MaterialManager::Listener
 };
 
 }
+
+#endif
 
 #endif
 

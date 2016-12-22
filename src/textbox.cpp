@@ -19,6 +19,10 @@
 */
 
 #include "textbox.h"
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+
 #include "screeninfo.h"
 
 namespace Goblin
@@ -200,4 +204,6 @@ void TextBox::_update()
 }
 
 }
+
+#endif
 
