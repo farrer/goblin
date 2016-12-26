@@ -666,16 +666,24 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
 
    /* Init the compositor system */
 #if OGRE_VERSION_MAJOR != 1
-   Ogre::CompositorManager2 *compositorManager = 
-      ogreRoot->getCompositorManager2();
-   const Ogre::IdString workspaceName("Goblin Workspace");
-   if(!compositorManager->hasWorkspaceDefinition(workspaceName))
+   if(shouldCreateBasicWorkspace())
    {
-      compositorManager->createBasicWorkspaceDef(workspaceName, 
-            Ogre::ColourValue(0.0f, 0.0f, 0.0f), Ogre::IdString());
+      /* Create a the basic default workspace */
+      Ogre::CompositorManager2 *compositorManager = 
+         ogreRoot->getCompositorManager2();
+      const Ogre::IdString workspaceName("Goblin Workspace");
+      if(!compositorManager->hasWorkspaceDefinition(workspaceName))
+      {
+         compositorManager->createBasicWorkspaceDef(workspaceName, 
+               Ogre::ColourValue(0.0f, 0.0f, 0.0f), Ogre::IdString());
+      }
+      ogreWorkspace = compositorManager->addWorkspace(ogreSceneManager,
+            ogreWindow, Goblin::Camera::getOgreCamera(), workspaceName, true);
    }
-   ogreWorkspace = compositorManager->addWorkspace(ogreSceneManager,
-         ogreWindow, Goblin::Camera::getOgreCamera(), workspaceName, true);
+   else
+   {
+      ogreWorkspace = NULL;
+   }
 #endif
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
@@ -683,9 +691,12 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
    /* Initialize mouse cursor cursor */
    Kobold::Mouse::init();
 #endif
-   
-   /* Load i18 files */
-   Kobold::i18n::init("interface.def", Kobold::UserInfo::getLanguage());
+
+   if(shouldUseKoboldI18n())
+   {
+      /* Load i18 files */
+      Kobold::i18n::init("interface.def", Kobold::UserInfo::getLanguage());
+   }
 
 #ifdef _GOBLIN_SHOW_FPS_
    fpsDisplay = new Goblin::FpsDisplay(guiScore.getOverlay(), ogreWindow,

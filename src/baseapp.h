@@ -137,10 +137,10 @@ class BaseApp
    protected:
 
       /*! \return application Unix name (all lower case, without spaces). */
-      virtual Ogre::String getApplicationUnixName()=0;
+      virtual const Ogre::String getApplicationUnixName() const = 0;
 
       /*! \return base data directory name (usually "data"). */
-      virtual Ogre::String getBaseDataDir() = 0;
+      virtual const Ogre::String getBaseDataDir() const = 0;
 
       /*! Do specific initialization for the implementation.
        * \return true on success, false to abort the initialization. */
@@ -152,10 +152,10 @@ class BaseApp
             Ogre::String** dataGroups, int& total)=0;
 
       /*! \return default width to create window (ignored on embeded systems) */
-      virtual int getDefaultWindowWidth()=0;
+      virtual const int getDefaultWindowWidth() const = 0;
       /*! \return default height to create window 
        * (ignored on embeded systems) */
-      virtual int getDefaultWindowHeight()=0;
+      virtual const int getDefaultWindowHeight() const = 0;
 
       /*! Clean all possible not used memory. This function is called 
        * when the embeded system is with low available memory, and should
@@ -169,10 +169,18 @@ class BaseApp
        * foreground when this function is called. */
       virtual void doSendToForeground()=0;
 
+      /*! \return if should use Kobold::I18n for internationalization. */
+      virtual const bool shouldUseKoboldI18n() const { return true; };
+
+
 #if OGRE_VERSION_MAJOR == 1
       /*! \return Shadow Technique to use.
        * \note defaults to Ogre::SHADOWTYPE_NONE. */ 
       virtual Ogre::ShadowTechnique getShadowTechnique();
+#else
+      /*! \return if should create and define a basic ogre workspace.
+       * \note if false, the implementation is responsible to define its own.*/
+      virtual const bool shouldCreateBasicWorkspace() const { return true; };
 #endif
 
       enum Orientation
@@ -183,10 +191,10 @@ class BaseApp
       /*! \return default orientation the application will use. All goblin
        * applications are defined as single oriented, ie, the orientation 
        * is hardly defined at the init and screen rotation is disabled. */
-      virtual Orientation getDefaultOrientation()=0;
+      virtual const Orientation getDefaultOrientation() const = 0;
 
       /*! \return minimum width in pixels to use doubled size gui. */
-      virtual int getMinWidthToUseDoubleSizedGui()=0;
+      virtual const int getMinWidthToUseDoubleSizedGui() const = 0;
 
       /*! Do the specific app cycle (at each render cycle). */
       virtual void doCycle()=0;
