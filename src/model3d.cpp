@@ -465,7 +465,7 @@ bool AnimatedModel3d::AnimationInfo::isElapsed(Ogre::Real curTimer)
 {
 #if OGRE_VERSION_MAJOR == 1 || \
     (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
-   return timer > animation->getLength();
+   return curTimer > animation->getLength();
 #else
    //FIXME: when running backwards!
    return animation->getCurrentFrame() >= animation->getNumFrames();
@@ -553,7 +553,7 @@ AnimatedModel3d::AnimatedModel3d(Ogre::String modelName,
    {
 #if OGRE_VERSION_MAJOR == 1 || \
     (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
-      animations[i].setAnimation(model->getAnimation(animationNames[i]));
+      animations[i].setAnimation(model->getAnimationState(animationNames[i]));
 #else
       animations[i].setAnimation(model->getSkeletonInstance()->getAnimation(
                animationNames[i]));
