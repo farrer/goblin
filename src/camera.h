@@ -35,20 +35,16 @@ namespace Goblin
 {
 
 #define CAMERA_ATTENUATION                    0.1f
-#define CAMERA_ZOOM_MIN                     600
-#define CAMERA_ZOOM_MAX                      80
+#define CAMERA_ZOOM_MIN                     600.0f
+#define CAMERA_ZOOM_MAX                      80.0f
 #define CAMERA_UNDEFINED                 -10000.0f
 #define CAMERA_MAX_TOUCHES_DISTANCE        5000.0f
 #define CAMERA_DEFAULT_LINEAR_VELOCITY        5.0f
 #define CAMERA_DEFAULT_ANGULAR_VELOCITY       8.0f
 #define CAMERA_DEFAULT_ZOOM_VELOCITY         20.0f
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-   #define CAMERA_DEFAULT_NEAR_CLIP_DISTANCE    2.2f
-#else
-   #define CAMERA_DEFAULT_NEAR_CLIP_DISTANCE    0.1f
-#endif
-#define CAMERA_DEFAULT_FAR_CLIP_DISTANCE  2500.0f
+#define CAMERA_DEFAULT_NEAR_CLIP_DISTANCE     2.2f
+#define CAMERA_DEFAULT_FAR_CLIP_DISTANCE   2200.0f
 
 /*! The camera single state (position and angles) */
 class CameraState
