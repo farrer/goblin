@@ -16,6 +16,7 @@ src/materiallistener.cpp
 src/screeninfo.cpp
 src/textbox.cpp
 src/texttitle.cpp
+src/vertexutils.cpp
 )
 
 set(GOBLIN_HEADERS
@@ -32,6 +33,7 @@ src/materiallistener.h
 src/screeninfo.h
 src/textbox.h
 src/texttitle.h
+src/vertexutils.h
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
