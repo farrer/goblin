@@ -29,7 +29,7 @@ using namespace Goblin;
  *                          generateTangents                           *
  ***********************************************************************/
 void VertexUtils::generateTangents(float* vertexData, Ogre::uint16* indexData, 
-      Ogre::uint32 bytesPerVertex, Ogre::uint32 vertexCount, 
+      Ogre::uint32 floatsPerVertex, Ogre::uint32 vertexCount, 
       Ogre::uint32 indexCount, Ogre::uint32 posIndex, 
       Ogre::uint32 normalIndex, Ogre::uint32 tangentIndex, 
       Ogre::uint32 uvIndex)
@@ -53,14 +53,14 @@ void VertexUtils::generateTangents(float* vertexData, Ogre::uint16* indexData,
       Ogre::uint32 i3 = indexData[i + 2];
 
       /* Define position indexes */
-      float* pi1 = &vertexData[i1 * bytesPerVertex + posIndex];
-      float* pi2 = &vertexData[i2 * bytesPerVertex + posIndex];
-      float* pi3 = &vertexData[i3 * bytesPerVertex + posIndex];
+      float* pi1 = &vertexData[i1 * floatsPerVertex + posIndex];
+      float* pi2 = &vertexData[i2 * floatsPerVertex + posIndex];
+      float* pi3 = &vertexData[i3 * floatsPerVertex + posIndex];
 
       /* Define texture indexes */
-      float* ti1 = &vertexData[i1 * bytesPerVertex + uvIndex];
-      float* ti2 = &vertexData[i2 * bytesPerVertex + uvIndex];
-      float* ti3 = &vertexData[i3 * bytesPerVertex + uvIndex];
+      float* ti1 = &vertexData[i1 * floatsPerVertex + uvIndex];
+      float* ti2 = &vertexData[i2 * floatsPerVertex + uvIndex];
+      float* ti3 = &vertexData[i3 * floatsPerVertex + uvIndex];
 	
       /* Calculate factors */
 		float x1 = pi2[0] - pi1[0];
@@ -110,13 +110,13 @@ void VertexUtils::generateTangents(float* vertexData, Ogre::uint16* indexData,
    /* Second pass */
 	for(Ogre::uint32 i = 0; i < vertexCount; i++)
 	{
-      float* nor = &vertexData[i * bytesPerVertex + normalIndex];
+      float* nor = &vertexData[i * floatsPerVertex + normalIndex];
 
 		Ogre::Vector3 n(nor[0], nor[1], nor[2]);
 		Ogre::Vector3 tu(tan1[(i * 3)], tan1[(i * 3) + 1], tan1[(i * 3) + 2]);
 		Ogre::Vector3 tv(tan2[(i * 3)], tan2[(i * 3) + 1], tan2[(i * 3) + 2]);
 
-      float* tan = &vertexData[i * bytesPerVertex + tangentIndex];
+      float* tan = &vertexData[i * floatsPerVertex + tangentIndex];
 		
 		/* Gram-Schmidt orthogonalize. */
       Ogre::Vector3 tangent = (tu - n * n.dotProduct(tu)).normalisedCopy();
