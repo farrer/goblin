@@ -32,50 +32,74 @@
 
 namespace Goblin
 {
-   /*! A vertex utils class, with some functions to work on vertices.
-    * \note all of them are from Dergo server project, which is MIT licensed,
-    *       Copyright (c) 2015 Matias N. Goldberg.
-    *       See: https://bitbucket.org/dark_sylinc/dergo-blender/src/ */
+   /*! A vertex utils class, with some functions to work on vertices. */
    class VertexUtils
    {
-      /** Generates tangents for normal mapping for indexed lists version. 
-       * Step 01. The data will be stored into outData.
-       * @remarks Tangent generation for indexed lists is split in two 
-       * steps to allow some degree of threading, since step 01 can be 
-       * done concurrently, while step 02 cannot.
-       * To generate tangents on a single threading app, do the following:
-       * Ogre::Vector3 *tuvData = new Ogre::Vector3[numVertices * 2u];
-       * generateTanUV( vertexData, indexData, bytesPerVertex,
-       *                numVertices, numIndices, posStride,
-       *                normalStride, tangentStride, uvStride,
-       *                outData );
-       * generateTangentsMergeTUV( vertexData, bytesPerVertex, numVertices,
-       *                          normalStride, tangentStride, outData, 1 );
-       * delete [] outData;
-       * @param outData
-       * Buffer to store the result of this step. It generates vectors 'tsU' 
-       * and 'tsV', one pair for each vertex. outData must be at least 
-       * outData = new Vector3[numVertices*2u]  */
-      static void generateTanUV( const uint8_t* vertexData, 
-            const uint32_t* indexData, uint32_t bytesPerVertex,
-            uint32_t numVertices, uint32_t numIndices, uint32_t posStride,
-            uint32_t normalStride, uint32_t tangentStride, uint32_t uvStride,
-            Ogre::Vector3* RESTRICT_ALIAS outData );
+      public:
 
-      /** Generates tangents for normal mapping for indexed lists version. 
-       * Step 02 and final step.
-       * Takes the data in inOutUvBuffer (which was the output of 
-       * generateTanTUV) and fills the vertexData.
-       * @param inOutUvBuffer
-       *    The buffer filled with tsU & tsV by generateTanUV. Assumes all 
-       *    threads are consecutive. This means the buffer must be at least 
-       *    new Vector3[numVertices*2u*numThreads]
-       * @param numThreads
-       *    The number of threads that processed generateTanUV. */
-   static void generateTangentsMergeTUV(uint8_t* vertexData, 
-         uint32_t bytesPerVertex, uint32_t numVertices, uint32_t normalStride,
-         uint32_t tangentStride, Ogre::Vector3* RESTRICT_ALIAS inOutUvBuffer,
-         size_t numThreads );
+         /*! Generate tangents for the vertexData.
+          * \param vertexData pointer to the vector of vertex data
+          * \param indexData pointer to the index vector (usually triangles)
+          * \param floatsPerVertex number of floats to represent each vertex
+          * \param vertexCount number of vertices
+          * \param indexCount number of indexes
+          * \param posIndex initial index of position on a single vertex
+          * \param normalIndex initial index of its normals for a single vertex
+          * \param tangentIndex initial index of its tangent for a single vertex
+          * \param uvIndex initial index of its texture map for a single vertex 
+          * */
+         static void generateTangents(float* vertexData, 
+               Ogre::uint16* indexData, Ogre::uint32 floatsPerVertex, 
+               Ogre::uint32 vertexCount, Ogre::uint32 indexCount, 
+               Ogre::uint32 posIndex, Ogre::uint32 normalIndex,
+               Ogre::uint32 tangentIndex, Ogre::uint32 uvIndex);
+
+         /** Generates tangents for normal mapping for indexed lists version. 
+          * Step 01. The data will be stored into outData.
+          * @remarks Tangent generation for indexed lists is split in two 
+          * steps to allow some degree of threading, since step 01 can be 
+          * done concurrently, while step 02 cannot.
+          * To generate tangents on a single threading app, do the following:
+          * Ogre::Vector3 *tuvData = new Ogre::Vector3[numVertices * 2u];
+          * generateTanUV( vertexData, indexData, bytesPerVertex,
+          *                numVertices, numIndices, posStride,
+          *                normalStride, tangentStride, uvStride,
+          *                outData );
+          * generateTangentsMergeTUV( vertexData, bytesPerVertex, numVertices,
+          *                          normalStride, tangentStride, outData, 1 );
+          * delete [] outData;
+          * @param outData
+          * Buffer to store the result of this step. It generates vectors 'tsU' 
+          * and 'tsV', one pair for each vertex. outData must be at least 
+          * outData = new Vector3[numVertices*2u] 
+          * \note the parallel indexed tangent generation functions are from 
+          *       Dergo server project, which is MIT licensed,
+          *       Copyright (c) 2015 Matias N. Goldberg.
+          *       See: https://bitbucket.org/dark_sylinc/dergo-blender/src */
+         static void generateTanUV( const uint8_t* vertexData, 
+               const uint32_t* indexData, uint32_t bytesPerVertex,
+               uint32_t numVertices, uint32_t numIndices, uint32_t posStride,
+               uint32_t normalStride, uint32_t tangentStride, uint32_t uvStride,
+               Ogre::Vector3* RESTRICT_ALIAS outData );
+
+         /** Generates tangents for normal mapping for indexed lists version. 
+          * Step 02 and final step.
+          * Takes the data in inOutUvBuffer (which was the output of 
+          * generateTanTUV) and fills the vertexData.
+          * @param inOutUvBuffer
+          *    The buffer filled with tsU & tsV by generateTanUV. Assumes all 
+          *    threads are consecutive. This means the buffer must be at least 
+          *    new Vector3[numVertices*2u*numThreads]
+          * @param numThreads
+          *    The number of threads that processed generateTanUV. 
+          * \note the parallel indexed tangent generation functions are from 
+          *       Dergo server project, which is MIT licensed,
+          *       Copyright (c) 2015 Matias N. Goldberg.
+          *       See: https://bitbucket.org/dark_sylinc/dergo-blender/src*/
+         static void generateTangentsMergeTUV(uint8_t* vertexData, 
+               uint32_t bytesPerVertex, uint32_t numVertices, 
+               uint32_t normalStride, uint32_t tangentStride, 
+               Ogre::Vector3* RESTRICT_ALIAS inOutUvBuffer, size_t numThreads);
 };
 
 }

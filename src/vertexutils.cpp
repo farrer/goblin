@@ -26,6 +26,112 @@
 using namespace Goblin;
 
 /***********************************************************************
+ *                          generateTangents                           *
+ ***********************************************************************/
+void VertexUtils::generateTangents(float* vertexData, Ogre::uint16* indexData, 
+      Ogre::uint32 bytesPerVertex, Ogre::uint32 vertexCount, 
+      Ogre::uint32 indexCount, Ogre::uint32 posIndex, 
+      Ogre::uint32 normalIndex, Ogre::uint32 tangentIndex, 
+      Ogre::uint32 uvIndex)
+{
+   /* Create the calculation vector and positionate the second */
+	float* tan1 = new float[vertexCount * 2 * 3];
+	float* tan2 = &tan1[vertexCount * 3];
+
+   /* clear the calculation vector */
+   for(Ogre::uint32 i = 0; i < vertexCount * 2 * 3; i++)
+   {
+      tan1[i] = 0.0f;
+   }
+
+   /* First pass */
+	for(Ogre::uint32 i = 0; i <= indexCount - 3; i += 3)
+	{
+      /* Define vertex index */
+      Ogre::uint32 i1 = indexData[i];
+      Ogre::uint32 i2 = indexData[i + 1];
+      Ogre::uint32 i3 = indexData[i + 2];
+
+      /* Define position indexes */
+      float* pi1 = &vertexData[i1 * bytesPerVertex + posIndex];
+      float* pi2 = &vertexData[i2 * bytesPerVertex + posIndex];
+      float* pi3 = &vertexData[i3 * bytesPerVertex + posIndex];
+
+      /* Define texture indexes */
+      float* ti1 = &vertexData[i1 * bytesPerVertex + uvIndex];
+      float* ti2 = &vertexData[i2 * bytesPerVertex + uvIndex];
+      float* ti3 = &vertexData[i3 * bytesPerVertex + uvIndex];
+	
+      /* Calculate factors */
+		float x1 = pi2[0] - pi1[0];
+		float x2 = pi3[0] - pi1[0];
+		float y1 = pi2[1] - pi1[1];
+		float y2 = pi3[1] - pi1[1];
+		float z1 = pi2[2] - pi1[2];
+		float z2 = pi3[2] - pi1[2];
+		
+		float s1 = ti2[0] - ti1[0];
+		float s2 = ti3[0] - ti1[0];
+		float t1 = ti2[1] - ti1[1];
+		float t2 = ti3[1] - ti1[1];
+		
+		float r = 1.0F / (s1 * t2 - s2 * t1);
+		
+      Ogre::Vector3 sdir((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
+            (t2 * z1 - t1 * z2) * r);
+		Ogre::Vector3 tdir((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
+            (s1 * z2 - s2 * z1) * r);
+
+		tan1[(i1 * 3)] += sdir[0];
+		tan1[(i1 * 3) + 1] += sdir[1];
+		tan1[(i1 * 3) + 2] += sdir[2];
+
+		tan1[(i2 * 3)] += sdir[0];
+		tan1[(i2 * 3) + 1] += sdir[1];
+		tan1[(i2 * 3) + 2] += sdir[2];
+
+		tan1[(i3 * 3)] += sdir[0];
+		tan1[(i3 * 3) + 1] += sdir[1];
+		tan1[(i3 * 3) + 2] += sdir[2];
+
+		tan2[(i1 * 3)] += tdir[0];
+		tan2[(i1 * 3) + 1] += tdir[1];
+		tan2[(i1 * 3) + 2] += tdir[2];
+
+		tan2[(i2 * 3)] += tdir[0];
+		tan2[(i2 * 3) + 1] += tdir[1];
+		tan2[(i2 * 3) + 2] += tdir[2];
+
+		tan2[(i3 * 3)] += tdir[0];
+		tan2[(i3 * 3) + 1] += tdir[1];
+		tan2[(i3 * 3) + 2] += tdir[2];
+	}
+	
+   /* Second pass */
+	for(Ogre::uint32 i = 0; i < vertexCount; i++)
+	{
+      float* nor = &vertexData[i * bytesPerVertex + normalIndex];
+
+		Ogre::Vector3 n(nor[0], nor[1], nor[2]);
+		Ogre::Vector3 tu(tan1[(i * 3)], tan1[(i * 3) + 1], tan1[(i * 3) + 2]);
+		Ogre::Vector3 tv(tan2[(i * 3)], tan2[(i * 3) + 1], tan2[(i * 3) + 2]);
+
+      float* tan = &vertexData[i * bytesPerVertex + tangentIndex];
+		
+		/* Gram-Schmidt orthogonalize. */
+      Ogre::Vector3 tangent = (tu - n * n.dotProduct(tu)).normalisedCopy();
+      tan[0] = tangent.x; 
+      tan[1] = tangent.y; 
+      tan[2] = tangent.z; 
+		
+		/* Calculate handedness. */
+		tan[3] = n.crossProduct(tu).dotProduct(tv) < 0.0f ? -1.0f : 1.0f;
+	}
+	
+	delete[] tan1;
+}
+
+/***********************************************************************
  *                            generateTanUV                            *
  ***********************************************************************/
 void VertexUtils::generateTanUV(const uint8_t* vertexData, 
