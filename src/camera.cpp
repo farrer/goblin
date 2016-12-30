@@ -465,8 +465,7 @@ bool Camera::verifyMouseInput()
    {
       /* Do the move */
       thetaAc = (Kobold::Mouse::getRelativeY());
-      /* X axis is inverted */
-      phiAc = (-Kobold::Mouse::getRelativeX());
+      phiAc = (Kobold::Mouse::getRelativeX());
 
       return true;
    }
@@ -475,7 +474,7 @@ bool Camera::verifyMouseInput()
    if(Kobold::Mouse::getRelativeWheel() != 0)
    {
       /* Inverted! */
-      zoomAc -= (Kobold::Mouse::getRelativeWheel() / 100.0f);
+      zoomAc -= (Kobold::Mouse::getRelativeWheel());
       return true;
    }
 
