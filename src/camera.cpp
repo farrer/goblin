@@ -461,7 +461,9 @@ bool Camera::verifyMultiTouchInput()
 bool Camera::verifyMouseInput()
 {
    /* Middle Mouse Button Rotation Control */
-   if(Kobold::Mouse::isMiddleButtonPressed())
+   if((Kobold::Mouse::isMiddleButtonPressed()) &&
+      ((Kobold::Mouse::getRelativeY() != 0) ||
+       (Kobold::Mouse::getRelativeX() != 0)))
    {
       /* Do the move */
       thetaAc = (Kobold::Mouse::getRelativeY());
