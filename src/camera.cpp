@@ -467,6 +467,19 @@ bool Camera::verifyMouseInput()
       thetaAc = (Kobold::Mouse::getRelativeY());
       phiAc = (Kobold::Mouse::getRelativeX());
 
+      /* Limit rotation accelaration, to give vamera some 'inertia' 
+       * (more fluid movement) */
+      if(Ogre::Math::Abs(thetaAc) > 5.0f)
+      {
+         int signal = (thetaAc > 0.0f) ? 1.0f : -1.0f;
+         thetaAc = signal * 5.0f;
+      }
+      if(Ogre::Math::Abs(phiAc) > 5.0f)
+      {
+         int signal = (phiAc > 0.0f) ? 1.0f : -1.0f;
+         phiAc = signal * 5.0f;
+      }
+
       return true;
    }
 
