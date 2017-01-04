@@ -338,21 +338,16 @@ bool BaseApp::createRoot()
    /* Create the root, without cfg files */
    ogreRoot = new Ogre::Root("", "");
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-   ogreRoot->loadPlugin("RenderSystem_Direct3D9");
-   rs = ogreRoot->getRenderSystemByName("Direct3D9 Rendering Subsystem");
-#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
+#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
       OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
    rs = new Ogre::GLES2RenderSystem();
    ogreRoot->addRenderSystem(rs);
 #elif OGRE_VERSION_MAJOR == 1 || \
      (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
-    /* FIXME: harcoded directory. */
-   ogreRoot->loadPlugin("/usr/lib/OGRE/RenderSystem_GL_d");
+   ogreRoot->loadPlugin(OGRE_GL_RENDER_SYSTEM_LIB);
    rs = ogreRoot->getRenderSystemByName("OpenGL Rendering Subsystem");
 #else
-    /* FIXME: harcoded directory. */
-   ogreRoot->loadPlugin("/usr/lib/OGRE/RenderSystem_GL3Plus_d");
+   ogreRoot->loadPlugin(OGRE_GL3PLUS_RENDER_SYSTEM_LIB);
    rs = ogreRoot->getRenderSystemByName("OpenGL 3+ Rendering Subsystem");
 #endif
 

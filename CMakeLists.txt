@@ -67,6 +67,19 @@ include_directories(${KOBOLD_INCLUDE_DIR})
 FIND_PACKAGE(Kosound REQUIRED)
 include_directories(${KOSOUND_INCLUDE_DIR})
 
+#FIXME: .so is too unix like. fix for other systems.
+# Define our render systems directories
+if(${GOBLIN_DEBUG})
+   string(REPLACE ".so" "" OGRE_GL_RENDER_SYSTEM_LIB 
+          ${OGRE_RenderSystem_GL_LIBRARY_DBG})
+   string(REPLACE ".so" "" OGRE_GL3PLUS_RENDER_SYSTEM_LIB 
+          ${OGRE_RenderSystem_GL3Plus_LIBRARY_DBG})
+else(${GOBLIN_DEBUG})
+   string(REPLACE ".so" "" OGRE_GL_RENDER_SYSTEM_LIB 
+          ${OGRE_RenderSystem_GL_LIBRARY_REL})
+   string(REPLACE ".so" "" OGRE_GL3PLUS_RENDER_SYSTEM_LIB 
+          ${OGRE_RenderSystem_GL3Plus_LIBRARY_REL})
+endif(${GOBLIN_DEBUG})
 
 # Include directories: src and the binary src (as generating config.h there)
 include_directories(${PROJECT_SOURCE_DIR}/src)
