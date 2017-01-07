@@ -58,7 +58,7 @@
    #include <android/native_window_jni.h>
    #include <android/asset_manager.h>
    #include <android/asset_manager_jni.h>
-   #include <OGRE/RenderSystems/GLES2/Android/OgreAndroidEGLWindow.h>
+   #include <OGRE/RenderSystems/GLES2/OgreGLRenderSystemCommon.h>
    #include <OGRE/Android/OgreAPKFileSystemArchive.h>
    #include <OGRE/Android/OgreAPKZipArchive.h>
    #include <OGRE/OgreArchiveManager.h>

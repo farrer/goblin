@@ -283,8 +283,8 @@ void BaseApp::initWindowForAndroid(JNIEnv* env, jobject surface)
    }
    else
    {
-      static_cast<Ogre::AndroidEGLWindow*>
-         (ogreWindow)->_createInternalResources(nativeWnd, NULL);
+      Ogre::GLRenderSystemCommon::_createInternalResources(ogreWindow, 
+            nativeWnd, NULL);
    }
 }
 
@@ -295,8 +295,7 @@ void BaseApp::termWindowForAndroid()
 {
    if((ogreRoot) && (ogreWindow))
    {
-      static_cast<Ogre::AndroidEGLWindow*>
-         (ogreWindow)->_destroyInternalResources();
+      Ogre::GLRenderSystemCommon::_destroyInternalResources(ogreWindow);
    }
 }
 
