@@ -171,6 +171,10 @@ class BaseApp
 
       /*! \return if should use Kobold::I18n for internationalization. */
       virtual const bool shouldUseKoboldI18n() const { return true; };
+      
+      /*! \return if should use BC5 compressed textures (usually .dds) for
+       * normal map textures. */
+      virtual const bool shouldUseBC5ForNormalTextures() const {return false;};
 
 
 #if OGRE_VERSION_MAJOR == 1

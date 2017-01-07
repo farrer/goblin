@@ -52,6 +52,7 @@
    #include <OGRE/Compositor/OgreCompositorManager2.h>
    #include <OGRE/OgreArchive.h>
    #include <OGRE/OgreArchiveManager.h>
+   #include <OGRE/OgreHlmsTextureManager.h>
 #endif
 
 using namespace Goblin;
@@ -400,6 +401,8 @@ bool BaseApp::initShaderSystem(Ogre::String cacheDir)
  ***********************************************************************/
 bool BaseApp::registerHLMS(Ogre::String hlmsPath)
 {
+   Ogre::HlmsManager* hlmsManager = Ogre::Root::getSingleton().getHlmsManager();
+
    Ogre::Archive* archiveLibrary = 
       Ogre::ArchiveManager::getSingletonPtr()->load(
          hlmsPath + "common/glsl", "FileSystem", true );
@@ -411,13 +414,21 @@ bool BaseApp::registerHLMS(Ogre::String hlmsPath)
          hlmsPath + "unlit/glsl", "FileSystem", true );
 
    Ogre::HlmsUnlit* hlmsUnlit = new Ogre::HlmsUnlit(archiveUnlit, &library);
-   Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
+   hlmsManager->registerHlms(hlmsUnlit);
 
    Ogre::Archive* archivePbs = Ogre::ArchiveManager::getSingletonPtr()->load(
          hlmsPath + "pbs/glsl", "FileSystem", true );
 
    Ogre::HlmsPbs* hlmsPbs = new Ogre::HlmsPbs(archivePbs, &library);
-   Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
+   hlmsManager->registerHlms(hlmsPbs);
+
+   /* If not using dds textures, should tell the manager  */
+   if(!shouldUseBC5ForNormalTextures())
+   {
+      hlmsManager->getTextureManager()->getDefaultTextureParameters()[
+          Ogre::HlmsTextureManager::TEXTURE_TYPE_NORMALS].pixelFormat = 
+             Ogre::PF_R8G8_SNORM;
+   }
 
    /* TODO: check if we need to restrict texture size (the examples from
     * Ogre only do it for DX11). */
