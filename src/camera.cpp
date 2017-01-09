@@ -39,6 +39,7 @@ namespace Goblin
 {
 
 #define CAMERA_DEFAULT_TRANSLATE_FACTOR          0.2f
+#define CAMERA_DEFAULT_ROTATE_FACTOR             0.25f
 #define CAMERA_DEFAULT_MAX_DIST_TO_TRANSLATE    32.0f
 
 /***********************************************************************
@@ -442,11 +443,11 @@ bool Camera::verifyMultiTouchInput()
             
             if(dX != 0)
             {
-               phiAc = dX*0.2f;
+               phiAc = dX * CAMERA_DEFAULT_ROTATE_FACTOR;
             }
             if(dY != 0)
             {
-               thetaAc = dY*0.2f;
+               thetaAc = dY * CAMERA_DEFAULT_ROTATE_FACTOR;
             }
          }
       }
@@ -466,8 +467,8 @@ bool Camera::verifyMouseInput()
        (Kobold::Mouse::getRelativeX() != 0)))
    {
       /* Do the move */
-      thetaAc = (Kobold::Mouse::getRelativeY());
-      phiAc = (Kobold::Mouse::getRelativeX());
+      thetaAc = (Kobold::Mouse::getRelativeY()) * CAMERA_DEFAULT_ROTATE_FACTOR;
+      phiAc = (Kobold::Mouse::getRelativeX()) * CAMERA_DEFAULT_ROTATE_FACTOR;
 
       /* Limit rotation accelaration, to give vamera some 'inertia' 
        * (more fluid movement) */

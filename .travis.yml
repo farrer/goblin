@@ -67,6 +67,7 @@ before_install:
    - cd ../../
 
    # Ogre3d
+   - rm -rf ogre
    - hg clone https://bitbucket.org/sinbad/ogre/
    - cd ogre
    - mkdir build
