@@ -143,8 +143,18 @@ class BaseApp
       virtual const Ogre::String getBaseDataDir() const = 0;
 
       /*! Do specific initialization for the implementation.
-       * \return true on success, false to abort the initialization. */
-      virtual bool doInit()=0;
+       * \note this function is called while its return is true, doing a 
+       * frame rendering when returned false. This way, the implementation can,
+       * for example, initialize things showing a progress bar while the system
+       * loads.
+       * \param callCounter initing with 0 on first call, its value will be 
+       *        incremented by one at each new call. Usefull for controlling
+       *        loading states on the implementation.
+       * \param shouldAbort set it to true to abort the initialization (usually
+       *        when something went wrong).
+       * \return true when done initing everything, false to be called again
+       *  to continue the loading proccess. */
+      virtual bool doCycleInit(int callCounter, bool& shouldAbort)=0;
 
       /*! Define all directories to use as Ogre resources, with
        * its unique group names. */
@@ -211,6 +221,12 @@ class BaseApp
        * \return if should quit the application. */
       bool getInput();
 
+      /*! \return current data path used by the application */
+      virtual Ogre::String getDataPath();
+
+      /*! Define current data path to be used by the application */
+      void defineDataPath();
+
 #if OGRE_VERSION_MAJOR == 1 || \
     (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
       /*! Initialize the RTSS */
@@ -223,9 +239,14 @@ class BaseApp
       bool registerHLMS(Ogre::String hlmsPath);
 #endif
 
+      /*! Internally called to render one frame to the screen */
+      void renderFrame();
+
       Ogre::Root* ogreRoot;                  /**< Ogre root */
       Ogre::RenderWindow* ogreWindow;        /**< Ogre Window */
       Ogre::SceneManager* ogreSceneManager;  /**< Ogre Scene Manager */
+
+      Ogre::String dataPath; /**< Data path used by the application */
 
 #if OGRE_VERSION_MAJOR == 1 || \
     (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)

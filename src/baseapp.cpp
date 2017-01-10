@@ -62,6 +62,7 @@ using namespace Goblin;
  ***********************************************************************/
 BaseApp::BaseApp()
 {
+   dataPath = "";
    timeElapsed = 0;
    receivedCameraInput = false;
    backRunning = false;
@@ -447,23 +448,41 @@ Ogre::ShadowTechnique BaseApp::getShadowTechnique()
 #endif
 
 /***********************************************************************
+ *                             getDataPath                             *
+ ***********************************************************************/
+Ogre::String BaseApp::getDataPath()
+{
+   return dataPath;
+}
+
+/***********************************************************************
+ *                            defineDataPth                            *
+ ***********************************************************************/
+void BaseApp::defineDataPath()
+{
+   Ogre::String baseDataDir = getBaseDataDir();
+#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE ||\
+    OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
+   dataPath = Ogre::macBundlePath() + Ogre::String("/") + baseDataDir +
+                       Ogre::String("/");
+#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+   dataPath = Ogre::String("/") + baseDataDir + Ogre::String("/");
+#else
+   //TODO: when installed somewhare, we must use it (ie: 
+   // /usr/local/share, for example
+   dataPath = baseDataDir + Ogre::String("/");
+#endif
+}
+
+/***********************************************************************
  *                                 create                              *
  ***********************************************************************/
 bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
                      Ogre::uint32 wZ, Ogre::Real wScale)
 {
-   Ogre::String baseDataDir = getBaseDataDir();
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE ||\
-    OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
-   Ogre::String path = Ogre::macBundlePath() + Ogre::String("/") + baseDataDir +
-                       Ogre::String("/");
-#elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-   Ogre::String path = Ogre::String("/") + baseDataDir + Ogre::String("/");
-#else
-   //TODO: when installed somewhare, we must use it (ie: 
-   // /usr/local/share, for example
-   Ogre::String path = baseDataDir + Ogre::String("/");
-#endif
+   /* Define application data path */
+   defineDataPath();
+   Ogre::String path = getDataPath();
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
@@ -709,8 +728,31 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
    fpsDisplay->setType(Goblin::FpsDisplay::TYPE_LAST);
    fpsDisplay->setPosition(0, 728);
 #endif
- 
-   return doInit();
+
+   /* Do the cycle initialization */
+   int callCounter = 0;
+   bool shouldAbort = false;
+   renderFrame();
+   while((!shouldAbort) && (!doCycleInit(callCounter, shouldAbort)))
+   {
+      renderFrame();
+      callCounter++;
+   }
+   return !shouldAbort;
+}
+
+/***********************************************************************
+ *                            renderFrame                              *
+ ***********************************************************************/
+void BaseApp::renderFrame()
+{
+   /* Render the frame and update the window */
+   ogreRoot->renderOneFrame();
+#if OGRE_VERSION_MAJOR == 1
+   ogreWindow->update();
+#else
+   ogreWindow->swapBuffers();
+#endif
 }
 
 /***********************************************************************
@@ -841,12 +883,7 @@ void BaseApp::run()
          exit |= shouldQuit();
 #endif
          /* Render the frame and update the window */
-         ogreRoot->renderOneFrame();
-#if OGRE_VERSION_MAJOR == 1
-         ogreWindow->update();
-#else
-         ogreWindow->swapBuffers();
-#endif
+         renderFrame();
 
          /* Reset the 'listener' position to current camera */
          Kosound::Sound::setListenerPosition(Goblin::Camera::getCenterX(),
