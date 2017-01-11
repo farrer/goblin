@@ -68,11 +68,12 @@ before_install:
 
    # Ogre3d
    - rm -rf ogre
+   - sudo rm -rf /usr/local/include/OGRE
    - hg clone https://bitbucket.org/sinbad/ogre/
    - cd ogre
    - mkdir build
    - cd build
-   - cmake -DOGRE_DEPENDENCIES_DIR=../../ogredeps/build/ogredeps -DOGRE_STATIC=1 -DOGRE_BUILD_SAMPLES=0 -DOGRE_BUILD_TOOLS=0 ..
+   - cmake -DOGRE_DEPENDENCIES_DIR=../../ogredeps/build/ogredeps -DOGRE_STATIC=1 -DOGRE_BUILD_SAMPLES=0 -DOGRE_BUILD_TOOLS=0 -DOGRE_BUILD_COMPONENT_BITES=0 -DOGRE_BUILD_COMPONENT_PYTHON=0 -DOGRE_BUILD_DEPENDENCIES=0 ..
    - make -j5
    - sudo make install
    - cd ../../
