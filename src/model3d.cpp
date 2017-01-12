@@ -45,6 +45,7 @@ using namespace Goblin;
 Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
       Ogre::SceneManager* sceneManager, Model3dType type, Model3d* parent)
 {
+   model = NULL;
    load(modelName, modelFile, sceneManager, type, parent);
 }
 
