@@ -51,7 +51,7 @@ class Model3d
          MODEL_DYNAMIC
       };
 
-      /*! Constructor 
+      /*! Constructor, with direct load. 
        * \param modelName model's name (unique)
        * \param modelFile filename of model's to load
        * \param sceneManager pointer to Ogre's used SceneManager
@@ -64,8 +64,20 @@ class Model3d
       Model3d(Ogre::String modelName, Ogre::String modelFile,
             Ogre::SceneManager* sceneManager, Model3dType type, 
             Model3d* parent=NULL);
+
+      /*! Constructor, without load.
+       * \note must call load later, before using the model */
+      Model3d();
+
       /*! Destructor */
       virtual ~Model3d();
+
+      /*! Load a model.
+       * \note only use it on not yet loaded models.
+       * \note see full constructor for parameters list. */
+      bool load(Ogre::String modelName, Ogre::String modelFile,
+            Ogre::SceneManager* sceneManager, Model3dType type, 
+            Model3d* parent=NULL);
 
       /*! Change the model material */
       void setMaterial(Ogre::String materialName);
@@ -82,9 +94,9 @@ class Model3d
             Ogre::Real rollValue);
 
       /*! \return current model's yaw (Y) angle */
-      Ogre::Real getYaw();
+      const Ogre::Real getYaw();
       /*! Same as #getYaw()  */
-      Ogre::Real getOrientation();
+      const Ogre::Real getOrientation();
 
       /* Set model's next position */
       void setTargetPosition(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ);
@@ -92,13 +104,16 @@ class Model3d
       void setPosition(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ);
       void setPosition(Ogre::Vector3 p);
 
-      /* Get current model position */
-      Ogre::Vector3 getPosition();
+      /* \return current model position */
+      const Ogre::Vector3 getPosition();
 
       /*! Set current model scale */
       void setScale(Ogre::Real x, Ogre::Real y, Ogre::Real z);
       /*! Set next model scale */
       void setTargetScale(Ogre::Real x, Ogre::Real y, Ogre::Real z);
+
+      /*! \return current model scale */
+      const Ogre::Vector3 getScale();
 
       /*! Notify that a static model had its position or 
        * orientation changed. 
@@ -115,7 +130,7 @@ class Model3d
       /*! show model */
       void show();
       /*! Verify if is visible or not */
-      bool isVisible();
+      const bool isVisible() const { return visible; };
 
       /*! \return if the model is static or dynamic 
        * \note only makes sense when using Ogre 2.x */
@@ -125,6 +140,18 @@ class Model3d
        * \param node SceneNode to check.
        * \return if node is the SceneNode of this Model or not */
       bool ownSceneNode(Ogre::SceneNode* node);
+
+      /*! \return scene node used by the model */
+      Ogre::SceneNode* getSceneNode() { return node; };
+
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+      /*! \return model's Ogre::Entity pointer */
+      Ogre::Entity* getEntity() { return model; };
+#else
+      /*! \return model's Ogre::Item pointer */
+      Ogre::Item* getItem() { return model; } ;
+#endif
 
    protected:
       Ogre::SceneManager* ogreSceneManager;  /**< Scene manager in use */

@@ -45,6 +45,62 @@ using namespace Goblin;
 Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
       Ogre::SceneManager* sceneManager, Model3dType type, Model3d* parent)
 {
+   load(modelName, modelFile, sceneManager, type, parent);
+}
+
+/***********************************************************************
+ *                             Constructor                             *
+ ***********************************************************************/
+Model3d::Model3d()
+{
+   visible = false;
+   node = NULL;
+   model = NULL;
+}
+
+/***********************************************************************
+ *                              Destructor                             *
+ ***********************************************************************/
+Model3d::~Model3d()
+{
+   /* Remove model and node */
+   if(node)
+   {
+      if(model)
+      {
+         node->detachObject(model);
+      }
+      ogreSceneManager->destroySceneNode(node);
+   }
+   if(model)
+   {
+#if OGRE_VERSION_MAJOR == 1 || \
+      (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+      ogreSceneManager->destroyEntity(model);
+#else
+      ogreSceneManager->destroyItem(model);
+#endif
+   }
+
+}
+
+/***********************************************************************
+ *                                  load                               *
+ ***********************************************************************/
+bool Model3d::load(Ogre::String modelName, Ogre::String modelFile,
+      Ogre::SceneManager* sceneManager, Model3dType type, 
+      Model3d* parent)
+{
+   /* Make sure not yet loaded */
+   assert(model == NULL);
+
+   if(model != NULL)
+   {
+      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+            "Error: You should not reload a loaded Model3d!");
+      return false;
+   }
+   
    this->visible = true;
 
    /* Set the scene manager to use */
@@ -78,6 +134,7 @@ Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
       Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR, 
             "Error: Couldn't create entity or item '%s' ('%s')!",
             modelFile.c_str(), modelName.c_str());
+      return false;
    }
    this->model->setName(modelName);
 #endif
@@ -100,22 +157,8 @@ Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
 #endif
    }
    node->attachObject(model);
-}
 
-/***********************************************************************
- *                              Destructor                             *
- ***********************************************************************/
-Model3d::~Model3d()
-{
-   /* Remove model and node */
-   node->detachObject(model);
-   ogreSceneManager->destroySceneNode(node);
-#if OGRE_VERSION_MAJOR == 1 || \
-    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
-   ogreSceneManager->destroyEntity(model);
-#else
-   ogreSceneManager->destroyItem(model);
-#endif
+   return true;
 }
 
 /***********************************************************************
@@ -160,11 +203,11 @@ void Model3d::setOrientation(Ogre::Real yawValue)
 /***********************************************************************
  *                                getYaw                               *
  ***********************************************************************/
-Ogre::Real Model3d::getYaw()
+const Ogre::Real Model3d::getYaw()
 {
    return ori[1].getValue();
 }
-Ogre::Real Model3d::getOrientation()
+const Ogre::Real Model3d::getOrientation()
 {
    return getYaw();
 }
@@ -227,7 +270,7 @@ void Model3d::setPosition(Ogre::Vector3 p)
 /***********************************************************************
  *                             getPosition                             *
  ***********************************************************************/
-Ogre::Vector3 Model3d::getPosition()
+const Ogre::Vector3 Model3d::getPosition()
 {
    Ogre::Vector3 res;
    res.x = pos[0].getValue();
@@ -267,6 +310,19 @@ void Model3d::setScale(Ogre::Real x, Ogre::Real y, Ogre::Real z)
 }
 
 /***********************************************************************
+ *                              getScale                               *
+ ***********************************************************************/
+const Ogre::Vector3 Model3d::getScale()
+{
+   Ogre::Vector3 res;
+   res.x = scala[0].getValue();
+   res.y = scala[1].getValue();
+   res.z = scala[2].getValue();
+
+   return res;
+}
+
+/***********************************************************************
  *                           setTargetScale                            *
  ***********************************************************************/
 void Model3d::setTargetScale(Ogre::Real x, Ogre::Real y, Ogre::Real z)
@@ -297,14 +353,6 @@ void Model3d::show()
 {
    visible = true;
    node->setVisible(true);
-}
-
-/***********************************************************************
- *                             isVisible                               *
- ***********************************************************************/
-bool Model3d::isVisible()
-{
-   return visible;
 }
 
 /***********************************************************************
