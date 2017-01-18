@@ -189,7 +189,11 @@ bool Model3d::isStatic()
  ***********************************************************************/
 void Model3d::setMaterial(Ogre::String materialName)
 {
+#if OGRE_VERSION_MAJOR == 1
    model->setMaterialName(materialName);
+#else
+   model->setDatablock(materialName);
+#endif
 }
 
 /***********************************************************************
