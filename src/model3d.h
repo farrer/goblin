@@ -93,10 +93,14 @@ class Model3d
       void setTargetOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 
             Ogre::Real rollValue);
 
+      /*! \return current model's pitch (X) angle */
+      const Ogre::Real getPitch() const { return ori[0].getValue(); };
       /*! \return current model's yaw (Y) angle */
-      const Ogre::Real getYaw();
+      const Ogre::Real getYaw() const { return ori[1].getValue(); };
       /*! Same as #getYaw()  */
-      const Ogre::Real getOrientation();
+      const Ogre::Real getOrientation() const { return getYaw(); };
+      /*! \return current model's roll (Z) angle */
+      const Ogre::Real getRoll() const { return ori[2].getValue(); };
 
       /* Set model's next position */
       void setTargetPosition(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ);
@@ -105,7 +109,7 @@ class Model3d
       void setPosition(Ogre::Vector3 p);
 
       /* \return current model position */
-      const Ogre::Vector3 getPosition();
+      const Ogre::Vector3 getPosition() const;
 
       /*! Set current model scale */
       void setScale(Ogre::Real x, Ogre::Real y, Ogre::Real z);
@@ -113,7 +117,7 @@ class Model3d
       void setTargetScale(Ogre::Real x, Ogre::Real y, Ogre::Real z);
 
       /*! \return current model scale */
-      const Ogre::Vector3 getScale();
+      const Ogre::Vector3 getScale() const;
 
       /*! Notify that a static model had its position or 
        * orientation changed. 

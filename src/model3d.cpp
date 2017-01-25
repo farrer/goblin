@@ -206,18 +206,6 @@ void Model3d::setOrientation(Ogre::Real yawValue)
 }
 
 /***********************************************************************
- *                                getYaw                               *
- ***********************************************************************/
-const Ogre::Real Model3d::getYaw()
-{
-   return ori[1].getValue();
-}
-const Ogre::Real Model3d::getOrientation()
-{
-   return getYaw();
-}
-
-/***********************************************************************
  *                           setOrientation                            *
  ***********************************************************************/
 void Model3d::setOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 
@@ -275,14 +263,11 @@ void Model3d::setPosition(Ogre::Vector3 p)
 /***********************************************************************
  *                             getPosition                             *
  ***********************************************************************/
-const Ogre::Vector3 Model3d::getPosition()
+const Ogre::Vector3 Model3d::getPosition() const
 {
-   Ogre::Vector3 res;
-   res.x = pos[0].getValue();
-   res.y = pos[1].getValue();
-   res.z = pos[2].getValue();
-
-   return res;
+   return Ogre::Vector3(pos[0].getValue(), 
+                        pos[1].getValue(), 
+                        pos[2].getValue());
 }
 
 /***********************************************************************
@@ -317,14 +302,11 @@ void Model3d::setScale(Ogre::Real x, Ogre::Real y, Ogre::Real z)
 /***********************************************************************
  *                              getScale                               *
  ***********************************************************************/
-const Ogre::Vector3 Model3d::getScale()
+const Ogre::Vector3 Model3d::getScale() const
 {
-   Ogre::Vector3 res;
-   res.x = scala[0].getValue();
-   res.y = scala[1].getValue();
-   res.z = scala[2].getValue();
-
-   return res;
+   return Ogre::Vector3(scala[0].getValue(), 
+                        scala[1].getValue(),
+                        scala[2].getValue());
 }
 
 /***********************************************************************
