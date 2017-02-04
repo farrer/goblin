@@ -695,7 +695,7 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
       /* Create a the basic default workspace */
       Ogre::CompositorManager2 *compositorManager = 
          ogreRoot->getCompositorManager2();
-      const Ogre::IdString workspaceName("Goblin Workspace");
+      const Ogre::String workspaceName("Goblin Workspace");
       if(!compositorManager->hasWorkspaceDefinition(workspaceName))
       {
          compositorManager->createBasicWorkspaceDef(workspaceName, 
