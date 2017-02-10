@@ -92,6 +92,9 @@ class Model3d
       /*! Set next orientation */
       void setTargetOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 
             Ogre::Real rollValue);
+ 
+      /*! Clear current model orientation, reseting its angles to 0.  */
+      void clearOrientation();
 
       /*! \return current model's pitch (X) angle */
       const Ogre::Real getPitch() const { return ori[0].getValue(); };

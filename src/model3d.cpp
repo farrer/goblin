@@ -197,6 +197,17 @@ void Model3d::setMaterial(Ogre::String materialName)
 }
 
 /***********************************************************************
+ *                        clearOrientation                             *
+ ***********************************************************************/
+void Model3d::clearOrientation()
+{
+   node->resetOrientation();
+   ori[0].setCurrent(0.0f);
+   ori[1].setCurrent(0.0f);
+   ori[2].setCurrent(0.0f);
+}
+
+/***********************************************************************
  *                           setOrientation                            *
  ***********************************************************************/
 void Model3d::setOrientation(Ogre::Real yawValue)
