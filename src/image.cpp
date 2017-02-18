@@ -103,7 +103,7 @@ void Image::load()
    texture = Ogre::TextureManager::getSingleton().load(imageFile, "gui",
       Ogre::TEX_TYPE_2D);
    
-   if(texture.isNull())
+   if(!texture)
    {
       Ogre::LogManager::getSingleton().getDefaultLog()->stream(
             Ogre::LML_CRITICAL)
