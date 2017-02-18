@@ -69,14 +69,13 @@ Ogre::Technique* MaterialListener::handleSchemeNotFound(
                originalMaterial->getName());
 
          /* Grab the generated technique.*/
-         Ogre::Material::TechniqueIterator itTech = 
-            originalMaterial->getTechniqueIterator();
-
-         while(itTech.hasMoreElements())
+         const Ogre::Material::Techniques techniques = 
+            originalMaterial->getTechniques();
+         Ogre::Material::Techniques::const_iterator itTech; 
+         for(itTech = techniques.begin(); itTech != techniques.end(); itTech++)
          {
-            Ogre::Technique* curTech = itTech.getNext();
-
-            if (curTech->getSchemeName() == schemeName)
+            Ogre::Technique* curTech = *itTech;
+            if(curTech->getSchemeName() == schemeName)
             {
                return curTech;
             }
