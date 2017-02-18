@@ -59,6 +59,7 @@ FpsDisplay::~FpsDisplay()
 void FpsDisplay::updateText()
 {
    Ogre::String fps;
+   Ogre::RenderTarget::FrameStats stats = ogreWindow->getStatistics();
 
 #if OGRE_VERSION_MAJOR == 1
    switch(type)
@@ -66,33 +67,32 @@ void FpsDisplay::updateText()
       default:
       case TYPE_AVERAGE:
       {
-         fps = Ogre::StringConverter::toString(ogreWindow->getAverageFPS(), 4);
+         fps = Ogre::StringConverter::toString(stats.avgFPS, 4);
       }
       break;
       case TYPE_WORST:
       {
-         fps = Ogre::StringConverter::toString(ogreWindow->getWorstFPS(), 4);
+         fps = Ogre::StringConverter::toString(stats.worstFPS, 4);
       }
       break;
       case TYPE_BEST:
       {
-         fps = Ogre::StringConverter::toString(ogreWindow->getBestFPS(), 4);
+         fps = Ogre::StringConverter::toString(stats.bestFPS, 4);
       }
       break;
       case TYPE_LAST:
       {
-         fps = Ogre::StringConverter::toString(ogreWindow->getLastFPS(), 4);
+         fps = Ogre::StringConverter::toString(stats.lastFPS, 4);
       }
       break;
    }
 
    fps += Ogre::String(" ") + 
-          Ogre::StringConverter::toString(ogreWindow->getTriangleCount());
+          Ogre::StringConverter::toString(stats.triangleCount);
    fps += Ogre::String(" (") + 
-          Ogre::StringConverter::toString(ogreWindow->getBatchCount()) +
+          Ogre::StringConverter::toString(stats.batchCount) +
           Ogre::String(")");
 #else
-   Ogre::RenderTarget::FrameStats stats = ogreWindow->getStatistics();
    const Ogre::FrameStats* frameStats = 
       Ogre::Root::getSingleton().getFrameStats();
    switch(type)
