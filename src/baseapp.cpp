@@ -405,10 +405,17 @@ bool BaseApp::registerHLMS(Ogre::String hlmsPath)
 
    Ogre::Archive* archiveLibrary = 
       Ogre::ArchiveManager::getSingletonPtr()->load(
-         hlmsPath + "common/glsl", "FileSystem", true );
+            hlmsPath + "common/glsl", "FileSystem", true );
+   Ogre::Archive* archiveLibraryAny = 
+      Ogre::ArchiveManager::getSingletonPtr()->load(
+            hlmsPath + "common/any", "FileSystem", true );
+   Ogre::Archive* archivePbsLibraryAny = 
+      Ogre::ArchiveManager::getSingletonPtr()->load(
+            hlmsPath + "pbs/any", "FileSystem", true );
 
    Ogre::ArchiveVec library;
    library.push_back(archiveLibrary);
+   library.push_back(archiveLibraryAny);
 
    Ogre::Archive* archiveUnlit = Ogre::ArchiveManager::getSingletonPtr()->load(
          hlmsPath + "unlit/glsl", "FileSystem", true );
@@ -419,6 +426,7 @@ bool BaseApp::registerHLMS(Ogre::String hlmsPath)
    Ogre::Archive* archivePbs = Ogre::ArchiveManager::getSingletonPtr()->load(
          hlmsPath + "pbs/glsl", "FileSystem", true );
 
+   library.push_back(archivePbsLibraryAny);
    Ogre::HlmsPbs* hlmsPbs = new Ogre::HlmsPbs(archivePbs, &library);
    hlmsManager->registerHlms(hlmsPbs);
 
@@ -672,6 +680,13 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
       return false;
    }
 #else
+
+   /* Add Ogre Common materials scripts */
+   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+         path + "ogremats", type);
+   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+         path + "ogremats/GLSL", type);
+
    /* Let's setup HLMS to use */
    //FIXME: when using mobile (metal), if we'll support.
    if(!registerHLMS(path + "hlms/"))
