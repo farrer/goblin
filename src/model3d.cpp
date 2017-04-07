@@ -25,6 +25,10 @@
    #include <OGRE/OgreSkeletonInstance.h>
 #elif OGRE_VERSION_MAJOR > 2 || OGRE_VERSION_MINOR > 0
    #include <OGRE/Animation/OgreSkeletonInstance.h>
+   #include <OGRE/OgreSubMesh2.h>
+   #include <OGRE/OgreMesh2.h>
+   #include <OGRE/Vao/OgreAsyncTicket.h>
+   #include <OGRE/OgreBitwise.h>
 #endif
 
 #include <kobold/log.h>
@@ -46,6 +50,11 @@ Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
       Ogre::SceneManager* sceneManager, Model3dType type, Model3d* parent)
 {
    model = NULL;
+   vertexCount = 0;
+   vertices = NULL;
+   indexCount = 0;
+   indices = NULL;
+
    load(modelName, modelFile, sceneManager, type, parent);
 }
 
@@ -57,6 +66,10 @@ Model3d::Model3d()
    visible = false;
    node = NULL;
    model = NULL;
+   vertexCount = 0;
+   vertices = NULL;
+   indexCount = 0;
+   indices = NULL;
 }
 
 /***********************************************************************
@@ -64,6 +77,20 @@ Model3d::Model3d()
  ***********************************************************************/
 Model3d::~Model3d()
 {
+#if(OGRE_VERSION_MAJOR > 2 || OGRE_VERSION_MINOR > 0)
+   /* Remove our cached vertices and indices */
+   if(vertices)
+   {
+      delete[] vertices;
+      vertices = NULL;
+   }
+   if(indices)
+   {
+      delete[] indices;
+      indices = NULL;
+   }
+#endif
+
    /* Remove model and node */
    if(node)
    {
@@ -407,6 +434,194 @@ void Model3d::update()
       node->roll(Ogre::Radian(Ogre::Degree(ori[2].getLastDelta())));
    }
 }
+
+#if OGRE_VERSION_MAJOR > 2 || OGRE_VERSION_MINOR > 0
+/***********************************************************************
+ *                              getCachedMesh                          *
+ ***********************************************************************/
+void Model3d::getCachedMesh(size_t &vertexCount, Ogre::Vector3* &vertices,
+      size_t &indexCount, Ogre::uint32* &indices)
+{
+   /* Check if need to generate the cache */
+   if((this->vertices == NULL) || (this->indices == NULL))
+   {
+      updateCachedMeshInformation();
+   }
+   
+   /* Set returns */
+   vertexCount = this->vertexCount;
+   vertices = this->vertices;
+   indexCount = this->indexCount;
+   indices = this->indices;
+}
+
+/***********************************************************************
+ *                      updateCachedMeshInformation                    *
+ ***********************************************************************/
+void Model3d::updateCachedMeshInformation()
+{
+   /* Original Code - Code found on this forum link: 
+    * http://www.ogre3d.org/wiki/index.php/RetrieveVertexData
+    * Most Code courtesy of al2950( thanks m8 :)), but then edited by 
+    * Jayce Young & Hannah Young at Aurasoft UK (Skyline Game Engine) 
+    * to work with Items in the scene. MIT License. */
+
+   Ogre::MeshPtr mesh = model->getMesh();
+   Ogre::Vector3 scale = node->getScale();
+
+   /* First, we compute the total number of vertices and indices 
+    * and init the buffers. */
+   unsigned int numVertices = 0;
+   unsigned int numIndices = 0;
+
+   Ogre::Mesh::SubMeshVec::const_iterator subMeshIterator = 
+      mesh->getSubMeshes().begin();
+
+   while (subMeshIterator != mesh->getSubMeshes().end())
+   {
+      Ogre::SubMesh *subMesh = *subMeshIterator;
+
+      numVertices += 
+         subMesh->mVao[0][0]->getVertexBuffers()[0]->getNumElements();
+      numIndices += 
+         subMesh->mVao[0][0]->getIndexBuffer()->getNumElements();
+
+      subMeshIterator++;
+   }
+  
+   /* Alloc (or realloc) buffers */
+   if(vertices)
+   {
+      delete[] vertices;
+      vertices = NULL;
+   }
+   vertices = new Ogre::Vector3[numVertices];
+   if(indices)
+   {
+      delete[] indices;
+      indices = NULL;
+   }
+   indices = new Ogre::uint32[numIndices];
+
+   vertexCount = numVertices;
+   indexCount = numIndices;
+
+   unsigned int addedIndices = 0;
+
+   unsigned int index_offset = 0;
+   unsigned int subMeshOffset = 0;
+
+   /* Read each submesh */
+   subMeshIterator = mesh->getSubMeshes().begin();
+   while (subMeshIterator != mesh->getSubMeshes().end())
+   {
+      Ogre::SubMesh *subMesh = *subMeshIterator;
+      Ogre::VertexArrayObjectArray vaos = subMesh->mVao[0];
+
+      if (!vaos.empty())
+      {
+         /* Get the first LOD level */
+         Ogre::VertexArrayObject *vao = vaos[0];
+         bool indices32 = (vao->getIndexBuffer()->getIndexType() == 
+               Ogre::IndexBufferPacked::IT_32BIT);
+
+         const Ogre::VertexBufferPackedVec &vertexBuffers = 
+            vao->getVertexBuffers();
+         Ogre::IndexBufferPacked *indexBuffer = vao->getIndexBuffer();
+
+         /* request async read from buffer */
+         Ogre::VertexArrayObject::ReadRequestsArray requests;
+         requests.push_back(Ogre::VertexArrayObject::ReadRequests(
+                  Ogre::VES_POSITION));
+
+         vao->readRequests(requests);
+         vao->mapAsyncTickets(requests);
+         unsigned int subMeshVerticiesNum = 
+            requests[0].vertexBuffer->getNumElements();
+
+         if (requests[0].type == Ogre::VET_HALF4)
+         {
+            for (size_t i = 0; i < subMeshVerticiesNum; ++i)
+            {
+               const Ogre::uint16* pos = 
+                  reinterpret_cast<const Ogre::uint16*>(requests[0].data);
+               Ogre::Vector3 vec;
+               vec.x = Ogre::Bitwise::halfToFloat(pos[0]);
+               vec.y = Ogre::Bitwise::halfToFloat(pos[1]);
+               vec.z = Ogre::Bitwise::halfToFloat(pos[2]);
+               requests[0].data += 
+                  requests[0].vertexBuffer->getBytesPerElement();
+               //vertices[i + subMeshOffset] = 
+               //      (orient * (vec * scale)) + position;
+               vertices[i + subMeshOffset] = (vec * scale);
+            }
+         }
+         else if (requests[0].type == Ogre::VET_FLOAT3)
+         {
+            for (size_t i = 0; i < subMeshVerticiesNum; ++i)
+            {
+               const float* pos = reinterpret_cast<const float*>(
+                     requests[0].data);
+               Ogre::Vector3 vec;
+               vec.x = *pos++;
+               vec.y = *pos++;
+               vec.z = *pos++;
+               requests[0].data += 
+                  requests[0].vertexBuffer->getBytesPerElement();
+               //vertices[i + subMeshOffset] = 
+               //   (orient * (vec * scale)) + position;
+               vertices[i + subMeshOffset] = (vec * scale);
+            }
+         }
+         else
+         {
+            Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR, 
+                  "Error: Vertex Buffer type not recognised!");
+         }
+         subMeshOffset += subMeshVerticiesNum;
+         vao->unmapAsyncTickets(requests);
+
+         /* Read index data */
+         if (indexBuffer)
+         {
+            Ogre::AsyncTicketPtr asyncTicket = indexBuffer->readRequest(
+                  0, indexBuffer->getNumElements());
+
+            unsigned int *pIndices = 0;
+            if (indices32)
+            {
+               pIndices = (unsigned*)(asyncTicket->map());
+            }
+            else
+            {
+               unsigned short *pShortIndices = (unsigned short*)(
+                     asyncTicket->map());
+               pIndices = new unsigned int[indexBuffer->getNumElements()];
+               for (size_t k = 0; k < indexBuffer->getNumElements(); k++)
+               {
+                  pIndices[k] = static_cast<unsigned int>(pShortIndices[k]);
+               }
+            }
+            unsigned int bufferIndex = 0;
+
+            for (size_t i = addedIndices; 
+                  i < addedIndices + indexBuffer->getNumElements(); i++)
+            {
+               indices[i] = pIndices[bufferIndex] + index_offset;
+               bufferIndex++;
+            }
+            addedIndices += indexBuffer->getNumElements();
+
+            if (!indices32) delete[] pIndices;
+
+            asyncTicket->unmap();
+         }
+         index_offset += vertexBuffers[0]->getNumElements();
+      }
+      subMeshIterator++;
+   }
+}
+#endif
 
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //

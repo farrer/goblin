@@ -157,7 +157,18 @@ class Model3d
       Ogre::Entity* getEntity() { return model; };
 #else
       /*! \return model's Ogre::Item pointer */
-      Ogre::Item* getItem() { return model; } ;
+      Ogre::Item* getItem() { return model; };
+
+      /*! Update cached mesh information. This info should be used
+       * when doing mesh collision detection.
+       * \note: avoid calling it too often, as it is an expensive
+       *        call and should 'lock' the GPU, killing performance.
+       *        Ideally, one should only call this function once per model. */
+      void updateCachedMeshInformation();
+      /*! Get the cached mesh buffers. If no cache mesh is at the buffers, 
+       * will call #updateCachedMeshInformation to generate them. */
+      void getCachedMesh(size_t &vertexCount, Ogre::Vector3* &vertices,
+            size_t &indexCount, Ogre::uint32* &indices);
 #endif
 
    protected:
@@ -170,6 +181,14 @@ class Model3d
       Ogre::Entity* model;  /**< Model's Ogre::Entity */
 #else
       Ogre::Item* model;    /**< Model's Ogre::Item */
+      
+      /* Note: for 2.1 we could keep (when needed) a copy of the model's
+       * vertices and indexes, to further allow polygon collision check in
+       * them. */
+      size_t vertexCount;      /**< Current vertex count */
+      Ogre::Vector3* vertices; /**< The cached model vertices */
+      size_t indexCount;       /**< Current index count */
+      Ogre::uint32* indices;   /**< The cached model index */
 #endif
 
       Kobold::Target pos[3];    /**< Target position for model */
