@@ -50,10 +50,12 @@ Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
       Ogre::SceneManager* sceneManager, Model3dType type, Model3d* parent)
 {
    model = NULL;
+#if(OGRE_VERSION_MAJOR > 2 || (OGRE_VERSION_MAJOR==2 && OGRE_VERSION_MINOR>0))
    vertexCount = 0;
    vertices = NULL;
    indexCount = 0;
    indices = NULL;
+#endif
 
    load(modelName, modelFile, sceneManager, type, parent);
 }
@@ -66,10 +68,12 @@ Model3d::Model3d()
    visible = false;
    node = NULL;
    model = NULL;
+#if(OGRE_VERSION_MAJOR > 2 || (OGRE_VERSION_MAJOR==2 && OGRE_VERSION_MINOR>0))
    vertexCount = 0;
    vertices = NULL;
    indexCount = 0;
    indices = NULL;
+#endif
 }
 
 /***********************************************************************
@@ -77,7 +81,7 @@ Model3d::Model3d()
  ***********************************************************************/
 Model3d::~Model3d()
 {
-#if(OGRE_VERSION_MAJOR > 2 || OGRE_VERSION_MINOR > 0)
+#if(OGRE_VERSION_MAJOR > 2 || (OGRE_VERSION_MAJOR==2 && OGRE_VERSION_MINOR>0))
    /* Remove our cached vertices and indices */
    if(vertices)
    {
@@ -435,7 +439,7 @@ void Model3d::update()
    }
 }
 
-#if OGRE_VERSION_MAJOR > 2 || OGRE_VERSION_MINOR > 0
+#if(OGRE_VERSION_MAJOR > 2 || (OGRE_VERSION_MAJOR==2 && OGRE_VERSION_MINOR>0))
 /***********************************************************************
  *                              getCachedMesh                          *
  ***********************************************************************/
