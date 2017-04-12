@@ -395,11 +395,12 @@ bool Model3d::ownSceneNode(Ogre::SceneNode* node)
 /***********************************************************************
  *                               update                                *
  ***********************************************************************/
-void Model3d::update()
+bool Model3d::update()
 {
 #if OGRE_VERSION_MAJOR != 1
    assert(sceneType == Ogre::SCENE_DYNAMIC);
 #endif
+   bool updated = false;
 
    /* Update position */
    if( (pos[0].needUpdate()) || (pos[1].needUpdate()) || (pos[2].needUpdate()) )
@@ -408,6 +409,7 @@ void Model3d::update()
       pos[1].update();
       pos[2].update();
       node->setPosition(pos[0].getValue(),pos[1].getValue(),pos[2].getValue());
+      updated = true;
    }
 
    /* Update scale */
@@ -419,6 +421,7 @@ void Model3d::update()
       scala[2].update();
       node->setScale(scala[0].getValue(), scala[1].getValue(),
             scala[2].getValue());
+      updated = true;
    }
 
    /* Update node orientation */
@@ -426,17 +429,22 @@ void Model3d::update()
    {
       ori[0].update();
       node->pitch(Ogre::Radian(Ogre::Degree(ori[0].getLastDelta())));
+      updated = true;
    }
    if(ori[1].needUpdate())
    {
       ori[1].update();
       node->yaw(Ogre::Radian(Ogre::Degree(ori[1].getLastDelta())));
+      updated = true;
    }
    if(ori[2].needUpdate())
    {
       ori[2].update();
       node->roll(Ogre::Radian(Ogre::Degree(ori[2].getLastDelta())));
+      updated = true;
    }
+
+   return updated;
 }
 
 #if(OGRE_VERSION_MAJOR > 2 || (OGRE_VERSION_MAJOR==2 && OGRE_VERSION_MINOR>0))
@@ -837,9 +845,9 @@ AnimatedModel3d::~AnimatedModel3d()
 /***********************************************************************
  *                                update                               *
  ***********************************************************************/
-void AnimatedModel3d::update()
+bool AnimatedModel3d::update()
 {
-   Model3d::update();
+   bool res = Model3d::update();
 
    timer += ANIM_UPDATE_RATE;
 
@@ -862,6 +870,8 @@ void AnimatedModel3d::update()
    {
       doFadeInAndFadeOut();
    }
+
+   return res;
 }
 
 /***********************************************************************

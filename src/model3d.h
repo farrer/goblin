@@ -129,8 +129,11 @@ class Model3d
        *       frame.*/
       void notifyStaticDirty();
 
-      /*! Update model's position */
-      virtual void update();
+      /*! Update model's position, scale or orientation, according to its
+       * defined targets.
+       * \return true if any of these elements are updated, false if no
+       *         update was needed. */
+      virtual bool update();
 
       /*! hide model */
       void hide();
@@ -226,8 +229,9 @@ class AnimatedModel3d : public Model3d
       /*! Destructor */
       virtual ~AnimatedModel3d();
 
-      /*! Update model's position and animations. */
-      virtual void update();
+      /*! Update model's position, rotation, scale and animations.
+       * \return true if updated its position, scale or rotation. */
+      virtual bool update();
 
       /*! Set model's base animation
        * \param index index of model's new base animation
