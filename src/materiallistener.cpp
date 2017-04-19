@@ -58,7 +58,7 @@ Ogre::Technique* MaterialListener::handleSchemeNotFound(
 
       /* Create shader generated technique for this material. */
       techniqueCreated = shaderGenerator->createShaderBasedTechnique(
-            originalMaterial->getName(), 
+            (*originalMaterial), 
             Ogre::MaterialManager::DEFAULT_SCHEME_NAME, schemeName);   
 
       /* Case technique registration succeeded. */
