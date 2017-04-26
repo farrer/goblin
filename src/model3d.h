@@ -91,7 +91,7 @@ class Model3d
             Ogre::Real rollValue);
       /*! Set next orientation */
       void setTargetOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 
-            Ogre::Real rollValue);
+            Ogre::Real rollValue, int nSteps = TARGET_DEFAULT_STEPS);
  
       /*! Clear current model orientation, reseting its angles to 0.  */
       void clearOrientation();
@@ -106,7 +106,8 @@ class Model3d
       const Ogre::Real getRoll() const { return ori[2].getValue(); };
 
       /* Set model's next position */
-      void setTargetPosition(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ);
+      void setTargetPosition(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ,
+            int nSteps = TARGET_DEFAULT_STEPS);
       /*! Set model's current position */
       void setPosition(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ);
       void setPosition(Ogre::Vector3 p);
@@ -117,7 +118,8 @@ class Model3d
       /*! Set current model scale */
       void setScale(Ogre::Real x, Ogre::Real y, Ogre::Real z);
       /*! Set next model scale */
-      void setTargetScale(Ogre::Real x, Ogre::Real y, Ogre::Real z);
+      void setTargetScale(Ogre::Real x, Ogre::Real y, Ogre::Real z,
+            int nSteps = TARGET_DEFAULT_STEPS);
 
       /*! \return current model scale */
       const Ogre::Vector3 getScale() const;

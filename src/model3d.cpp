@@ -268,16 +268,16 @@ void Model3d::setOrientation(Ogre::Real pitchValue, Ogre::Real yawValue,
  *                        setTargetOrientation                         *
  ***********************************************************************/
 void Model3d::setTargetOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 
-            Ogre::Real rollValue)
+            Ogre::Real rollValue, int nSteps)
 {
 #if OGRE_VERSION_MAJOR != 1
    assert(sceneType == Ogre::SCENE_DYNAMIC);
 #endif
 
    /* Define Target */
-   ori[0].setTarget(pitchValue);
-   ori[1].setTarget(yawValue);
-   ori[2].setTarget(rollValue);
+   ori[0].setTarget(pitchValue, nSteps);
+   ori[1].setTarget(yawValue, nSteps);
+   ori[2].setTarget(rollValue, nSteps);
 }
 
 /***********************************************************************
@@ -315,16 +315,17 @@ const Ogre::Vector3 Model3d::getPosition() const
 /***********************************************************************
  *                          setTargetPosition                          *
  ***********************************************************************/
-void Model3d::setTargetPosition(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ)
+void Model3d::setTargetPosition(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ,
+      int nSteps)
 {
 #if OGRE_VERSION_MAJOR != 1
    assert(sceneType == Ogre::SCENE_DYNAMIC);
 #endif
 
    /* Set Target */
-   pos[0].setTarget(pX);
-   pos[1].setTarget(pY);
-   pos[2].setTarget(pZ);
+   pos[0].setTarget(pX, nSteps);
+   pos[1].setTarget(pY, nSteps);
+   pos[2].setTarget(pZ, nSteps);
 }
 
 /***********************************************************************
@@ -354,16 +355,17 @@ const Ogre::Vector3 Model3d::getScale() const
 /***********************************************************************
  *                           setTargetScale                            *
  ***********************************************************************/
-void Model3d::setTargetScale(Ogre::Real x, Ogre::Real y, Ogre::Real z)
+void Model3d::setTargetScale(Ogre::Real x, Ogre::Real y, Ogre::Real z, 
+      int nSteps)
 {
 #if OGRE_VERSION_MAJOR != 1
    assert(sceneType == Ogre::SCENE_DYNAMIC);
 #endif
 
    /* Set Target */
-   scala[0].setTarget(x);
-   scala[1].setTarget(y);
-   scala[2].setTarget(z);
+   scala[0].setTarget(x, nSteps);
+   scala[1].setTarget(y, nSteps);
+   scala[2].setTarget(z, nSteps);
 }
 
 /***********************************************************************
