@@ -89,7 +89,8 @@ class Model3d
       /*! Set current orientation */
       void setOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 
             Ogre::Real rollValue);
-      /*! Set next orientation */
+      /*! Set next orientation. 
+       * \note Will rotate at the nearest equivalent angles. */
       void setTargetOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 
             Ogre::Real rollValue, int nSteps = TARGET_DEFAULT_STEPS);
  
@@ -177,6 +178,10 @@ class Model3d
 #endif
 
    protected:
+
+      /*! \return equivalent angle to target that is nearest cur */
+      float getNearestEquivalentAngle(float cur, float target);
+
       Ogre::SceneManager* ogreSceneManager;  /**< Scene manager in use */
 
       Ogre::SceneNode* node;    /**< Scene Node */

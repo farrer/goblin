@@ -265,6 +265,24 @@ void Model3d::setOrientation(Ogre::Real pitchValue, Ogre::Real yawValue,
 }
 
 /***********************************************************************
+ *                    getNearestEquivalentAngle                        *
+ ***********************************************************************/
+float Model3d::getNearestEquivalentAngle(float cur, float target)
+{
+   float diff = target - cur;
+   if(diff > 180.0f)
+   {
+      return target - 360.0f;
+   }
+   else if(diff < -180.0f)
+   {
+      return target + 360.0f;
+   }
+
+   return target;
+}
+
+/***********************************************************************
  *                        setTargetOrientation                         *
  ***********************************************************************/
 void Model3d::setTargetOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 
@@ -275,9 +293,12 @@ void Model3d::setTargetOrientation(Ogre::Real pitchValue, Ogre::Real yawValue,
 #endif
 
    /* Define Target */
-   ori[0].setTarget(pitchValue, nSteps);
-   ori[1].setTarget(yawValue, nSteps);
-   ori[2].setTarget(rollValue, nSteps);
+   ori[0].setTarget(getNearestEquivalentAngle(ori[0].getValue(), pitchValue),
+         nSteps);
+   ori[1].setTarget(getNearestEquivalentAngle(ori[1].getValue(), yawValue),
+         nSteps);
+   ori[2].setTarget(getNearestEquivalentAngle(ori[2].getValue(), rollValue),
+         nSteps);
 }
 
 /***********************************************************************
