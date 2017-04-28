@@ -739,6 +739,7 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
    return !shouldAbort;
 }
 
+#if OGRE_VERSION_MAJOR != 1
 /***********************************************************************
  *                         createWorkspace                             *
  ***********************************************************************/
@@ -756,6 +757,7 @@ Ogre::CompositorWorkspace* BaseApp::createWorkspace()
    return compositorManager->addWorkspace(ogreSceneManager,
          ogreWindow, Goblin::Camera::getOgreCamera(), workspaceName, true);
 }
+#endif
 
 /***********************************************************************
  *                            renderFrame                              *
