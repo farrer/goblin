@@ -977,7 +977,7 @@ void AnimatedModel3d::setBaseAnimation(int index, bool loop, bool reset)
    }
 
    /* Update last looping animation, if needed */
-   if((!loop) && (looping))
+   if(looping)
    {
       previousAnimationIndex = baseAnimationIndex;
    }
