@@ -705,24 +705,7 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
 
    /* Init the compositor system */
 #if OGRE_VERSION_MAJOR != 1
-   if(shouldCreateBasicWorkspace())
-   {
-      /* Create a the basic default workspace */
-      Ogre::CompositorManager2 *compositorManager = 
-         ogreRoot->getCompositorManager2();
-      const Ogre::String workspaceName("Goblin Workspace");
-      if(!compositorManager->hasWorkspaceDefinition(workspaceName))
-      {
-         compositorManager->createBasicWorkspaceDef(workspaceName, 
-               Ogre::ColourValue(0.0f, 0.0f, 0.0f), Ogre::IdString());
-      }
-      ogreWorkspace = compositorManager->addWorkspace(ogreSceneManager,
-            ogreWindow, Goblin::Camera::getOgreCamera(), workspaceName, true);
-   }
-   else
-   {
-      ogreWorkspace = NULL;
-   }
+   ogreWorkspace = createWorkspace();
 #endif
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
@@ -754,6 +737,24 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
       callCounter++;
    }
    return !shouldAbort;
+}
+
+/***********************************************************************
+ *                         createWorkspace                             *
+ ***********************************************************************/
+Ogre::CompositorWorkspace* BaseApp::createWorkspace()
+{
+   /* Create a the basic default workspace */
+   Ogre::CompositorManager2 *compositorManager = 
+      ogreRoot->getCompositorManager2();
+   const Ogre::String workspaceName("Goblin Workspace");
+   if(!compositorManager->hasWorkspaceDefinition(workspaceName))
+   {
+      compositorManager->createBasicWorkspaceDef(workspaceName, 
+            Ogre::ColourValue(0.0f, 0.0f, 0.0f), Ogre::IdString());
+   }
+   return compositorManager->addWorkspace(ogreSceneManager,
+         ogreWindow, Goblin::Camera::getOgreCamera(), workspaceName, true);
 }
 
 /***********************************************************************

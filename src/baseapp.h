@@ -192,9 +192,11 @@ class BaseApp
        * \note defaults to Ogre::SHADOWTYPE_NONE. */ 
       virtual Ogre::ShadowTechnique getShadowTechnique();
 #else
-      /*! \return if should create and define a basic ogre workspace.
-       * \note if false, the implementation is responsible to define its own.*/
-      virtual const bool shouldCreateBasicWorkspace() const { return true; };
+      /*! Function that will create the workspace to use by the application.
+       * \note should be overriden if desired an workspace different than the
+       *       basic created one.
+       * \return pointer to the created workspace */
+      virtual Ogre::CompositorWorkspace* createWorkspace();
 #endif
 
       enum Orientation
