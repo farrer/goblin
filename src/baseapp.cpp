@@ -412,6 +412,9 @@ bool BaseApp::registerHLMS(Ogre::String hlmsPath)
    Ogre::Archive* archivePbsLibraryAny = 
       Ogre::ArchiveManager::getSingletonPtr()->load(
             hlmsPath + "pbs/any", "FileSystem", true );
+   Ogre::Archive* archiveUnlitLibraryAny = 
+      Ogre::ArchiveManager::getSingletonPtr()->load(
+            hlmsPath + "unlit/any", "FileSystem", true );
 
    Ogre::ArchiveVec library;
    library.push_back(archiveLibrary);
@@ -419,6 +422,7 @@ bool BaseApp::registerHLMS(Ogre::String hlmsPath)
 
    Ogre::Archive* archiveUnlit = Ogre::ArchiveManager::getSingletonPtr()->load(
          hlmsPath + "unlit/glsl", "FileSystem", true );
+   library.push_back(archiveUnlitLibraryAny);
 
    Ogre::HlmsUnlit* hlmsUnlit = new Ogre::HlmsUnlit(archiveUnlit, &library);
    hlmsManager->registerHlms(hlmsUnlit);
