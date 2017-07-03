@@ -699,9 +699,14 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
  
    /* Define the camera */
    Goblin::Camera::init(ogreSceneManager, ogreWindow);
-   
+
    /* Load things from resource. */
+#if OGRE_VERSION_MAJOR == 1 || \
+    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+#else
+   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups(true);
+#endif
 
    /* Init the compositor system */
 #if OGRE_VERSION_MAJOR != 1
