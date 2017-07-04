@@ -903,8 +903,8 @@ void BaseApp::run()
          fpsDisplay->update();
 #endif
 
-         /* Do the specific app cycle */
-         doCycle();
+         /* Do the specific before-render app cycle */
+         doBeforeRender();
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
@@ -912,6 +912,9 @@ void BaseApp::run()
 #endif
          /* Render the frame and update the window */
          renderFrame();
+         
+         /* Do the specific after-render app cycle */
+         doAfterRender();
 
          /* Reset the 'listener' position to current camera */
          Kosound::Sound::setListenerPosition(Goblin::Camera::getCenterX(),

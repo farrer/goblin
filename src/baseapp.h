@@ -212,8 +212,10 @@ class BaseApp
       /*! \return minimum width in pixels to use doubled size gui. */
       virtual const int getMinWidthToUseDoubleSizedGui() const = 0;
 
-      /*! Do the specific app cycle (at each render cycle). */
-      virtual void doCycle()=0;
+      /*! Do the specific app cycle (before each render cycle). */
+      virtual void doBeforeRender()=0;
+      /*! Do the specific app cycle (after each render). */
+      virtual void doAfterRender()=0;
 
       /*! \return true when defined its time to quit.
        * Usually, ignored by iOS and Android systems. */
