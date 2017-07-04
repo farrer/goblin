@@ -426,6 +426,7 @@ bool BaseApp::registerHLMS(Ogre::String hlmsPath)
 
    Ogre::HlmsUnlit* hlmsUnlit = new Ogre::HlmsUnlit(archiveUnlit, &library);
    hlmsManager->registerHlms(hlmsUnlit);
+   library.pop_back();
 
    Ogre::Archive* archivePbs = Ogre::ArchiveManager::getSingletonPtr()->load(
          hlmsPath + "pbs/glsl", "FileSystem", true );
