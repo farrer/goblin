@@ -334,6 +334,7 @@ class AnimatedModel3d : public Model3d
 
       AnimationInfo* animations; /**< Model animations */
       Ogre::Real timer; /**< Timer reference for our animations */
+      bool animationSet; /**< If animation was set at this frame */
 };
 
 }

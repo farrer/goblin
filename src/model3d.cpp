@@ -923,6 +923,7 @@ AnimatedModel3d::AnimatedModel3d(Ogre::String modelName,
    this->animations = new AnimationInfo[totalAnimations];
    this->baseAnimationIndex = -1;
    this->looping = false;
+   this->animationSet = false;
    this->previousAnimationIndex = -1;
    this->timer = 0;
    this->totalFadings = 0;
@@ -959,6 +960,7 @@ AnimatedModel3d::~AnimatedModel3d()
 bool AnimatedModel3d::update()
 {
    bool res = Model3d::update();
+   animationSet = false;
 
    timer += ANIM_UPDATE_RATE;
 
@@ -1043,6 +1045,12 @@ int AnimatedModel3d::getCurrentAnimation()
  ***********************************************************************/
 void AnimatedModel3d::setBaseAnimation(int index, bool loop, bool reset)
 {
+   if(animationSet)
+   {
+      /* Already set an animation for this model at the current frame */
+      return;
+   }
+
    if(index == baseAnimationIndex)
    {
       /* Setting to the current animation, no need to do anything. */
@@ -1110,5 +1118,7 @@ void AnimatedModel3d::setBaseAnimation(int index, bool loop, bool reset)
    {
       baseAnimation = NULL;
    }
+
+   animationSet = true;
 }
 
