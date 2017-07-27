@@ -109,9 +109,9 @@ class Model3d
       /* Set model's next position */
       void setTargetPosition(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ,
             int nSteps = TARGET_DEFAULT_STEPS);
-      /*! Set model's current position */
+      /*! Set model's position */
       void setPosition(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ);
-      void setPosition(Ogre::Vector3 p);
+      void setPosition(const Ogre::Vector3& p);
 
       /* \return current model position */
       const Ogre::Vector3 getPosition() const;
@@ -124,6 +124,15 @@ class Model3d
 
       /*! \return current model scale */
       const Ogre::Vector3 getScale() const;
+
+      /*! Set the model's orientation now */
+      void setOrientationNow(Ogre::Real pitchValue, Ogre::Real yawValue, 
+            Ogre::Real rollValue);
+      /*! Set the model's position now */
+      void setPositionNow(const Ogre::Vector3& p);
+      void setPositionNow(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ);
+      /*! Set the model's scale now */
+      void setScaleNow(Ogre::Real x, Ogre::Real y, Ogre::Real z);
 
       /*! Notify that a static model had its position or 
        * orientation changed. 
@@ -204,6 +213,11 @@ class Model3d
       Kobold::Target pos[3];    /**< Target position for model */
       Kobold::Target ori[3];    /**< Orientation angles */
       Kobold::Target scala[3];  /**< Target scale for model */
+
+      bool dirtyPos;          /**< If should update node position */
+      bool dirtyOri;          /**< If should update orientation */
+      bool dirtyScale;        /**< If should update scale */
+      Ogre::Vector3 prevOri;  /**< Previous orientation */
 
 #if OGRE_VERSION_MAJOR != 1
       Ogre::SceneMemoryMgrTypes sceneType;    /**< Model's scene type */

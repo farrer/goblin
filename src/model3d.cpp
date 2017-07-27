@@ -56,6 +56,9 @@ Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
    indexCount = 0;
    indices = NULL;
 #endif
+   dirtyPos = false;
+   dirtyOri = false;
+   dirtyScale = false;
 
    load(modelName, modelFile, sceneManager, type, parent);
 }
@@ -236,6 +239,8 @@ void Model3d::clearOrientation()
    ori[0].setCurrent(0.0f);
    ori[1].setCurrent(0.0f);
    ori[2].setCurrent(0.0f);
+
+   dirtyOri = false;
 }
 
 /***********************************************************************
@@ -243,14 +248,31 @@ void Model3d::clearOrientation()
  ***********************************************************************/
 void Model3d::setOrientation(Ogre::Real yawValue)
 {
-   node->yaw(Ogre::Radian(Ogre::Degree(yawValue-ori[1].getValue())));
-   ori[1].setCurrent(yawValue);
+   setOrientation(0.0f, yawValue, 0.0f);
 }
 
 /***********************************************************************
  *                           setOrientation                            *
  ***********************************************************************/
 void Model3d::setOrientation(Ogre::Real pitchValue, Ogre::Real yawValue, 
+            Ogre::Real rollValue)
+{
+   /* Define Target and previous */
+   prevOri[0] = ori[0].getValue();
+   prevOri[1] = ori[1].getValue();
+   prevOri[2] = ori[2].getValue();
+   
+   ori[0].setCurrent(pitchValue);
+   ori[1].setCurrent(yawValue);
+   ori[2].setCurrent(rollValue);
+
+   dirtyOri = true;
+}
+
+/***********************************************************************
+ *                         setOrientationNow                           *
+ ***********************************************************************/
+void Model3d::setOrientationNow(Ogre::Real pitchValue, Ogre::Real yawValue, 
             Ogre::Real rollValue)
 {
    /* Define scene node, based on previous */
@@ -262,6 +284,8 @@ void Model3d::setOrientation(Ogre::Real pitchValue, Ogre::Real yawValue,
    ori[0].setCurrent(pitchValue);
    ori[1].setCurrent(yawValue);
    ori[2].setCurrent(rollValue);
+
+   dirtyOri = false;
 }
 
 /***********************************************************************
@@ -310,17 +334,40 @@ void Model3d::setPosition(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ)
    pos[0].setCurrent(pX);
    pos[1].setCurrent(pY);
    pos[2].setCurrent(pZ);
-
-   /* Set node */
-   node->setPosition(pX, pY, pZ);
+   
+   dirtyPos = true;
 }
 
 /***********************************************************************
  *                             setPosition                             *
  ***********************************************************************/
-void Model3d::setPosition(Ogre::Vector3 p)
+void Model3d::setPosition(const Ogre::Vector3& p)
 {
    setPosition(p.x, p.y, p.z);
+}
+
+/***********************************************************************
+ *                           setPositionNow                            *
+ ***********************************************************************/
+void Model3d::setPositionNow(const Ogre::Vector3& p)
+{
+   setPositionNow(p.x, p.y, p.z);
+}
+
+/***********************************************************************
+ *                           setPositionNow                            *
+ ***********************************************************************/
+void Model3d::setPositionNow(Ogre::Real pX, Ogre::Real pY, Ogre::Real pZ)
+{
+   /* Set Target */
+   pos[0].setCurrent(pX);
+   pos[1].setCurrent(pY);
+   pos[2].setCurrent(pZ);
+
+   /* Set node */
+   node->setPosition(pX, pY, pZ);
+
+   dirtyPos = false;
 }
 
 /***********************************************************************
@@ -359,8 +406,23 @@ void Model3d::setScale(Ogre::Real x, Ogre::Real y, Ogre::Real z)
    scala[1].setCurrent(y);
    scala[2].setCurrent(z);
 
+   dirtyScale = true;
+}
+
+/***********************************************************************
+ *                            setScaleNow                              *
+ ***********************************************************************/
+void Model3d::setScaleNow(Ogre::Real x, Ogre::Real y, Ogre::Real z)
+{
+   /* Set Target */
+   scala[0].setCurrent(x);
+   scala[1].setCurrent(y);
+   scala[2].setCurrent(z);
+
    /* Set node */
    node->setScale(x, y, z);
+
+   dirtyScale = false;
 }
 
 /***********************************************************************
@@ -426,7 +488,15 @@ bool Model3d::update()
    bool updated = false;
 
    /* Update position */
-   if( (pos[0].needUpdate()) || (pos[1].needUpdate()) || (pos[2].needUpdate()) )
+   if(dirtyPos)
+   {
+      node->setPosition(pos[0].getValue(), pos[1].getValue(),
+            pos[2].getValue());
+      updated = true;
+      dirtyPos = false;
+   }
+   else if( (pos[0].needUpdate()) || (pos[1].needUpdate()) || 
+            (pos[2].needUpdate()) )
    {
       pos[0].update();
       pos[1].update();
@@ -436,8 +506,15 @@ bool Model3d::update()
    }
 
    /* Update scale */
-   if( (scala[0].needUpdate()) || (scala[1].needUpdate()) || 
-       (scala[2].needUpdate()) )
+   if(dirtyScale)
+   {
+      node->setScale(scala[0].getValue(), scala[1].getValue(),
+            scala[2].getValue());
+      updated = true;
+      dirtyScale = false;
+   }
+   else if( (scala[0].needUpdate()) || (scala[1].needUpdate()) || 
+            (scala[2].needUpdate()) )
    {
       scala[0].update();
       scala[1].update();
@@ -448,23 +525,34 @@ bool Model3d::update()
    }
 
    /* Update node orientation */
-   if(ori[0].needUpdate())
+   if(dirtyOri)
    {
-      ori[0].update();
-      node->pitch(Ogre::Radian(Ogre::Degree(ori[0].getLastDelta())));
+      node->pitch(Ogre::Radian(Ogre::Degree(ori[0].getValue() - prevOri[0])));
+      node->yaw(Ogre::Radian(Ogre::Degree(ori[1].getValue() - prevOri[1])));
+      node->roll(Ogre::Radian(Ogre::Degree(ori[2].getValue() - prevOri[2])));
       updated = true;
+      dirtyOri = false;
    }
-   if(ori[1].needUpdate())
+   else
    {
-      ori[1].update();
-      node->yaw(Ogre::Radian(Ogre::Degree(ori[1].getLastDelta())));
-      updated = true;
-   }
-   if(ori[2].needUpdate())
-   {
-      ori[2].update();
-      node->roll(Ogre::Radian(Ogre::Degree(ori[2].getLastDelta())));
-      updated = true;
+      if(ori[0].needUpdate())
+      {
+         ori[0].update();
+         node->pitch(Ogre::Radian(Ogre::Degree(ori[0].getLastDelta())));
+         updated = true;
+      }
+      if(ori[1].needUpdate())
+      {
+         ori[1].update();
+         node->yaw(Ogre::Radian(Ogre::Degree(ori[1].getLastDelta())));
+         updated = true;
+      }
+      if(ori[2].needUpdate())
+      {
+         ori[2].update();
+         node->roll(Ogre::Radian(Ogre::Degree(ori[2].getLastDelta())));
+         updated = true;
+      }
    }
 
    return updated;
