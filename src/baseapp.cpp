@@ -60,8 +60,9 @@ using namespace Goblin;
 /***********************************************************************
  *                              Constructor                            *
  ***********************************************************************/
-BaseApp::BaseApp()
+BaseApp::BaseApp(const CameraConfig& cameraConfig)
 {
+   this->cameraConfig = cameraConfig;
    dataPath = "";
    timeElapsed = 0;
    receivedCameraInput = false;
@@ -703,7 +704,7 @@ bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
 #endif
  
    /* Define the camera */
-   Goblin::Camera::init(ogreSceneManager, ogreWindow);
+   Goblin::Camera::init(ogreSceneManager, ogreWindow, cameraConfig);
 
    /* Load things from resource. */
 #if OGRE_VERSION_MAJOR == 1 || \

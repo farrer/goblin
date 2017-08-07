@@ -34,17 +34,47 @@
 namespace Goblin
 {
 
-#define CAMERA_ATTENUATION                    0.1f
-#define CAMERA_ZOOM_MIN                     600.0f
-#define CAMERA_ZOOM_MAX                      80.0f
 #define CAMERA_UNDEFINED                 -10000.0f
 #define CAMERA_MAX_TOUCHES_DISTANCE        5000.0f
-#define CAMERA_DEFAULT_LINEAR_VELOCITY        5.0f
-#define CAMERA_DEFAULT_ANGULAR_VELOCITY       8.0f
-#define CAMERA_DEFAULT_ZOOM_VELOCITY         20.0f
 
-#define CAMERA_DEFAULT_NEAR_CLIP_DISTANCE     2.2f
-#define CAMERA_DEFAULT_FAR_CLIP_DISTANCE   2200.0f
+/*! Camera configuration values */
+class CameraConfig
+{
+   public:
+      /*! Constructor, which set all values as defaults */
+      CameraConfig();
+
+      /*! Assign operator */
+      CameraConfig& operator=(CameraConfig conf);
+
+      /*! Value to deaccelerate the camera on each update. Works like
+       * a constant friction to its movement. */
+      Ogre::Real linearAttenuation;
+      /*! Same as linear attenuation, but for angular movement */
+      Ogre::Real angularAttenuation;
+
+      Ogre::Real zoomMin; /**< (how far the camera could be) */
+      Ogre::Real zoomMax; /**< (how near the camera could be) */
+      Ogre::Real linearVelocity; /**< Velocity to move on linear axis */
+      Ogre::Real angularVelocity; /**< Velocity to rotate */
+      Ogre::Real zoomVelocity; /**< Velocity of zoom movement */
+
+      Ogre::Real thetaMax; /**< Max theta angle */
+      Ogre::Real thetaMin; /**< Min theta angle */
+
+      Ogre::Real nearClipDistance; /**< Camera near clip plane distance */
+      Ogre::Real farClipDistance; /**< Camera far clip plane distance */
+
+      /*! Factor to multiply to screen variation when translating the camera,
+       * for multitouch devices. This one is relative to screen size (on big 
+       * screens we should use a bigger factor, otherwise the movement will
+       * be too slow). */
+      Ogre::Real translateFactor; 
+      /*! Maximum distance allowed for a single translate with mouse or touch */
+      Ogre::Real maxDistToTranslate;
+      /*! Factor to apply when rotating with multitouch devices and mouse. */
+      Ogre::Real rotateFactor;
+};
 
 /*! The camera single state (position and angles) */
 class CameraState
@@ -65,11 +95,11 @@ class Camera
    public:
       /*! Init the Camera to use
        * \param ogreSceneManager -> pointer to the used scene manager
-       * \param ogreRenderWindow -> pointer to the used render window */
+       * \param ogreRenderWindow -> pointer to the used render window 
+       * \param conf -> camera configuration. */
       static void init(Ogre::SceneManager* ogreSceneManager, 
-            Ogre::RenderWindow* ogreRenderWindow, 
-            Ogre::Real nearClip = CAMERA_DEFAULT_NEAR_CLIP_DISTANCE,
-            Ogre::Real farClip = CAMERA_DEFAULT_FAR_CLIP_DISTANCE);
+            Ogre::RenderWindow* ogreRenderWindow,
+            const CameraConfig& conf);
 
       /*! Instantaneous set Camera position/orientation */
       static void set(Ogre::Real x, Ogre::Real y, Ogre::Real z, 
@@ -85,10 +115,16 @@ class Camera
        * \note: Camera will follow a calculated path from current
        *        position/orientation to the Target defined here. */
       static void setTarget(Ogre::Real x, Ogre::Real y, Ogre::Real z, 
+            Ogre::Real p, Ogre::Real t, Ogre::Real zo);
+
+      /*! Set a Target position/orientation to the Camera, with specific 
+       * velocities.
+       * \note: Camera will follow a calculated path from current
+       *        position/orientation to the Target defined here. */
+      static void setTarget(Ogre::Real x, Ogre::Real y, Ogre::Real z, 
             Ogre::Real p, Ogre::Real t, Ogre::Real zo,
-            Ogre::Real linearVelocity=CAMERA_DEFAULT_LINEAR_VELOCITY,
-            Ogre::Real angularVelocity=CAMERA_DEFAULT_ANGULAR_VELOCITY,
-            Ogre::Real zoomVelocity=CAMERA_DEFAULT_ZOOM_VELOCITY);
+            Ogre::Real linearVelocity, Ogre::Real angularVelocity,
+            Ogre::Real zoomVelocity);
 
       /*! Do the Camera movimentation, based on mouse and keyboard events 
        * (common OS) or on multitouch events on iOS
@@ -163,14 +199,6 @@ class Camera
       /*! Disable the limit defined by "limitCameraArea" */
       static void removeCameraAreaLimits();
       
-      /*! Set current camera view frustum near clip plane distance.
-       * \param nearClip value for near plane distance */
-      static void setNearClipDistance(Ogre::Real nearClip);
-
-      /*! Set current camera view frustum far clip plane distance.
-       * \param farClip value for far plane distance */
-      static void setFarClipDistance(Ogre::Real farClip);
-
    protected:
 
       /*! Do the Camera look at */
@@ -192,14 +220,16 @@ class Camera
       /*! Apply a single acceleration
        * \param factor -> factor to apply acceleration to
        * \param ac -> factor acceleration */
-      static void applyAcceleration(Ogre::Real& factor, Ogre::Real& ac);
+      static void applyAcceleration(Ogre::Real& factor, Ogre::Real& ac, 
+            const Ogre::Real& attenuation);
       /*! Apply a single acceleration, verifying the value's limits.
        * When got the limit, the value is limited to it and factor acceleration
        * is automatically set to 0 (stoped).
        * \param factor -> factor to apply acceleration to
        * \param ac -> factor acceleration */
       static void applyAcceleration(Ogre::Real& factor, Ogre::Real& ac,
-            Ogre::Real minValue, Ogre::Real maxValue);
+            Ogre::Real minValue, Ogre::Real maxValue,
+            const Ogre::Real& attenuation);
       /*! Apply all accelerations and move the Camera (with lookAt)
        * \return true if moved something on Camera, false if remained static */
       static bool applyAccelerationsAndMove();
@@ -246,15 +276,8 @@ class Camera
       static bool limitedArea; /**< If camera valid positions area is defined */
       static Ogre::Vector3 minArea; /**< Minimun valid camera positions */
       static Ogre::Vector3 maxArea; /**< Maximun valid camera positions */
-      /*! Factor to multiply to screen variation when translating the camera,
-       * for multitouch devices. This one is relative to screen size (in big 
-       * screens we should use a bigger factor, otherwise the movement will
-       * be too slow). */
-      static Ogre::Real translateFactor; 
-      /*! Max finger distance difference to initial to do a translation 
-       * instead of a zoom in/out. As #translateFactor, it's also dependent
-       * to the screen resolution. */
-      static Ogre::Real maxDistToTranslate;
+
+      static CameraConfig config; /**< Current configuration */
 
    private:
       /*! No instances are allowed. */ 

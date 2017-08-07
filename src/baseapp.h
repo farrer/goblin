@@ -49,6 +49,7 @@
 #endif
 
 #include "goblinconfig.h"
+#include "camera.h"
 #include "fpsdisplay.h"
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
@@ -77,7 +78,7 @@ class BaseApp
 {
    public:
       /*! Constructor */
-      BaseApp();
+      BaseApp(const CameraConfig& cameraConfig);
       /*! Destructor */
       virtual ~BaseApp();
 
@@ -286,6 +287,10 @@ class BaseApp
       bool backRunning;               /**< If app is background */ 
       bool receivedCameraInput; /**< If camera received input on last check */
       unsigned long timeElapsed; /**< Time elapsed before new call to render. */
+
+   private:
+      CameraConfig cameraConfig; /**< Camera config to initialize */
+
 };
 
 }

@@ -38,9 +38,49 @@
 namespace Goblin
 {
 
-#define CAMERA_DEFAULT_TRANSLATE_FACTOR          0.2f
-#define CAMERA_DEFAULT_ROTATE_FACTOR             0.25f
-#define CAMERA_DEFAULT_MAX_DIST_TO_TRANSLATE    32.0f
+/***********************************************************************
+ *                            Constructor                              *
+ ***********************************************************************/
+CameraConfig::CameraConfig()
+{
+   this->linearAttenuation = 0.03f;
+   this->angularAttenuation = 0.25f;
+   this->zoomMin = 30.0f;
+   this->zoomMax = 4.0f;
+   this->linearVelocity = 0.15f;
+   this->angularVelocity = 2.0f;
+   this->zoomVelocity = 0.25f;
+   this->nearClipDistance = 0.2f;
+   this->farClipDistance = 220.0f;
+   this->translateFactor = 0.01f;
+   this->maxDistToTranslate = 1.6f;
+   this->rotateFactor = 0.25f;
+   this->thetaMax = 89.0f;
+   this->thetaMin = 1.0f;
+}
+
+/***********************************************************************
+ *                               assign                                *
+ ***********************************************************************/
+CameraConfig& CameraConfig::operator=(CameraConfig conf)
+{
+   this->linearAttenuation = conf.linearAttenuation;
+   this->angularAttenuation = conf.angularAttenuation;
+   this->zoomMin = conf.zoomMin;
+   this->zoomMax = conf.zoomMax;
+   this->linearVelocity = conf.linearVelocity;
+   this->angularVelocity = conf.angularVelocity;
+   this->zoomVelocity = conf.zoomVelocity;
+   this->nearClipDistance = conf.nearClipDistance;
+   this->farClipDistance = conf.farClipDistance;
+   this->translateFactor = conf.translateFactor;
+   this->maxDistToTranslate = conf.maxDistToTranslate;
+   this->rotateFactor = conf.rotateFactor;
+   this->thetaMax = conf.thetaMax;
+   this->thetaMin = conf.thetaMin;
+
+   return *this;
+}
 
 /***********************************************************************
  *                            Constructor                              *
@@ -53,9 +93,10 @@ Camera::Camera()
  *                               init                                  *
  ***********************************************************************/
 void Camera::init(Ogre::SceneManager* ogreSceneManager, 
-      Ogre::RenderWindow* ogreRenderWindow, 
-      Ogre::Real nearClip, Ogre::Real farClip)
+      Ogre::RenderWindow* ogreRenderWindow, const CameraConfig& conf) 
 {
+   config = conf;
+
    state.phi = 0;
    state.theta = /*55*/89;
    state.zoom = 335;
@@ -68,14 +109,12 @@ void Camera::init(Ogre::SceneManager* ogreSceneManager,
    state.center.y = 30;
    state.center.z = /*20*/-5;
 
-   translateFactor = CAMERA_DEFAULT_TRANSLATE_FACTOR;
-   maxDistToTranslate = CAMERA_DEFAULT_MAX_DIST_TO_TRANSLATE;
    if(ScreenInfo::shouldUseDoubleSizedGui())
    {
       /* Screen is too big, we should translate more for each finger
        * variation to not move too slow. */
-      translateFactor *= 2.0f;
-      maxDistToTranslate *= 2.0f;
+      config.translateFactor *= 2.0f;
+      config.maxDistToTranslate *= 2.0f;
    }
   
    centerXAc = 0.0f;
@@ -87,8 +126,8 @@ void Camera::init(Ogre::SceneManager* ogreSceneManager,
       
    /* Create the ogre Camera */
    ogreCamera = ogreSceneManager->createCamera("OGRE_Game_Camera");
-   ogreCamera->setNearClipDistance(nearClip);
-   ogreCamera->setFarClipDistance(farClip);
+   ogreCamera->setNearClipDistance(config.nearClipDistance);
+   ogreCamera->setFarClipDistance(config.farClipDistance);
    lookAt();
 
    /* And create the viewport */
@@ -184,6 +223,16 @@ void Camera::setPosition(Ogre::Vector3 pos, bool doLookAt)
    {
       lookAt();
    }
+}
+
+/***********************************************************************
+ *                             setTarget                               *
+ ***********************************************************************/
+void Camera::setTarget(Ogre::Real x, Ogre::Real y, Ogre::Real z, 
+            Ogre::Real p, Ogre::Real t, Ogre::Real zo)
+{
+   setTarget(x, y, z, p, t, zo, config.linearVelocity, config.angularVelocity,
+             config.zoomVelocity);
 }
 
 /***********************************************************************
@@ -323,7 +372,8 @@ bool Camera::verifyMultiTouchInput()
                (p1.state == TOUCH_MOVED) )
       {
          /* Verify if the distance is somewhat constant */
-         if(Ogre::Math::Abs(curDist - initialDistance) <= maxDistToTranslate)
+         if(Ogre::Math::Abs(curDist - initialDistance) <= 
+               config.maxDistToTranslate)
          {
             /* Is constant: moving the camera center, if enabled */
             if(!canTranslate)
@@ -339,17 +389,17 @@ bool Camera::verifyMultiTouchInput()
             if(dZ != 0)
             {
                /* Try to move Forward/Backward to camera facing position */
-               varXAc += dZ * translateFactor * 
+               varXAc += dZ * config.translateFactor * 
                   Ogre::Math::Sin(Ogre::Radian(Ogre::Degree(state.phi)));
-               varZAc += dZ * translateFactor * 
+               varZAc += dZ * config.translateFactor * 
                   Ogre::Math::Cos(Ogre::Radian(Ogre::Degree(state.phi)));
             }
             if(dX != 0)
             {
                /* Try to move Left/Right to camera facing position */
-               varXAc += dX * translateFactor *
+               varXAc += dX * config.translateFactor *
                   Ogre::Math::Sin(Ogre::Radian(Ogre::Degree(state.phi+90)));
-               varZAc += dX * translateFactor * 
+               varZAc += dX * config.translateFactor * 
                   Ogre::Math::Cos(Ogre::Radian( Ogre::Degree(state.phi+90)));
             }
             
@@ -382,7 +432,7 @@ bool Camera::verifyMultiTouchInput()
                initialDistance = CAMERA_UNDEFINED;
                return true;
             }
-            zoomAc = ((initialDistance - curDist) / 32.0f);
+            zoomAc = ((initialDistance - curDist) / config.maxDistToTranslate);
          }
       }
       
@@ -443,11 +493,11 @@ bool Camera::verifyMultiTouchInput()
             
             if(dX != 0)
             {
-               phiAc = dX * CAMERA_DEFAULT_ROTATE_FACTOR;
+               phiAc = dX * config.rotateFactor;;
             }
             if(dY != 0)
             {
-               thetaAc = dY * CAMERA_DEFAULT_ROTATE_FACTOR;
+               thetaAc = dY * config.rotateFactor;
             }
          }
       }
@@ -467,8 +517,8 @@ bool Camera::verifyMouseInput()
        (Kobold::Mouse::getRelativeX() != 0)))
    {
       /* Do the move */
-      thetaAc = (Kobold::Mouse::getRelativeY()) * CAMERA_DEFAULT_ROTATE_FACTOR;
-      phiAc = (Kobold::Mouse::getRelativeX()) * CAMERA_DEFAULT_ROTATE_FACTOR;
+      thetaAc = (Kobold::Mouse::getRelativeY()) * config.rotateFactor;
+      phiAc = (Kobold::Mouse::getRelativeX()) * config.rotateFactor;
 
       /* Limit rotation accelaration, to give vamera some 'inertia' 
        * (more fluid movement) */
@@ -490,7 +540,8 @@ bool Camera::verifyMouseInput()
    if(Kobold::Mouse::getRelativeWheel() != 0)
    {
       /* Inverted! */
-      zoomAc -= (Kobold::Mouse::getRelativeWheel());
+      zoomAc -= (Kobold::Mouse::getRelativeWheel() * 
+                    config.zoomVelocity * 0.5f);
       return true;
    }
 
@@ -502,7 +553,7 @@ bool Camera::verifyMouseInput()
  ***********************************************************************/
 void Camera::verifyKeyboardInput()
 {
-   int varCamera = 2;
+   int varCamera = 1.0f;
    Ogre::Real varXAc = 0.0f;
    Ogre::Real varZAc = 0.0f;
 
@@ -516,28 +567,28 @@ void Camera::verifyKeyboardInput()
    if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_UP)) && (canZoom) )
    {
       /* Increase zoom */
-      zoomAc = -2*varCamera;
+      zoomAc = -varCamera * config.zoomVelocity;
    }
    else if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_DOWN)) && 
             (canZoom) )
    {
       /* Decrease zoom */
-      zoomAc = 2*varCamera;
+      zoomAc = varCamera * config.zoomVelocity;
    }
 
    if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_HOME)) ||
          (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_7)) ) &&
       (canZoom) ) 
    {
-      /* Maximaze zoom */
-      zoomAc = -20;
+      /* Maximize zoom */
+      zoomAc = -10 * config.zoomVelocity;
    }
    else if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_END)) ||
               (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_1) ) ) &&
             (canZoom) )
    {
       /* Minimize zoom */
-      zoomAc = 20;
+      zoomAc = 10 * config.zoomVelocity;
    }
 
    if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_INSERT)) ||
@@ -566,13 +617,13 @@ void Camera::verifyKeyboardInput()
        (canRotate) )
    {
       /* Rotate left */
-      phiAc = varCamera;
+      phiAc = varCamera * config.angularVelocity;
    }
    else if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_RIGHT)) && 
             (canRotate) )
    {
       /* Rotate Right */
-      phiAc = -varCamera;
+      phiAc = -varCamera * config.angularVelocity;
    }
 
    if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_PAGEUP)) ||
@@ -580,14 +631,14 @@ void Camera::verifyKeyboardInput()
        (canRotate) )
    {
       /* Rotate Up */
-      thetaAc = varCamera;
+      thetaAc = varCamera * config.angularVelocity;
    }
    else if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_PAGEDOWN)) ||
          (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_3)) ) &&
          (canRotate) )
    {
       /* Rotate Down */
-      thetaAc = -varCamera;
+      thetaAc = -varCamera * config.angularVelocity;
    }
 
    if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_8)) && 
@@ -595,18 +646,18 @@ void Camera::verifyKeyboardInput()
    {
       /* Move Forward */
       varXAc += -varCamera*Ogre::Math::Sin(Ogre::Radian(
-               Ogre::Degree(state.phi)));
+               Ogre::Degree(state.phi)))*config.linearVelocity;
       varZAc += -varCamera*Ogre::Math::Cos(Ogre::Radian(
-               Ogre::Degree(state.phi)));
+               Ogre::Degree(state.phi)))*config.linearVelocity;
    }
    if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_2)) && 
        (canTranslate) )
    {
       /* Move Backward */
       varXAc += varCamera*Ogre::Math::Sin(Ogre::Radian(
-               Ogre::Degree(state.phi)));
+               Ogre::Degree(state.phi)))*config.linearVelocity;
       varZAc += varCamera*Ogre::Math::Cos(Ogre::Radian(
-               Ogre::Degree(state.phi)));
+               Ogre::Degree(state.phi)))*config.linearVelocity;
    }
 
    if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_4)) && 
@@ -614,18 +665,18 @@ void Camera::verifyKeyboardInput()
    {
       /* Move Left */
       varXAc += -varCamera*Ogre::Math::Sin(Ogre::Radian(
-               Ogre::Degree(state.phi+90)));
+               Ogre::Degree(state.phi+90)))*config.linearVelocity;
       varZAc += -varCamera*Ogre::Math::Cos(Ogre::Radian(
-               Ogre::Degree(state.phi+90)));
+               Ogre::Degree(state.phi+90)))*config.linearVelocity;
    }
    if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_6)) && 
        (canTranslate) )
    {
       /* Move Right */
       varXAc += varCamera*Ogre::Math::Sin(Ogre::Radian(
-               Ogre::Degree(state.phi+90)));
+               Ogre::Degree(state.phi+90)))*config.linearVelocity;
       varZAc += varCamera*Ogre::Math::Cos(Ogre::Radian(
-               Ogre::Degree(state.phi+90)));
+               Ogre::Degree(state.phi+90)))*config.linearVelocity;
    }
 
    /* Apply acceleration with varX and varZ do possible simultaneous
@@ -705,7 +756,7 @@ bool Camera::applyAccelerationsAndMove()
       /* Do the look-at */
       lookAt();
 
-      return(true);
+      return true;
    }
 
 
@@ -713,21 +764,21 @@ bool Camera::applyAccelerationsAndMove()
    /* Apply Phi acceleration */
    if(phiAc != 0)
    {
-      applyAcceleration(state.phi, phiAc);
+      applyAcceleration(state.phi, phiAc, config.angularAttenuation);
       state.phi = rangeValue(state.phi);
       moved = true;
    }
    /* Apply theta acceleration */
    if(thetaAc != 0)
    {
-      applyAcceleration(state.theta, thetaAc);
+      applyAcceleration(state.theta, thetaAc, config.angularAttenuation);
       moved = true;
    }
    
    /* Apply zoom acceleration */
    if(zoomAc != 0)
    {
-      applyAcceleration(state.zoom, zoomAc);
+      applyAcceleration(state.zoom, zoomAc, config.linearAttenuation);
       moved = true;
    }
    
@@ -736,11 +787,12 @@ bool Camera::applyAccelerationsAndMove()
    {
       if(limitedArea)
       {
-         applyAcceleration(state.center.x, centerXAc, minArea.x, maxArea.x);
+         applyAcceleration(state.center.x, centerXAc, minArea.x, maxArea.x,
+               config.linearAttenuation);
       }
       else
       {
-         applyAcceleration(state.center.x, centerXAc);
+         applyAcceleration(state.center.x, centerXAc, config.linearAttenuation);
       }
       moved = true;
    }
@@ -749,11 +801,12 @@ bool Camera::applyAccelerationsAndMove()
    {
       if(limitedArea)
       {
-         applyAcceleration(state.center.y, centerYAc, minArea.y, maxArea.y);
+         applyAcceleration(state.center.y, centerYAc, minArea.y, maxArea.y,
+               config.linearAttenuation);
       }
       else
       {
-         applyAcceleration(state.center.y, centerYAc);
+         applyAcceleration(state.center.y, centerYAc, config.linearAttenuation);
       }
       moved = true;
    }
@@ -762,11 +815,12 @@ bool Camera::applyAccelerationsAndMove()
    {
       if(limitedArea)
       {
-         applyAcceleration(state.center.z, centerZAc, minArea.z, maxArea.z);
+         applyAcceleration(state.center.z, centerZAc, minArea.z, maxArea.z, 
+               config.linearAttenuation);
       }
       else
       {
-         applyAcceleration(state.center.z, centerZAc);
+         applyAcceleration(state.center.z, centerZAc, config.linearAttenuation);
       }
       moved = true;
    }
@@ -775,24 +829,24 @@ bool Camera::applyAccelerationsAndMove()
    if(moved)
    {
       /* Verify Limits */
-      if(state.theta > 89)
+      if(state.theta > config.thetaMax)
       {
-         state.theta = 89;
+         state.theta = config.thetaMax;
          thetaAc = 0;
       }
-      else if(state.theta < 0)
+      else if(state.theta < config.thetaMin)
       {
-         state.theta = 0;
+         state.theta = config.thetaMin;
          thetaAc = 0;
       }
-      if(state.zoom < CAMERA_ZOOM_MAX)
+      if(state.zoom < config.zoomMax)
       {
-         state.zoom = CAMERA_ZOOM_MAX;
+         state.zoom = config.zoomMax;
          zoomAc = 0;
       }
-      else if(state.zoom > CAMERA_ZOOM_MIN)
+      else if(state.zoom > config.zoomMin)
       {
-         state.zoom = CAMERA_ZOOM_MIN;
+         state.zoom = config.zoomMin;
          zoomAc = 0;
       }
       
@@ -806,7 +860,8 @@ bool Camera::applyAccelerationsAndMove()
 /***********************************************************************
  *                          applyAcceleration                          *
  ***********************************************************************/
-void Camera::applyAcceleration(Ogre::Real& factor, Ogre::Real& ac)
+void Camera::applyAcceleration(Ogre::Real& factor, Ogre::Real& ac,
+            const Ogre::Real& attenuation)
 {
    /* Apply to the factor */
    factor += ac;
@@ -814,7 +869,7 @@ void Camera::applyAcceleration(Ogre::Real& factor, Ogre::Real& ac)
    /* Attenuate */
    if(ac > 0)
    {
-      ac -= CAMERA_ATTENUATION;
+      ac -= attenuation;
       if(ac < 0)
       {
          /* Must Stop */
@@ -823,7 +878,7 @@ void Camera::applyAcceleration(Ogre::Real& factor, Ogre::Real& ac)
    }
    else
    {
-      ac += CAMERA_ATTENUATION;
+      ac += attenuation;
       if(ac > 0)
       {
          ac = 0;
@@ -835,10 +890,11 @@ void Camera::applyAcceleration(Ogre::Real& factor, Ogre::Real& ac)
  *                          applyAcceleration                          *
  ***********************************************************************/
 void Camera::applyAcceleration(Ogre::Real& factor, Ogre::Real& ac,
-                               Ogre::Real minValue, Ogre::Real maxValue)
+                               Ogre::Real minValue, Ogre::Real maxValue,
+                               const Ogre::Real& attenuation)
 {
    /* Apply normally the accelleration */
-   applyAcceleration(factor, ac);
+   applyAcceleration(factor, ac, attenuation);
    
    /* Check limits, stopping if reached. */
    if(factor <= minValue)
@@ -868,7 +924,7 @@ void Camera::getCameraToViewportRay(Ogre::Real x, Ogre::Real y,
 void Camera::setPhi(Ogre::Real value)
 {
    flushCurrentAtTarget();
-   targetPhi.setTargetAndVelocity(rangeValue(value), 12.0f);
+   targetPhi.setTargetAndVelocity(rangeValue(value), config.angularVelocity);
    needUpdate = true;
 }
    
@@ -975,22 +1031,6 @@ void Camera::removeCameraAreaLimits()
 }
 
 /***********************************************************************
- *                        setNearClipDistance                          *
- ***********************************************************************/
-void Camera::setNearClipDistance(Ogre::Real nearClip)
-{
-   ogreCamera->setNearClipDistance(nearClip);
-}
-
-/***********************************************************************
- *                         setFarClipDistance                          *
- ***********************************************************************/
-void Camera::setFarClipDistance(Ogre::Real farClip)
-{
-   ogreCamera->setFarClipDistance(farClip);
-}
-
-/***********************************************************************
  *                               Static Fields                         *
  ***********************************************************************/
 Ogre::Camera* Camera::ogreCamera=NULL;
@@ -1027,7 +1067,6 @@ bool Camera::limitedArea = false;
 Ogre::Vector3 Camera::minArea;
 Ogre::Vector3 Camera::maxArea;
 
-Ogre::Real Camera::translateFactor = 0.0f;
-Ogre::Real Camera::maxDistToTranslate = 0.0f;
+CameraConfig Camera::config;
 
 }
