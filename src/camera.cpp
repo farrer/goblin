@@ -34,6 +34,7 @@
    #include <kobold/keyboard.h>
 #endif
 
+#include <kobold/log.h>
 
 namespace Goblin
 {
@@ -51,7 +52,7 @@ CameraConfig::CameraConfig()
    this->angularVelocity = 2.0f;
    this->zoomVelocity = 0.25f;
    this->nearClipDistance = 0.2f;
-   this->farClipDistance = 220.0f;
+   this->farClipDistance = 600.0f;
    this->translateFactor = 0.01f;
    this->maxDistToTranslate = 1.6f;
    this->rotateFactor = 0.25f;
@@ -98,16 +99,16 @@ void Camera::init(Ogre::SceneManager* ogreSceneManager,
    config = conf;
 
    state.phi = 0;
-   state.theta = /*55*/89;
-   state.zoom = 335;
+   state.theta = 55;
+   state.zoom = (conf.zoomMin - conf.zoomMax) / 2;
 
    phiAc = 0;
    thetaAc = 0;
    zoomAc = 0;
 
    state.center.x = 0;
-   state.center.y = 30;
-   state.center.z = /*20*/-5;
+   state.center.y = 3.0f;
+   state.center.z = 0.0f;
 
    if(ScreenInfo::shouldUseDoubleSizedGui())
    {
@@ -126,9 +127,11 @@ void Camera::init(Ogre::SceneManager* ogreSceneManager,
       
    /* Create the ogre Camera */
    ogreCamera = ogreSceneManager->createCamera("OGRE_Game_Camera");
+   lookAt();
    ogreCamera->setNearClipDistance(config.nearClipDistance);
    ogreCamera->setFarClipDistance(config.farClipDistance);
-   lookAt();
+   ogreCamera->setAutoAspectRatio(true);
+
 
    /* And create the viewport */
 #if OGRE_VERSION_MAJOR == 1
@@ -551,8 +554,9 @@ bool Camera::verifyMouseInput()
 /***********************************************************************
  *                         verifyKeyboardInput                         *
  ***********************************************************************/
-void Camera::verifyKeyboardInput()
+bool Camera::verifyKeyboardInput()
 {
+   bool moved = false;
    int varCamera = 1.0f;
    Ogre::Real varXAc = 0.0f;
    Ogre::Real varZAc = 0.0f;
@@ -568,12 +572,14 @@ void Camera::verifyKeyboardInput()
    {
       /* Increase zoom */
       zoomAc = -varCamera * config.zoomVelocity;
+      moved = true;
    }
    else if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_DOWN)) && 
             (canZoom) )
    {
       /* Decrease zoom */
       zoomAc = varCamera * config.zoomVelocity;
+      moved = true;
    }
 
    if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_HOME)) ||
@@ -582,6 +588,7 @@ void Camera::verifyKeyboardInput()
    {
       /* Maximize zoom */
       zoomAc = -10 * config.zoomVelocity;
+      moved = true;
    }
    else if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_END)) ||
               (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_1) ) ) &&
@@ -589,6 +596,7 @@ void Camera::verifyKeyboardInput()
    {
       /* Minimize zoom */
       zoomAc = 10 * config.zoomVelocity;
+      moved = true;
    }
 
    if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_INSERT)) ||
@@ -597,6 +605,7 @@ void Camera::verifyKeyboardInput()
    {
       /* Max Up */
       thetaAc = 10;
+      moved = true;
    }
    else if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_DELETE)) ||
               (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_DECIMAL)) 
@@ -604,13 +613,15 @@ void Camera::verifyKeyboardInput()
    {
       /* Max Down */
       thetaAc = -10;
+      moved = true;
    }
 
    if(Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_F5))
    {
-      printf("Center: (%.2f, %.2f, %.2f)\nPhi: %.2f Theta: %.2f Zoom: %.2f\n",
-             state.center.x, state.center.y,state.center.z, 
-             state.phi, state.theta, state.zoom);
+      Kobold::Log::add(Kobold::Log::LOG_LEVEL_NORMAL, 
+            "Center: (%.2f, %.2f, %.2f)\nPhi: %.2f Theta: %.2f Zoom: %.2f\n",
+            state.center.x, state.center.y,state.center.z, 
+            state.phi, state.theta, state.zoom);
    }
 
    if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_LEFT)) && 
@@ -618,12 +629,14 @@ void Camera::verifyKeyboardInput()
    {
       /* Rotate left */
       phiAc = varCamera * config.angularVelocity;
+      moved = true;
    }
    else if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_RIGHT)) && 
             (canRotate) )
    {
       /* Rotate Right */
       phiAc = -varCamera * config.angularVelocity;
+      moved = true;
    }
 
    if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_PAGEUP)) ||
@@ -632,6 +645,7 @@ void Camera::verifyKeyboardInput()
    {
       /* Rotate Up */
       thetaAc = varCamera * config.angularVelocity;
+      moved = true;
    }
    else if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_PAGEDOWN)) ||
          (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_3)) ) &&
@@ -639,6 +653,7 @@ void Camera::verifyKeyboardInput()
    {
       /* Rotate Down */
       thetaAc = -varCamera * config.angularVelocity;
+      moved = true;
    }
 
    if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_8)) && 
@@ -649,6 +664,7 @@ void Camera::verifyKeyboardInput()
                Ogre::Degree(state.phi)))*config.linearVelocity;
       varZAc += -varCamera*Ogre::Math::Cos(Ogre::Radian(
                Ogre::Degree(state.phi)))*config.linearVelocity;
+      moved = true;
    }
    if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_2)) && 
        (canTranslate) )
@@ -658,6 +674,7 @@ void Camera::verifyKeyboardInput()
                Ogre::Degree(state.phi)))*config.linearVelocity;
       varZAc += varCamera*Ogre::Math::Cos(Ogre::Radian(
                Ogre::Degree(state.phi)))*config.linearVelocity;
+      moved = true;
    }
 
    if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_4)) && 
@@ -668,6 +685,7 @@ void Camera::verifyKeyboardInput()
                Ogre::Degree(state.phi+90)))*config.linearVelocity;
       varZAc += -varCamera*Ogre::Math::Cos(Ogre::Radian(
                Ogre::Degree(state.phi+90)))*config.linearVelocity;
+      moved = true;
    }
    if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_6)) && 
        (canTranslate) )
@@ -677,6 +695,7 @@ void Camera::verifyKeyboardInput()
                Ogre::Degree(state.phi+90)))*config.linearVelocity;
       varZAc += varCamera*Ogre::Math::Cos(Ogre::Radian(
                Ogre::Degree(state.phi+90)))*config.linearVelocity;
+      moved = true;
    }
 
    /* Apply acceleration with varX and varZ do possible simultaneous
@@ -686,6 +705,8 @@ void Camera::verifyKeyboardInput()
       centerXAc = varXAc;
       centerZAc = varZAc;
    }
+
+   return moved;
 }
 #endif
 
@@ -705,7 +726,7 @@ bool Camera::doMove()
 #else
 
    /* Verify keyboard and mouse input */
-   verifyKeyboardInput();
+   moved |= verifyKeyboardInput();
    moved |= verifyMouseInput();
 
 #endif

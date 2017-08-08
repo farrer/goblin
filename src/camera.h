@@ -207,8 +207,9 @@ class Camera
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
       /*! Verify the keyboard input to the Camera
-       * \param keboard -> keyboard state */
-      static void verifyKeyboardInput();
+       * \param keboard -> keyboard state
+       * \return true if camera moved with keyboard. */
+      static bool verifyKeyboardInput();
       /*! Verify mouse input to the Camera
        * \param mouse -> mouse state
        * \return true if Camera moved with mouse */
