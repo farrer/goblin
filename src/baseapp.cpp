@@ -26,10 +26,8 @@
 #include <kobold/i18n.h>
 #include <kobold/log.h>
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
-    OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-   #include <OGRE/RenderSystems/GLES2/OgreGLES2RenderSystem.h>
-#else
+#if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
+    OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
    #include <SDL_syswm.h>
    #include <iostream>
    #include <sstream>
@@ -342,8 +340,7 @@ bool BaseApp::createRoot()
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
       OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
-   rs = new Ogre::GLES2RenderSystem();
-   ogreRoot->addRenderSystem(rs);
+   rs = ogreRoot->getRenderSystemByName("OpenGL ES 2.x Rendering Subsystem");
 #elif OGRE_VERSION_MAJOR == 1 || \
      (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
    ogreRoot->loadPlugin(OGRE_GL_RENDER_SYSTEM_LIB);
