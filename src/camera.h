@@ -198,6 +198,9 @@ class Camera
    
       /*! Disable the limit defined by "limitCameraArea" */
       static void removeCameraAreaLimits();
+
+      /*! \return current camera configuration */
+      static CameraConfig getConfiguration();
       
    protected:
 
