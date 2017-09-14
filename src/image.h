@@ -47,15 +47,19 @@ class Image: public GuiObject
    public:
       /*! Constructor
        * \param ogreOverlay -> overlay used to put Image in
-       * \param imageFileNam -> filename of the Image */
-      Image(Ogre::Overlay* ogreOverlay, Ogre::String imageFileName);
+       * \param imageFileName -> filename of the Image
+       * \param groupName -> resource group name where the image is. */
+      Image(Ogre::Overlay* ogreOverlay, const Ogre::String& imageFileName, 
+            const Ogre::String& groupName);
    
       /*! Constructor for derived classes.
        * \param guiObjectType type of the derived class.
        * \param ogreOverlay -> overlay used to put Image in
-       * \param imageFileNam -> filename of the Image */
+       * \param imageFileName -> image's filename
+       * \param groupName -> resource group name where the image is. */
       Image(int guiObjectType, Ogre::Overlay* ogreOverlay,
-            Ogre::String imageFileName);
+            const Ogre::String& imageFileName,
+            const Ogre::String& groupName);
 
       /*! Destructor */
       ~Image();
@@ -81,7 +85,8 @@ class Image: public GuiObject
       void _update();
    
       /*! Initialize structures. */
-      void init(Ogre::String imageFileName);
+      void init(const Ogre::String& imageFileName, 
+            const Ogre::String& groupName);
 
       Ogre::String imageFile; /**< File name of the Image */
       Ogre::Real alpha;       /**< Current alpha value (on fade-in/out) */

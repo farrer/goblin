@@ -35,26 +35,28 @@ namespace Goblin
 /***********************************************************************
  *                                Constructor                          *
  ***********************************************************************/
-Image::Image(Ogre::Overlay* ogreOverlay, Ogre::String imageFileName)
+Image::Image(Ogre::Overlay* ogreOverlay, const Ogre::String& imageFileName,
+      const Ogre::String& groupName)
    :GuiObject(ogreOverlay, GuiObject::TYPE_IMAGE, "Panel", imageFileName)
 {
-   init(imageFileName);
+   init(imageFileName, groupName);
 }
    
 /***********************************************************************
  *                                Constructor                          *
  ***********************************************************************/
 Image::Image(int guiObjectType, Ogre::Overlay* ogreOverlay,
-             Ogre::String imageFileName)
+             const Ogre::String& imageFileName, const Ogre::String& groupName)
    :GuiObject(ogreOverlay, guiObjectType, "Panel", imageFileName)
 {
-   init(imageFileName);
+   init(imageFileName, groupName);
 }
    
 /***********************************************************************
  *                                   init                              *
  ***********************************************************************/
-void Image::init(Ogre::String imageFileName)
+void Image::init(const Ogre::String& imageFileName, 
+      const Ogre::String& groupName)
 {
    Ogre::ResourceManager::ResourceCreateOrRetrieveResult matRes;
    imageFile = imageFileName;
@@ -74,7 +76,8 @@ void Image::init(Ogre::String imageFileName)
    else
    {
       /* Texture already loaded, let's just retrieve it. */
-      texture = Ogre::TextureManager::getSingleton().getByName(imageFile);
+      texture = Ogre::TextureManager::getSingleton().getByName(imageFile, 
+            groupName);
    }
    container->setMaterialName(material->getName());
 

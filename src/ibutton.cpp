@@ -33,8 +33,9 @@ using namespace Goblin;
 /***********************************************************************
  *                           Constructor                               *
  ***********************************************************************/
-Ibutton::Ibutton(Ogre::Overlay* ogreOverlay, Ogre::String imageFileName)
-        :Image(GuiObject::TYPE_IBUTTON, ogreOverlay, imageFileName)
+Ibutton::Ibutton(Ogre::Overlay* ogreOverlay, const Ogre::String& imageFileName,
+                 const Ogre::String& groupName)
+        :Image(GuiObject::TYPE_IBUTTON, ogreOverlay, imageFileName, groupName)
 {
    setDefaults();
    text = NULL;
@@ -43,10 +44,10 @@ Ibutton::Ibutton(Ogre::Overlay* ogreOverlay, Ogre::String imageFileName)
 /***********************************************************************
  *                           Constructor                               *
  ***********************************************************************/
-Ibutton::Ibutton(Ogre::Overlay* ogreOverlay, Ogre::String imageFileName,
-                 Ogre::String text, Ogre::String fontName,
-                 Ogre::Real charHeight)
-:Image(GuiObject::TYPE_IBUTTON, ogreOverlay, imageFileName)
+Ibutton::Ibutton(Ogre::Overlay* ogreOverlay, const Ogre::String& imageFileName,
+                 const Ogre::String& groupName, const Ogre::String& text, 
+                 const Ogre::String& fontName, Ogre::Real charHeight)
+         :Image(GuiObject::TYPE_IBUTTON, ogreOverlay, imageFileName, groupName)
 {
    setDefaults();
    this->text = new TextBox(getWidth() / 2.0f, 0, getWidth(), 16, text,
@@ -121,7 +122,7 @@ void Ibutton::setDimensions(Ogre::Real w, Ogre::Real h)
 /***********************************************************************
  *                             setText                                 *
  ***********************************************************************/
-void Ibutton::setText(Ogre::String str)
+void Ibutton::setText(const Ogre::String& str)
 {
    if(text != NULL)
    {
@@ -144,7 +145,7 @@ Ogre::String Ibutton::getText()
 /***********************************************************************
  *                          setPressedSound                            *
  ***********************************************************************/
-void Ibutton::setPressedSound(Ogre::String soundFile)
+void Ibutton::setPressedSound(const Ogre::String& soundFile)
 {
    pressedSound = soundFile;
    havePressedSound = (pressedSound != "");

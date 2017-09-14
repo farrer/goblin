@@ -54,6 +54,7 @@ class Model3d
       /*! Constructor, with direct load. 
        * \param modelName model's name (unique)
        * \param modelFile filename of model's to load
+       * \param groupName resource group where the model is
        * \param sceneManager pointer to Ogre's used SceneManager
        * \param type model type (static or dynamic)
        * \param parent pointer to model's parent, if any.
@@ -61,9 +62,9 @@ class Model3d
        *       to apply position/orientation changes.
        * \note calling update (and thus using targets for static models
        *       is forbidden). */
-      Model3d(Ogre::String modelName, Ogre::String modelFile,
-            Ogre::SceneManager* sceneManager, Model3dType type, 
-            Model3d* parent=NULL);
+      Model3d(const Ogre::String& modelName, const Ogre::String& modelFile,
+              const Ogre::String& groupName, Ogre::SceneManager* sceneManager, 
+              Model3dType type, Model3d* parent=NULL);
 
       /*! Constructor, without load.
        * \note must call load later, before using the model */
@@ -75,12 +76,12 @@ class Model3d
       /*! Load a model.
        * \note only use it on not yet loaded models.
        * \note see full constructor for parameters list. */
-      bool load(Ogre::String modelName, Ogre::String modelFile,
-            Ogre::SceneManager* sceneManager, Model3dType type, 
-            Model3d* parent=NULL);
+      bool load(const Ogre::String& modelName, const Ogre::String& modelFile,
+                const Ogre::String& groupName, Ogre::SceneManager* sceneManager,
+                Model3dType type, Model3d* parent=NULL);
 
       /*! Change the model material */
-      void setMaterial(Ogre::String materialName);
+      void setMaterial(const Ogre::String& materialName);
 
       /*! Set current orientation along Y axys.
        * \param yawValue new value for Y orientation.
@@ -244,7 +245,8 @@ class AnimatedModel3d : public Model3d
        *        (usually it's a value common to all AnimatedModels of some
        *        kind in a game, thus received here as parameter).
        * \param parent pointer to model's parent, if any. */
-      AnimatedModel3d(Ogre::String modelName, Ogre::String modelFile,
+      AnimatedModel3d(const Ogre::String& modelName, 
+            const Ogre::String& modelFile, const Ogre::String& groupName,
             Ogre::SceneManager* sceneManager, Ogre::String* animationNames,
             int totalAnimations, Model3d* parent=NULL);
       /*! Destructor */

@@ -31,18 +31,18 @@ using namespace Goblin;
 /***********************************************************************
  *                           Constructor                               *
  ***********************************************************************/
-Ibar::Ibar(Ogre::Overlay* ogreOverlay, Ogre::String fileLeft,
-           Ogre::String fileCenter, Ogre::String fileRight,
-           int x, int y, int w, int incMin)
+Ibar::Ibar(Ogre::Overlay* ogreOverlay, const Ogre::String& fileLeft,
+           const Ogre::String& fileCenter, const Ogre::String& fileRight,
+           int x, int y, int w, int incMin, const Ogre::String& groupName)
 {
    posX = x;
    posY = y;
    width = w;
    percentual = 0;
    
-   imageLeft = new Image(ogreOverlay, fileLeft);
-   imageCenter = new Image(ogreOverlay, fileCenter);
-   imageRight = new Image(ogreOverlay, fileRight);
+   imageLeft = new Image(ogreOverlay, fileLeft, groupName);
+   imageCenter = new Image(ogreOverlay, fileCenter, groupName);
+   imageRight = new Image(ogreOverlay, fileRight, groupName);
    
    minWidth = imageLeft->getWidth() + incMin;
    this->incMin = incMin;

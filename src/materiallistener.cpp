@@ -66,7 +66,7 @@ Ogre::Technique* MaterialListener::handleSchemeNotFound(
       {
          /* Force creating the shaders for the generated technique. */
          shaderGenerator->validateMaterial(schemeName, 
-               originalMaterial->getName());
+               originalMaterial->getName(), originalMaterial->getGroup());
 
          /* Grab the generated technique.*/
          const Ogre::Material::Techniques techniques = 

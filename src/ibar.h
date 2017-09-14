@@ -47,8 +47,9 @@ class Ibar
        *        valid Ibar width (usually, the minimun delta for images
        *        not overlap badly). */
       Ibar(Ogre::Overlay* ogreOverlay,
-           Ogre::String fileLeft, Ogre::String fileCenter,
-           Ogre::String fileRight, int x, int y, int w, int incMin);
+           const Ogre::String& fileLeft, const Ogre::String& fileCenter,
+           const Ogre::String& fileRight, int x, int y, int w, int incMin,
+           const Ogre::String& groupName);
       /*! Destructor */
       ~Ibar();
    

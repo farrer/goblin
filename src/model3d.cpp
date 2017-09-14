@@ -46,8 +46,9 @@ using namespace Goblin;
 /***********************************************************************
  *                             Constructor                             *
  ***********************************************************************/
-Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
-      Ogre::SceneManager* sceneManager, Model3dType type, Model3d* parent)
+Model3d::Model3d(const Ogre::String& modelName, const Ogre::String& modelFile,
+      const Ogre::String& groupName, Ogre::SceneManager* sceneManager, 
+      Model3dType type, Model3d* parent)
 {
    model = NULL;
 #if(OGRE_VERSION_MAJOR > 2 || (OGRE_VERSION_MAJOR==2 && OGRE_VERSION_MINOR>0))
@@ -60,7 +61,7 @@ Model3d::Model3d(Ogre::String modelName, Ogre::String modelFile,
    dirtyOri = false;
    dirtyScale = false;
 
-   load(modelName, modelFile, sceneManager, type, parent);
+   load(modelName, modelFile, groupName, sceneManager, type, parent);
 }
 
 /***********************************************************************
@@ -122,7 +123,8 @@ Model3d::~Model3d()
 /***********************************************************************
  *                                  load                               *
  ***********************************************************************/
-bool Model3d::load(Ogre::String modelName, Ogre::String modelFile,
+bool Model3d::load(const Ogre::String& modelName, 
+      const Ogre::String& modelFile, const Ogre::String& groupName,
       Ogre::SceneManager* sceneManager, Model3dType type, 
       Model3d* parent)
 {
@@ -156,13 +158,10 @@ bool Model3d::load(Ogre::String modelName, Ogre::String modelFile,
    }
 #if OGRE_VERSION_MAJOR == 1 || \
     (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
-   this->model = ogreSceneManager->createEntity(modelFile, 
-         Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+   this->model = ogreSceneManager->createEntity(modelFile, groupName,
          sceneType);
 #else
-   this->model = ogreSceneManager->createItem(modelFile,
-         Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-         sceneType);
+   this->model = ogreSceneManager->createItem(modelFile, groupName, sceneType);
 #endif
    if(!this->model)
    {
@@ -221,7 +220,7 @@ bool Model3d::isStatic()
 /***********************************************************************
  *                           changeMaterial                            *
  ***********************************************************************/
-void Model3d::setMaterial(Ogre::String materialName)
+void Model3d::setMaterial(const Ogre::String& materialName)
 {
 #if OGRE_VERSION_MAJOR == 1
    model->setMaterialName(materialName);
@@ -910,12 +909,12 @@ void AnimatedModel3d::AnimationInfo::reset()
 /***********************************************************************
  *                             Constructor                             *
  ***********************************************************************/
-AnimatedModel3d::AnimatedModel3d(Ogre::String modelName, 
-                      Ogre::String modelFile, Ogre::SceneManager* sceneManager, 
-                      Ogre::String* animationNames, int totalAnimations, 
-                      Model3d* parent)
-                :Model3d(modelName, modelFile, sceneManager, MODEL_DYNAMIC,
-                         parent)
+AnimatedModel3d::AnimatedModel3d(const Ogre::String& modelName, 
+      const Ogre::String& modelFile, const Ogre::String& groupName,
+      Ogre::SceneManager* sceneManager, Ogre::String* animationNames, 
+      int totalAnimations, Model3d* parent)
+   :Model3d(modelName, modelFile, groupName, sceneManager, MODEL_DYNAMIC,
+         parent)
 {
    assert(totalAnimations > 0);
    this->totalAnimations = totalAnimations;

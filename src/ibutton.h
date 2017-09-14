@@ -45,20 +45,23 @@ class Ibutton: public Image
       /*! Constructor
        * \param ogreOverlay -> overlay used to put Image in
        * \param imageFileNam -> filename of the image */
-      Ibutton(Ogre::Overlay* ogreOverlay, Ogre::String imageFileName);
+      Ibutton(Ogre::Overlay* ogreOverlay, const Ogre::String& imageFileName,
+            const Ogre::String& groupName);
    
       /*! Constructor
       * \param ogreOverlay -> overlay used to put Image in
       * \param imageFileNam -> filename of the image */
-      Ibutton(Ogre::Overlay* ogreOverlay, Ogre::String imageFileName,
-              Ogre::String text, Ogre::String fontName, Ogre::Real charHeight);
+      Ibutton(Ogre::Overlay* ogreOverlay, const Ogre::String& imageFileName,
+              const Ogre::String& groupName, const Ogre::String& text, 
+              const Ogre::String& fontName, Ogre::Real charHeight);
+
 
       /*! Destructor */
       ~Ibutton();
    
       /*! Set a sound file to play when button is pressed.
        * \param soundFile sound file name */
-      void setPressedSound(Ogre::String soundFile);
+      void setPressedSound(const Ogre::String& soundFile);
  
       /*! Verify events on the Ibutton
        * \param mouseX -> cursor X coordinate
@@ -76,7 +79,7 @@ class Ibutton: public Image
       /*! Set button text.
        * \note only if it already contains a text 
        * \param str new button text. */
-      void setText(Ogre::String str);
+      void setText(const Ogre::String& str);
 
       /*! \return current button text (if any).  */
       Ogre::String getText();
