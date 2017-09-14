@@ -79,7 +79,7 @@ class Image: public GuiObject
 
    protected:
       /*! Load an Image to a ogre overlay, using defined material */
-      void load();
+      void load(const Ogre::String& groupName);
 
       /*! The update process */
       void _update();

@@ -71,7 +71,7 @@ void Image::init(const Ogre::String& imageFileName,
    /* Load the image, if the material was created. */
    if(matRes.second)
    {
-      load();
+      load(groupName);
    }
    else
    {
@@ -101,9 +101,9 @@ Image::~Image()
 /***********************************************************************
  *                               loadImage                             *
  ***********************************************************************/
-void Image::load()
+void Image::load(const Ogre::String& groupName)
 {
-   texture = Ogre::TextureManager::getSingleton().load(imageFile, "gui",
+   texture = Ogre::TextureManager::getSingleton().load(imageFile, groupName,
       Ogre::TEX_TYPE_2D);
    
    if(!texture)
