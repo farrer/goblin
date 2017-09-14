@@ -65,7 +65,7 @@ void Image::init(const Ogre::String& imageFileName,
    
    /* Create material */
    matRes = Ogre::MaterialManager::getSingleton().createOrRetrieve(
-         imageFileName, "gui");
+         imageFileName, groupName);
    material = Ogre::static_pointer_cast<Ogre::Material>(matRes.first);
    
    /* Load the image, if the material was created. */
