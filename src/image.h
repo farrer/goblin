@@ -57,7 +57,7 @@ class Image: public GuiObject
        * \param ogreOverlay -> overlay used to put Image in
        * \param imageFileName -> image's filename
        * \param groupName -> resource group name where the image is. */
-      Image(int guiObjectType, Ogre::Overlay* ogreOverlay,
+      Image(const GuiObjectType& guiObjectType, Ogre::Overlay* ogreOverlay,
             const Ogre::String& imageFileName,
             const Ogre::String& groupName);
 
@@ -75,7 +75,7 @@ class Image: public GuiObject
       void fadeOut();
 
       /*! \return image file name */
-      Ogre::String getFileName();
+      const Ogre::String& getFileName() const;
 
    protected:
       /*! Load an Image to a ogre overlay, using defined material */

@@ -31,7 +31,7 @@ namespace Goblin
 /***********************************************************************
  *                                Constructor                          *
  ***********************************************************************/
-GuiObjectChild::GuiObjectChild(GuiObject* childPtr, Ogre::Vector2 offset)
+GuiObjectChild::GuiObjectChild(GuiObject* childPtr, const Ogre::Vector2& offset)
 {
    this->ptr = childPtr;
    this->offset = offset;
@@ -54,8 +54,8 @@ GuiObjectChild::~GuiObjectChild()
 /***********************************************************************
  *                                Constructor                          *
  ***********************************************************************/
-GuiObject::GuiObject(Ogre::Overlay* ogreOverlay, int type,
-      Ogre::String overlayElementType, Ogre::String elementName)
+GuiObject::GuiObject(Ogre::Overlay* ogreOverlay, const GuiObjectType& type,
+      const Ogre::String& overlayElementType, const Ogre::String& elementName)
    : Kobold::List()
 {
    Ogre::String name;
@@ -324,57 +324,57 @@ void GuiObject::show()
 /***********************************************************************
  *                              isVisible                              *
  ***********************************************************************/
-bool GuiObject::isVisible()
+const bool GuiObject::isVisible() const
 {
-   return(visible);
+   return visible;
 }
 
 /***********************************************************************
  *                               getWidth                              *
  ***********************************************************************/
-Ogre::Real GuiObject::getWidth()
+const Ogre::Real GuiObject::getWidth() const
 {
-   return(tW.getValue());
+   return tW.getValue();
 }
 
 /***********************************************************************
  *                               getHeight                             *
  ***********************************************************************/
-Ogre::Real GuiObject::getHeight()
+const Ogre::Real GuiObject::getHeight() const
 {
-   return(tH.getValue());
+   return tH.getValue();
 }
 
 /***********************************************************************
  *                               getPosX                               *
  ***********************************************************************/
-Ogre::Real GuiObject::getPosX()
+const Ogre::Real GuiObject::getPosX() const
 {
-   return(tX.getValue());
+   return tX.getValue();
 }
 
 /***********************************************************************
  *                               getPosY                               *
  ***********************************************************************/
-Ogre::Real GuiObject::getPosY()
+const Ogre::Real GuiObject::getPosY() const
 {
-   return(tY.getValue());
+   return tY.getValue();
 }
 
 /***********************************************************************
  *                               getPosX                               *
  ***********************************************************************/
-Ogre::Real GuiObject::getTargetPosX()
+const Ogre::Real GuiObject::getTargetPosX() const
 {
-   return(tX.getTarget());
+   return tX.getTarget();
 }
 
 /***********************************************************************
  *                               getPosY                               *
  ***********************************************************************/
-Ogre::Real GuiObject::getTargetPosY()
+const Ogre::Real GuiObject::getTargetPosY() const 
 {
-   return(tY.getTarget());
+   return tY.getTarget();
 }
 
 /***********************************************************************

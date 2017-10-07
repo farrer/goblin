@@ -96,7 +96,7 @@ void Cursor::finish()
 /*****************************************************************
  *                         Load Cursor                           *
  *****************************************************************/
-void Cursor::loadCursor(Ogre::String fileName)
+void Cursor::loadCursor(const Ogre::String& fileName)
 {
    cursorTexture = Ogre::TextureManager::getSingleton().load(fileName, "gui");
 
@@ -137,7 +137,7 @@ void Cursor::update()
 /*****************************************************************
  *                         updateByEvent                         *
  *****************************************************************/
-void Cursor::updateByEvent(SDL_Event event)
+void Cursor::updateByEvent(const SDL_Event& event)
 {
    Kobold::Mouse::updateByEvent(event);
 }
@@ -217,7 +217,7 @@ bool Cursor::checkButtonRelease(int buttonNumber)
 /*****************************************************************
  *                              set                              *
  *****************************************************************/
-void Cursor::set(Ogre::String fileName)
+void Cursor::set(const Ogre::String& fileName)
 {
    loadCursor(fileName);
 }

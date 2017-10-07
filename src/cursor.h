@@ -53,7 +53,7 @@ class Cursor
 
       /*! Set the current mouse Cursor to an image
        * \param fileName -> name of the image to load */
-      static void set(Ogre::String fileName);
+      static void set(const Ogre::String& fileName);
 
       /*! Update the Cursor position and state 
        * \note: should be called after SDL_PumEvents or similar. */
@@ -61,7 +61,7 @@ class Cursor
 
       /*! Update current mouse by events. Usually used in conjunction
        * with #update */
-      static void updateByEvent(SDL_Event event);
+      static void updateByEvent(const SDL_Event& event);
 
       /*! \return current cursor X coordinate on screen */
       static int getX();
@@ -95,7 +95,7 @@ class Cursor
 
       /*! Load Cursor file 
        * \param fileName -> file name of Cursor */
-      static void loadCursor(Ogre::String fileName);
+      static void loadCursor(const Ogre::String& fileName);
 };
 
 }

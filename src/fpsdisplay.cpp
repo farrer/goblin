@@ -36,8 +36,7 @@ using namespace Goblin;
  *                              constructor                            *
  ***********************************************************************/
 FpsDisplay::FpsDisplay(Ogre::Overlay* ogreOverlay, 
-                       Ogre::RenderWindow* renderWindow, 
-                       Ogre::String fontName)
+      Ogre::RenderWindow* renderWindow, const Ogre::String& fontName)
            :TextBox(0, 0, 64, 32, "", "FpsDisplay", ogreOverlay, fontName, 18)
 {
    ogreWindow = renderWindow;

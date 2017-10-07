@@ -50,7 +50,7 @@ class GuiObjectChild : public Kobold::ListElement
        * \param childPtr pointer to the child gui object
        * \param offset position offset relative to the parent
        * \note Deleting childPtr is responsability of caller. */
-      GuiObjectChild(GuiObject* childPtr, Ogre::Vector2 offset);
+      GuiObjectChild(GuiObject* childPtr, const Ogre::Vector2& offset);
       /*! Destructor  */
       ~GuiObjectChild();
    
@@ -67,7 +67,7 @@ class GuiObject : protected Kobold::List
 {
    public:
    
-      enum
+      enum GuiObjectType
       {
          TYPE_IMAGE,
          TYPE_TEXT_BOX,
@@ -78,8 +78,9 @@ class GuiObject : protected Kobold::List
  
       /*! Constructor
        * \ogreOverlay -> overlay to show image in */
-      GuiObject(Ogre::Overlay* ogreOverlay, int type,
-            Ogre::String overlayElementType, Ogre::String elementName);
+      GuiObject(Ogre::Overlay* ogreOverlay, const GuiObjectType& type,
+            const Ogre::String& overlayElementType, 
+            const Ogre::String& elementName);
       /*! Destructor */
       virtual ~GuiObject();
 
@@ -102,7 +103,7 @@ class GuiObject : protected Kobold::List
       void show();
 
       /*! Verify if the GuiObject is visible or not */
-      bool isVisible();
+      const bool isVisible() const;
 
       /*! Update the GuiObject
        * @param force true to force update.
@@ -122,18 +123,18 @@ class GuiObject : protected Kobold::List
             int nSteps=TARGET_DEFAULT_STEPS);
 
       /*! Get current GuiObject width */
-      Ogre::Real getWidth();
+      const Ogre::Real getWidth() const;
       /*! Get current GuiObject height */
-      Ogre::Real getHeight();
+      const Ogre::Real getHeight() const;
       /*! Get current GuiObject X position */
-      Ogre::Real getPosX();
+      const Ogre::Real getPosX() const;
       /*! Get current GuiObject Y position */
-      Ogre::Real getPosY();
+      const Ogre::Real getPosY() const;
 
       /*! Get target GuiObject X position */
-      Ogre::Real getTargetPosX();
+      const Ogre::Real getTargetPosX() const;
       /*! Get target GuiObject Y position */
-      Ogre::Real getTargetPosY();
+      const Ogre::Real getTargetPosY() const;
 
 
       /*! Verify if the GuiObject is currently updating or not */

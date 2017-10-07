@@ -45,8 +45,8 @@ enum
 /***********************************************************************
  *                            Constructor                              *
  ***********************************************************************/
-TextTitle::TextTitle(int x, int y, int w, int h, Ogre::String text, 
-            Ogre::String name, Ogre::String fontName)
+TextTitle::TextTitle(int x, int y, int w, int h, const Ogre::String& text, 
+      const Ogre::String& name, const Ogre::String& fontName)
 {
    textOverlay = Ogre::OverlayManager::getSingletonPtr()->create(name + 
       Ogre::String("Overlay"));
@@ -65,7 +65,7 @@ TextTitle::TextTitle(int x, int y, int w, int h, Ogre::String text,
  ***********************************************************************/
 TextTitle::~TextTitle()
 {
-   delete(dtext);
+   delete dtext;
    Ogre::OverlayManager::getSingletonPtr()->destroy(textOverlay);
 }
 
@@ -118,9 +118,9 @@ void TextTitle::update()
 /***********************************************************************
  *                               isDone                                *
  ***********************************************************************/
-bool TextTitle::isDone()
+const bool TextTitle::isDone() const
 {
-   return(state == TEXT_TITLE_STATE_DONE);
+   return state == TEXT_TITLE_STATE_DONE;
 }
 
 }

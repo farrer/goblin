@@ -140,7 +140,7 @@ void Ibar::show()
  ***********************************************************************/
 bool Ibar::isVisible()
 {
-   return(imageLeft->isVisible() && imageRight->isVisible());
+   return imageLeft->isVisible() && imageRight->isVisible();
 }
 
 #endif

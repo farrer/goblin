@@ -31,10 +31,10 @@ namespace Goblin
 /***********************************************************************
  *                              constructor                            *
  ***********************************************************************/
-TextBox::TextBox(int x, int y, int w, int h, Ogre::String text, 
-                 Ogre::String name, Ogre::Overlay* ogreOverlay,
-                 Ogre::String fontName, Ogre::Real charHeight)
-        :GuiObject(ogreOverlay, GuiObject::TYPE_TEXT_BOX, "TextArea", name)
+TextBox::TextBox(int x, int y, int w, int h, const Ogre::String& text, 
+      const Ogre::String& name, Ogre::Overlay* ogreOverlay,
+      const Ogre::String& fontName, Ogre::Real charHeight)
+   :GuiObject(ogreOverlay, GuiObject::TYPE_TEXT_BOX, "TextArea", name)
 {
    guiOverlay = ogreOverlay;
 
@@ -71,7 +71,7 @@ TextBox::~TextBox()
 /***********************************************************************
  *                                setText                              *
  ***********************************************************************/
-void TextBox::setText(Ogre::String text)
+void TextBox::setText(const Ogre::String& text)
 {
    if(dispText->getCaption().compare(text) != 0)
    {
@@ -95,7 +95,7 @@ Ogre::String TextBox::getText()
 /***********************************************************************
  *                                setFont                              *
  ***********************************************************************/
-void TextBox::setFont(Ogre::String fontName, Ogre::Real size)
+void TextBox::setFont(const Ogre::String& fontName, Ogre::Real size)
 {
    dispText->setFontName(fontName);
    if(ScreenInfo::shouldUseDoubleSizedGui())
@@ -123,7 +123,7 @@ void TextBox::setColor(Ogre::Real r, Ogre::Real g, Ogre::Real b, Ogre::Real a)
 /***********************************************************************
  *                            setAlignment                             *
  ***********************************************************************/
-void TextBox::setAlignment(Ogre::TextAreaOverlayElement::Alignment a)
+void TextBox::setAlignment(const Ogre::TextAreaOverlayElement::Alignment& a)
 {
    dispText->setAlignment(a);
 }

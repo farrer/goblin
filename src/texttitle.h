@@ -52,8 +52,8 @@ class TextTitle
        * \param text -> text of the box
        * \param name -> name of the box
        * \param fontName -> name of the font to use */
-      TextTitle(int x, int y, int w, int h, Ogre::String text, 
-            Ogre::String name, Ogre::String fontName);
+      TextTitle(int x, int y, int w, int h, const Ogre::String& text, 
+            const Ogre::String& name, const Ogre::String& fontName);
       /*! Destructor */
       ~TextTitle();
 
@@ -62,7 +62,7 @@ class TextTitle
 
       /*! Verify if text animation is done for some time 
        * \return true when first animation cicle is done */
-      bool isDone();
+      const bool isDone() const;
 
    protected:
       Ogre::Overlay* textOverlay;    /**< The Overlay Used */

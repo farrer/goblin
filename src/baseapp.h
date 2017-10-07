@@ -112,7 +112,7 @@ class BaseApp
       /*! Create and setup the system to use
        * \param userHome path to the know user home. "" to check for it.
        * \return true on success */
-      bool create(Ogre::String userHome="", Ogre::uint32 wX=320,
+      bool create(const Ogre::String& userHome="", Ogre::uint32 wX=320,
                   Ogre::uint32 wZ=480, Ogre::Real wScale=1.0f);
  
       /*! Run the game.
@@ -235,13 +235,13 @@ class BaseApp
 #if OGRE_VERSION_MAJOR == 1 || \
     (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
       /*! Initialize the RTSS */
-      bool initShaderSystem(Ogre::String userDir);
+      bool initShaderSystem(const Ogre::String& userDir);
       
       Ogre::RTShader::ShaderGenerator* shaderGenerator; /**< RTSS */
       Goblin::MaterialListener* materialListener; /**< Material to shader */
 #else 
       /*! Register the HLMS system */
-      bool registerHLMS(Ogre::String hlmsPath);
+      bool registerHLMS(const Ogre::String& hlmsPath);
 #endif
 
       /*! Internally called to render one frame to the screen */

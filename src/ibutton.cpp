@@ -205,7 +205,7 @@ int Ibutton::verifyEvents(int mouseX, int mouseY, bool leftButtonPressed)
    /* Update the image */
    update();
 
-   return(event);
+   return event;
 }
 
 #endif

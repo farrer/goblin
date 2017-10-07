@@ -372,7 +372,7 @@ bool BaseApp::createRoot()
 /***********************************************************************
  *                              initRTSS                               *
  ***********************************************************************/
-bool BaseApp::initShaderSystem(Ogre::String cacheDir)
+bool BaseApp::initShaderSystem(const Ogre::String& cacheDir)
 {
    Kobold::Log::add(Kobold::Log::LOG_LEVEL_NORMAL, "Initing shader system...");
    if(Ogre::RTShader::ShaderGenerator::initialize())
@@ -400,7 +400,7 @@ bool BaseApp::initShaderSystem(Ogre::String cacheDir)
 /***********************************************************************
  *                         registerHLMS                                *
  ***********************************************************************/
-bool BaseApp::registerHLMS(Ogre::String hlmsPath)
+bool BaseApp::registerHLMS(const Ogre::String& hlmsPath)
 {
    Ogre::HlmsManager* hlmsManager = Ogre::Root::getSingleton().getHlmsManager();
 
@@ -491,7 +491,7 @@ void BaseApp::defineDataPath()
 /***********************************************************************
  *                                 create                              *
  ***********************************************************************/
-bool BaseApp::create(Ogre::String userHome, Ogre::uint32 wX,
+bool BaseApp::create(const Ogre::String& userHome, Ogre::uint32 wX,
                      Ogre::uint32 wZ, Ogre::Real wScale)
 {
    /* Define application data path */

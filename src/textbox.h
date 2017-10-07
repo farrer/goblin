@@ -54,15 +54,15 @@ class TextBox : public GuiObject
        * \param ogreOverlay -> pointer to the overlay used
        * \param fontName -> name of font to use
        * \param charHeight -> height of character*/
-      TextBox(int x, int y, int w, int h, Ogre::String text, 
-            Ogre::String name, Ogre::Overlay* ogreOverlay,
-            Ogre::String fontName, Ogre::Real charHeight);
+      TextBox(int x, int y, int w, int h, const Ogre::String& text, 
+            const Ogre::String& name, Ogre::Overlay* ogreOverlay,
+            const Ogre::String& fontName, Ogre::Real charHeight);
       /*! Destructor */
       ~TextBox();
 
       /*! Set the text
        * \param text -> new text to display */
-      void setText(Ogre::String text);
+      void setText(const Ogre::String& text);
       
       /*! \return current text */
       Ogre::String getText();
@@ -70,13 +70,13 @@ class TextBox : public GuiObject
       /*! Set the text font
        * \param fontName -> name of the font to use
        * \param size -> font size */
-      void setFont(Ogre::String fontName, Ogre::Real size);
+      void setFont(const Ogre::String& fontName, Ogre::Real size);
 
       /*! Set color of the text */
       void setColor(Ogre::Real r, Ogre::Real g, Ogre::Real b, Ogre::Real a);
 
       /*! Set text alignment */
-      void setAlignment(Ogre::TextAreaOverlayElement::Alignment a);
+      void setAlignment(const Ogre::TextAreaOverlayElement::Alignment& a);
 
       /*! Fade the text in */
       void fadeIn();

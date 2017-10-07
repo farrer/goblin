@@ -45,7 +45,7 @@ Image::Image(Ogre::Overlay* ogreOverlay, const Ogre::String& imageFileName,
 /***********************************************************************
  *                                Constructor                          *
  ***********************************************************************/
-Image::Image(int guiObjectType, Ogre::Overlay* ogreOverlay,
+Image::Image(const GuiObjectType& guiObjectType, Ogre::Overlay* ogreOverlay,
              const Ogre::String& imageFileName, const Ogre::String& groupName)
    :GuiObject(ogreOverlay, guiObjectType, "Panel", imageFileName)
 {
@@ -236,7 +236,7 @@ void Image::_update()
 /***********************************************************************
  *                                getFileName                          *
  ***********************************************************************/
-Ogre::String Image::getFileName()
+const Ogre::String& Image::getFileName() const
 {
    return imageFile;
 }

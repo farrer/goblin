@@ -51,7 +51,7 @@ class FpsDisplay: public TextBox
 
       /*! Constructor */
       FpsDisplay(Ogre::Overlay* ogreOverlay, Ogre::RenderWindow* renderWindow, 
-            Ogre::String fontName);
+            const Ogre::String& fontName);
       /*! Destructor */
       ~FpsDisplay();
 
