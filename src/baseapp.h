@@ -168,6 +168,9 @@ class BaseApp
        * (ignored on embeded systems) */
       virtual const int getDefaultWindowHeight() const = 0;
 
+      /*! \return if is using Ogre::Overlay (and should initialize it) */
+      virtual const bool getUseOverlay() const { return true; };
+
       /*! Clean all possible not used memory. This function is called 
        * when the embeded system is with low available memory, and should
        * do it the best as it can. */

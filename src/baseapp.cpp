@@ -618,14 +618,16 @@ bool BaseApp::create(const Ogre::String& userHome, Ogre::uint32 wX,
          getMinWidthToUseDoubleSizedGui());
 
    /* Create the ogre overlay system */
-   //FIXME: make overlay optional!
+   if(getUseOverlay())
+   {
 #if OGRE_VERSION_MAJOR == 1 || \
-    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
-   ogreOverlaySystem = new Ogre::OverlaySystem();
+      (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+      ogreOverlaySystem = new Ogre::OverlaySystem();
 #else
-   ogreOverlaySystem = new Ogre::v1::OverlaySystem();
+      ogreOverlaySystem = new Ogre::v1::OverlaySystem();
 #endif
-   ogreSceneManager->addRenderQueueListener(ogreOverlaySystem); 
+      ogreSceneManager->addRenderQueueListener(ogreOverlaySystem); 
+   }
 
    /* Create input */
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
