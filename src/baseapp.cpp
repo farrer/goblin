@@ -791,7 +791,6 @@ void BaseApp::renderFrame()
  ***********************************************************************/
 bool BaseApp::getInput()
 {
-   bool shouldDoCameraInput = true;
    bool quit = false;
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
@@ -856,17 +855,22 @@ bool BaseApp::getInput()
          quit = true;
       }
    }
-   shouldDoCameraInput = !Kobold::Keyboard::isEditingText();
-
 #endif
 
-   if(shouldDoCameraInput)
-   {
-      /* Do the camera input (if defined) */
-      receivedCameraInput = Goblin::Camera::doMove();
-   }
-
    return quit;
+}
+
+/***********************************************************************
+ *                         shouldDoCameraInput                         *
+ ***********************************************************************/
+const bool BaseApp::shouldDoCameraInput()
+{
+#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
+    OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+   return true;
+#else
+   return !Kobold::Keyboard::isEditingText();
+#endif
 }
 
 /***********************************************************************
@@ -908,6 +912,13 @@ void BaseApp::run()
 
          /* Do the specific before-render app cycle */
          doBeforeRender();
+
+         /* Update our camera */
+         if(shouldDoCameraInput())
+         {
+            /* Do the camera input (if defined) */
+            receivedCameraInput = Goblin::Camera::doMove();
+         }
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID

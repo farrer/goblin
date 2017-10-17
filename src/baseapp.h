@@ -190,6 +190,10 @@ class BaseApp
        * normal map textures. */
       virtual const bool shouldUseBC5ForNormalTextures() const {return false;};
 
+      /*! Function called on each step to check if should verify camera input
+       * or not at this moment.
+       * \return if should verify camera input now or not */
+      virtual const bool shouldDoCameraInput();
 
 #if OGRE_VERSION_MAJOR == 1
       /*! \return Shadow Technique to use.
