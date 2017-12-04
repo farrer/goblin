@@ -583,8 +583,7 @@ bool BaseApp::create(const Ogre::String& userHome, Ogre::uint32 wX,
 
    /* Create the scene manager */
 #if OGRE_VERSION_MAJOR == 1
-   //FIXME: we should do some check if need to use another scene manager.
-   ogreSceneManager = ogreRoot->createSceneManager(Ogre::ST_GENERIC);
+   ogreSceneManager = ogreRoot->createSceneManager();
 
    /* Set shadow technique to desired one (defaults to no shadows) */
    ogreSceneManager->setShadowTechnique(getShadowTechnique());
