@@ -94,7 +94,12 @@ Camera::Camera()
  *                               init                                  *
  ***********************************************************************/
 void Camera::init(Ogre::SceneManager* ogreSceneManager, 
-      Ogre::RenderWindow* ogreRenderWindow, const CameraConfig& conf) 
+#if (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR >= 2)
+      Ogre::Window* ogreRenderWindow,
+#else
+      Ogre::RenderWindow* ogreRenderWindow, 
+#endif
+      const CameraConfig& conf) 
 {
    config = conf;
 
@@ -132,28 +137,35 @@ void Camera::init(Ogre::SceneManager* ogreSceneManager,
    ogreCamera->setFarClipDistance(config.farClipDistance);
    ogreCamera->setAutoAspectRatio(true);
 
-
-   /* And create the viewport */
-#if OGRE_VERSION_MAJOR == 1
-   ogreViewport = ogreRenderWindow->addViewport(ogreCamera);
-   ogreViewport->setBackgroundColour(Ogre::ColourValue(0.0f, 0.0f, 0.0f, 1.0f));
+#if (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR > 1)
+   ogreCamera->setAspectRatio(Ogre::Real(ogreRenderWindow->getWidth()) / 
+                              Ogre::Real(ogreRenderWindow->getHeight()));
 #else
-   ogreViewport = ogreRenderWindow->addViewport();
-#endif
+   /* And create the viewport */
+   Ogre::Viewport* ogreViewport=NULL;
+   #if OGRE_VERSION_MAJOR == 1
+      ogreViewport = ogreRenderWindow->addViewport(ogreCamera);
+      ogreViewport->setBackgroundColour(
+            Ogre::ColourValue(0.0f, 0.0f, 0.0f, 1.0f));
+   #else
+      ogreViewport = ogreRenderWindow->addViewport();
+   #endif
 
    ogreCamera->setAspectRatio(Ogre::Real(ogreViewport->getActualWidth()) / 
                               Ogre::Real(ogreViewport->getActualHeight()));
-#if OGRE_VERSION_MAJOR == 1
-   ogreViewport->setCamera(ogreCamera);
-#endif
+   #if OGRE_VERSION_MAJOR == 1
+      ogreViewport->setCamera(ogreCamera);
+   #endif
    //ogreCamera->setLodBias(1000.0f);
 
-#if OGRE_VERSION_MAJOR == 1 || \
-    (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
-   ogreViewport->setMaterialScheme(
-         Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);   
-   Ogre::RTShader::ShaderGenerator::getSingletonPtr()->invalidateScheme(
-         Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+   #if OGRE_VERSION_MAJOR == 1 || \
+       (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
+      ogreViewport->setMaterialScheme(
+            Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);   
+      Ogre::RTShader::ShaderGenerator::getSingletonPtr()->invalidateScheme(
+            Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+   #endif
+
 #endif
                                                       
 }
@@ -1063,7 +1075,6 @@ CameraConfig Camera::getConfiguration()
  *                               Static Fields                         *
  ***********************************************************************/
 Ogre::Camera* Camera::ogreCamera=NULL;
-Ogre::Viewport* Camera::ogreViewport=NULL;
 
 CameraState Camera::state;
 CameraState Camera::prevState;

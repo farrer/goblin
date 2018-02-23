@@ -24,7 +24,11 @@
 #include <OGRE/OgreRoot.h>
 #include <OGRE/OgreTimer.h>
 #include <OGRE/OgreSceneManager.h>
-#include <OGRE/OgreRenderWindow.h>
+#if (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR >= 2)
+   #include <OGRE/OgreWindow.h>
+#else
+   #include <OGRE/OgreRenderWindow.h>
+#endif
 #include <OGRE/Overlay/OgreOverlay.h>
 #include <OGRE/Overlay/OgreOverlaySystem.h>
 #include <OGRE/Overlay/OgreOverlayManager.h>
@@ -130,7 +134,11 @@ class BaseApp
       void sendToForeground();
 
       /*! Retrieve current ogre window used. */
-      Ogre::RenderWindow* getWindow();
+#if (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR >= 2)
+      Ogre::Window* getWindow() { return ogreWindow; }; 
+#else
+      Ogre::RenderWindow* getWindow() { return ogreWindow; };
+#endif
 
       /*! Get the scene manager */
       Ogre::SceneManager* getSceneManager();
@@ -255,7 +263,11 @@ class BaseApp
       void renderFrame();
 
       Ogre::Root* ogreRoot;                  /**< Ogre root */
+#if (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR >= 2)
+      Ogre::Window* ogreWindow;              /**< Ogre Window */
+#else
       Ogre::RenderWindow* ogreWindow;        /**< Ogre Window */
+#endif
       Ogre::SceneManager* ogreSceneManager;  /**< Ogre Scene Manager */
 
       Ogre::String dataPath; /**< Data path used by the application */

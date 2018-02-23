@@ -23,9 +23,12 @@
 
 /* Ogre headers */
 #include <OGRE/OgreCamera.h>
-#include <OGRE/OgreViewport.h>
 #include <OGRE/OgreSceneManager.h>
-#include <OGRE/OgreRenderWindow.h>
+#if (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR >= 2)
+   #include <OGRE/OgreWindow.h>
+#else
+   #include <OGRE/OgreRenderWindow.h>
+#endif
 #include <OGRE/OgreMath.h>
 #include <OGRE/OgreRay.h>
 
@@ -97,9 +100,14 @@ class Camera
        * \param ogreSceneManager -> pointer to the used scene manager
        * \param ogreRenderWindow -> pointer to the used render window 
        * \param conf -> camera configuration. */
+#if (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR >= 2)
+      static void init(Ogre::SceneManager* ogreSceneManager, 
+            Ogre::Window* ogreWindow, const CameraConfig& conf);
+#else
       static void init(Ogre::SceneManager* ogreSceneManager, 
             Ogre::RenderWindow* ogreRenderWindow,
             const CameraConfig& conf);
+#endif
 
       /*! Instantaneous set Camera position/orientation */
       static void set(Ogre::Real x, Ogre::Real y, Ogre::Real z, 
@@ -138,8 +146,6 @@ class Camera
       static void getCameraToViewportRay(Ogre::Real x, Ogre::Real y, 
             Ogre::Ray* outRay);
    
-      static Ogre::Viewport* getViewport(){return ogreViewport;};
-
       static Ogre::Camera* getOgreCamera(){return ogreCamera;};
 
       /*! Push current camera state
@@ -247,7 +253,6 @@ class Camera
             Ogre::Real max);
    
       static Ogre::Camera* ogreCamera; /**< Pointer to the ogre Camera used */
-      static Ogre::Viewport* ogreViewport; /**< pointer to the ogre viewport */
 
       static CameraState state;       /**< Current camera state */
       static CameraState prevState;   /**< State to push/pop */

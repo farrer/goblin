@@ -21,7 +21,13 @@
 #ifndef _goblin_screen_info_h_
 #define _goblin_screen_info_h_
 
-#include <OGRE/OgreRenderWindow.h>
+#include <OGRE/OgrePrerequisites.h>
+
+#if (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR >= 2)
+   #include <OGRE/OgreWindow.h>
+#else
+   #include <OGRE/OgreRenderWindow.h>
+#endif
 
 namespace Goblin
 {
@@ -36,8 +42,13 @@ class ScreenInfo
        * @param windowScaleFactor Scale factor of the screen (usually, only 
        *        > 1.0 on "retina display" devices). 
        * @param widthThreshold minimun width to use double sized GUI. */
+#if (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR >= 2)
+      static void init(Ogre::Window* ogreRenderWindow,
+                Ogre::Real windowScaleFactor, Ogre::uint32 widthThreshold);
+#else
       static void init(Ogre::RenderWindow* ogreRenderWindow,
                 Ogre::Real windowScaleFactor, Ogre::uint32 widthThreshold);
+#endif
    
       /*! @return current window Width. */
       static Ogre::uint32 getWindowWidth();

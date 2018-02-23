@@ -25,8 +25,13 @@ using namespace Goblin;
 /***********************************************************************
  *                               init                                  *
  ***********************************************************************/
+#if (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR >= 2)
+void ScreenInfo::init(Ogre::Window* ogreRenderWindow,
+          Ogre::Real windowScaleFactor, Ogre::uint32 widthThreshold)
+#else
 void ScreenInfo::init(Ogre::RenderWindow* ogreRenderWindow,
           Ogre::Real windowScaleFactor, Ogre::uint32 widthThreshold)
+#endif
 {
    /* Retrieve direct access attributes */
    wY = ogreRenderWindow->getHeight();

@@ -213,14 +213,6 @@ void BaseApp::sendToForeground()
 }
 
 /***********************************************************************
- *                              getWindow                              *
- ***********************************************************************/
-Ogre::RenderWindow* BaseApp::getWindow()
-{
-   return ogreWindow;
-}
-
-/***********************************************************************
  *                          getSceneManager                            *
  ***********************************************************************/
 Ogre::SceneManager* BaseApp::getSceneManager()
@@ -335,31 +327,32 @@ void BaseApp::renderOneFrameForAndroid(JNIEnv* env, JavaVM *vm)
  ***********************************************************************/
 bool BaseApp::createRoot()
 {
-   Ogre::RenderSystem* rs;
-
    /* Create the root, without cfg files */
    ogreRoot = new Ogre::Root("", "");
+   Ogre::RenderSystem* renderSystem = NULL;
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
       OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
    ogreRoot->installPlugin(OGRE_NEW Ogre::GLES2Plugin());
-   rs = ogreRoot->getRenderSystemByName("OpenGL ES 2.x Rendering Subsystem");
+   renderSystem = ogreRoot->getRenderSystemByName(
+         "OpenGL ES 2.x Rendering Subsystem");
 #elif OGRE_VERSION_MAJOR == 1 || \
      (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
    ogreRoot->loadPlugin(OGRE_GL_RENDER_SYSTEM_LIB);
-   rs = ogreRoot->getRenderSystemByName("OpenGL Rendering Subsystem");
+   renderSystem = ogreRoot->getRenderSystemByName("OpenGL Rendering Subsystem");
 #else
    ogreRoot->loadPlugin(OGRE_GL3PLUS_RENDER_SYSTEM_LIB);
-   rs = ogreRoot->getRenderSystemByName("OpenGL 3+ Rendering Subsystem");
+   renderSystem = ogreRoot->getRenderSystemByName(
+         "OpenGL 3+ Rendering Subsystem");
 #endif
 
-   if(!rs)
+   if(!renderSystem)
    {
       Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
             "FATAL: Couldn't define render system!");
       return false;
    }
-   ogreRoot->setRenderSystem(rs);
+   ogreRoot->setRenderSystem(renderSystem);
    
    /* Init ogre, without loading from ogre.cfg */
    ogreRoot->initialise(false);
@@ -592,6 +585,10 @@ bool BaseApp::create(const Ogre::String& userHome, Ogre::uint32 wX,
    const size_t numThreads = std::max<size_t>(1, 
          Ogre::PlatformInformation::getNumLogicalCores());
 
+#if OGRE_VERSION_MINOR >= 2
+   ogreSceneManager = ogreRoot->createSceneManager(Ogre::ST_GENERIC, 
+         numThreads);
+#else
    Ogre::InstancingThreadedCullingMethod threadedCullingMethod = 
       Ogre::INSTANCING_CULLING_SINGLETHREAD;
 
@@ -603,6 +600,7 @@ bool BaseApp::create(const Ogre::String& userHome, Ogre::uint32 wX,
 
    ogreSceneManager = ogreRoot->createSceneManager(Ogre::ST_GENERIC, 
          numThreads, threadedCullingMethod);
+#endif
 
    /* Set sane defaults for proper shadow mapping */
    ogreSceneManager->setShadowDirectionalLightExtrusionDistance(500.0f);
@@ -766,8 +764,14 @@ Ogre::CompositorWorkspace* BaseApp::createWorkspace()
       compositorManager->createBasicWorkspaceDef(workspaceName, 
             Ogre::ColourValue(0.0f, 0.0f, 0.0f), Ogre::IdString());
    }
+#if OGRE_VERSION_MINOR == 1
    return compositorManager->addWorkspace(ogreSceneManager,
          ogreWindow, Goblin::Camera::getOgreCamera(), workspaceName, true);
+#else
+   return compositorManager->addWorkspace(ogreSceneManager,
+         ogreWindow->getTexture(), Goblin::Camera::getOgreCamera(), 
+         workspaceName, true);
+#endif
 }
 #endif
 
