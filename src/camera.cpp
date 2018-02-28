@@ -34,6 +34,12 @@
    #include <kobold/keyboard.h>
 #endif
 
+
+#if ((OGRE_VERSION_MAJOR == 1) ||\
+     (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR <= 1))
+   #include <OGRE/OgreViewport.h>
+#endif
+
 #include <kobold/log.h>
 
 namespace Goblin
