@@ -25,6 +25,7 @@
 #include <kobold/userinfo.h>
 #include <kobold/i18n.h>
 #include <kobold/log.h>
+#include <OGRE/OgrePrerequisites.h>
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
     OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
@@ -48,7 +49,7 @@
 #endif
 
 
-#if OGRE_VERSION_MAJOR >= 1
+#if OGRE_VERSION_MAJOR > 1
    #include <OGRE/Compositor/OgreCompositorManager2.h>
    #include <OGRE/OgreArchive.h>
    #include <OGRE/OgreArchiveManager.h>
