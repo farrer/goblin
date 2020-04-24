@@ -397,39 +397,52 @@ bool BaseApp::initShaderSystem(const Ogre::String& cacheDir)
  ***********************************************************************/
 bool BaseApp::registerHLMS(const Ogre::String& hlmsPath)
 {
-   Ogre::HlmsManager* hlmsManager = Ogre::Root::getSingleton().getHlmsManager();
+   Ogre::String mainFolderPath;
+   Ogre::StringVector libraryFoldersPaths;
+   Ogre::StringVector::const_iterator libraryFolderPathIt;
+   Ogre::StringVector::const_iterator libraryFolderPathEn;
+   Ogre::ArchiveManager& archiveManager = Ogre::ArchiveManager::getSingleton();
 
-   Ogre::Archive* archiveLibrary = 
-      Ogre::ArchiveManager::getSingletonPtr()->load(
-            hlmsPath + "common/glsl", "FileSystem", true );
-   Ogre::Archive* archiveLibraryAny = 
-      Ogre::ArchiveManager::getSingletonPtr()->load(
-            hlmsPath + "common/any", "FileSystem", true );
-   Ogre::Archive* archivePbsLibraryAny = 
-      Ogre::ArchiveManager::getSingletonPtr()->load(
-            hlmsPath + "pbs/any", "FileSystem", true );
-   Ogre::Archive* archiveUnlitLibraryAny = 
-      Ogre::ArchiveManager::getSingletonPtr()->load(
-            hlmsPath + "unlit/any", "FileSystem", true );
+   /* Unlit */
+   Ogre::HlmsUnlit::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+   Ogre::Archive *archiveUnlit = archiveManager.load(hlmsPath + mainFolderPath,
+         "FileSystem", true );
+   Ogre::ArchiveVec archiveUnlitLibraryFolders;
+   libraryFolderPathIt = libraryFoldersPaths.begin();
+   libraryFolderPathEn = libraryFoldersPaths.end();
+   while( libraryFolderPathIt != libraryFolderPathEn )
+   {
+      Ogre::Archive *archiveLibrary = archiveManager.load(
+            hlmsPath + *libraryFolderPathIt, "FileSystem", true ); 
+      archiveUnlitLibraryFolders.push_back( archiveLibrary );
+      ++libraryFolderPathIt;
+   }
 
-   Ogre::ArchiveVec library;
-   library.push_back(archiveLibrary);
-   library.push_back(archiveLibraryAny);
+   Ogre::HlmsUnlit* hlmsUnlit = new Ogre::HlmsUnlit(archiveUnlit,
+         &archiveUnlitLibraryFolders);
+   Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
 
-   Ogre::Archive* archiveUnlit = Ogre::ArchiveManager::getSingletonPtr()->load(
-         hlmsPath + "unlit/glsl", "FileSystem", true );
-   library.push_back(archiveUnlitLibraryAny);
+   /* Pbs */
+   Ogre::HlmsPbs::getDefaultPaths(mainFolderPath, libraryFoldersPaths);
+   Ogre::Archive* archivePbs = archiveManager.load(hlmsPath + mainFolderPath,
+         "FileSystem", true );
 
-   Ogre::HlmsUnlit* hlmsUnlit = new Ogre::HlmsUnlit(archiveUnlit, &library);
-   hlmsManager->registerHlms(hlmsUnlit);
-   library.pop_back();
+   Ogre::ArchiveVec archivePbsLibraryFolders;
+   libraryFolderPathIt = libraryFoldersPaths.begin();
+   libraryFolderPathEn = libraryFoldersPaths.end();
+   while(libraryFolderPathIt != libraryFolderPathEn)
+   {
+      Ogre::Archive *archiveLibrary = 
+         archiveManager.load(hlmsPath + *libraryFolderPathIt, "FileSystem",
+               true);
+      archivePbsLibraryFolders.push_back(archiveLibrary);
+      ++libraryFolderPathIt;
+   }
 
-   Ogre::Archive* archivePbs = Ogre::ArchiveManager::getSingletonPtr()->load(
-         hlmsPath + "pbs/glsl", "FileSystem", true );
+   Ogre::HlmsPbs* hlmsPbs = new Ogre::HlmsPbs(archivePbs, 
+         &archivePbsLibraryFolders);
+   Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
 
-   library.push_back(archivePbsLibraryAny);
-   Ogre::HlmsPbs* hlmsPbs = new Ogre::HlmsPbs(archivePbs, &library);
-   hlmsManager->registerHlms(hlmsPbs);
 
 #if (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR < 2)
    /* If not using dds textures, should tell the manager  */
@@ -707,7 +720,7 @@ bool BaseApp::create(const Ogre::String& userHome, Ogre::uint32 wX,
 
    /* Let's setup HLMS to use */
    //FIXME: when using mobile (metal), if we'll support.
-   if(!registerHLMS(path + "hlms/"))
+   if(!registerHLMS(path))
    {
       Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
             "Error: Couldn't register HLMS to use!");
