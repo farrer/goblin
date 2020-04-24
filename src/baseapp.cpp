@@ -498,8 +498,11 @@ bool BaseApp::create(const Ogre::String& userHome, Ogre::uint32 wX,
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
    /* Initialize SDL */
-   if(SDL_Init(SDL_INIT_VIDEO) < 0)
+   if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS) < 0)
    {
+      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+            "FATAL: Couldn't init SDL: %s", SDL_GetError());
+
       return false;
    }
 
@@ -523,7 +526,13 @@ bool BaseApp::create(const Ogre::String& userHome, Ogre::uint32 wX,
 
    /* Retrieve info from SDL */
    SDL_SysWMinfo wmInfo;
-   SDL_GetWindowWMInfo(sdlWindow, &wmInfo);
+   SDL_VERSION( &wmInfo.version );
+   if(SDL_GetWindowWMInfo(sdlWindow, &wmInfo ) == SDL_FALSE)
+   {
+      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+            "FATAL: Couldn't get SDL WMinfo: %s", SDL_GetError());
+      return false;
+   }
 #endif
 
 #if OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
@@ -562,9 +571,9 @@ bool BaseApp::create(const Ogre::String& userHome, Ogre::uint32 wX,
 #else
    /* Define window from the SDL's already created one */
    #if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
-      /*opts["parentWindowHandle"] = Ogre::StringConverter::toString(
-            size_t(wmInfo.info.x11.window));*/
-      opts["currentGLContext"] = Ogre::String("True");
+      opts["parentWindowHandle"] = Ogre::StringConverter::toString(
+            (uintptr_t) wmInfo.info.x11.window );
+      //opts["currentGLContext"] = Ogre::String("True");
    #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
       opts["externalWindowHandle"] = Ogre::StringConverter::toString(
             size_t(wmInfo.info.win.window));
@@ -840,6 +849,7 @@ bool BaseApp::getInput()
    /* Get Keyboard State */
    Kobold::Keyboard::updateState();
    Kobold::Mouse::update();
+
    /* Set mouse coordinates */
    leftButtonPressed = Kobold::Mouse::isLeftButtonPressed();
    rightButtonPressed = Kobold::Mouse::isRightButtonPressed();
@@ -856,6 +866,7 @@ bool BaseApp::getInput()
       {
          Kobold::Keyboard::updateByEvent(event);
       }
+      Kobold::Mouse::updateByEvent(event);
       /* Let's check quit event */
       if(event.type == SDL_QUIT)
       {
