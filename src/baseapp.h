@@ -194,9 +194,11 @@ class BaseApp
       /*! \return if should use Kobold::I18n for internationalization. */
       virtual const bool shouldUseKoboldI18n() const { return true; };
       
+#if (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR < 2)
       /*! \return if should use BC5 compressed textures (usually .dds) for
        * normal map textures. */
       virtual const bool shouldUseBC5ForNormalTextures() const {return false;};
+#endif
 
       /*! Function called on each step to check if should verify camera input
        * or not at this moment.

@@ -1,7 +1,10 @@
 
 cmake_minimum_required(VERSION 2.8)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDEBUG=1 -D_DEBUG=1")
+
 # Define project and its current version
+project(goblin)
 set(PACKAGE goblin)
 
 set(VERSION_MAJOR 1)
@@ -58,6 +61,8 @@ FIND_PACKAGE(Ogg REQUIRED)
 include_directories(${OGG_INCLUDE_DIR})
 FIND_PACKAGE(OGRE REQUIRED)
 include_directories(${OGRE_INCLUDE_DIR})
+include_directories(${OGRE_INCLUDE_DIR}/Depracated/)
+include_directories(${OGRE_INCLUDE_DIR}/Hlms/Common/)
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
    include_directories(${OGRE_INCLUDE_DIR}/RenderSystems/GLES2/)
    include_directories(${OGRE_INCLUDE_DIR}/RenderSystems/GLSupport/)

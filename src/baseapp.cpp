@@ -48,11 +48,13 @@
 #endif
 
 
-#if OGRE_VERSION_MAJOR != 1
+#if OGRE_VERSION_MAJOR >= 1
    #include <OGRE/Compositor/OgreCompositorManager2.h>
    #include <OGRE/OgreArchive.h>
    #include <OGRE/OgreArchiveManager.h>
-   #include <OGRE/OgreHlmsTextureManager.h>
+   #if OGRE_VERSION_MINOR <= 1
+      #include <OGRE/OgreHlmsTextureManager.h>
+   #endif
 #endif
 
 using namespace Goblin;
@@ -429,6 +431,7 @@ bool BaseApp::registerHLMS(const Ogre::String& hlmsPath)
    Ogre::HlmsPbs* hlmsPbs = new Ogre::HlmsPbs(archivePbs, &library);
    hlmsManager->registerHlms(hlmsPbs);
 
+#if (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR < 2)
    /* If not using dds textures, should tell the manager  */
    if(!shouldUseBC5ForNormalTextures())
    {
@@ -436,6 +439,7 @@ bool BaseApp::registerHLMS(const Ogre::String& hlmsPath)
           Ogre::HlmsTextureManager::TEXTURE_TYPE_NORMALS].pixelFormat = 
              Ogre::PF_R8G8_SNORM;
    }
+#endif
 
    /* TODO: check if we need to restrict texture size (the examples from
     * Ogre only do it for DX11). */
