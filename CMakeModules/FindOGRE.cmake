@@ -530,6 +530,7 @@ ogre_find_plugin(RenderSystem_GLES OgreGLESRenderSystem.h RenderSystems/GLES/inc
 ogre_find_plugin(RenderSystem_GLES2 OgreGLES2RenderSystem.h RenderSystems/GLES2/include)
 ogre_find_plugin(RenderSystem_Direct3D9 OgreD3D9RenderSystem.h RenderSystems/Direct3D9/include)
 ogre_find_plugin(RenderSystem_Direct3D11 OgreD3D11RenderSystem.h RenderSystems/Direct3D11/include)
+ogre_find_plugin(Codec_FreeImage OgreFreeImageCodec.h Plugins/FreeImage/OgreFreeImageCodec.h)
         
 if (OGRE_STATIC)
   # check if dependencies for plugins are met
@@ -576,6 +577,9 @@ if (OGRE_STATIC)
   )
   set(OGRE_Plugin_CgProgramManager_LIBRARIES ${OGRE_Plugin_CgProgramManager_LIBRARIES}
     ${Cg_LIBRARIES}
+  )
+  set(OGRE_Codec_FreeImage_LIBRARIES ${OGRE_Codec_FreeImage_LIBRARIES}
+     ${FreeImage_LIBRARIES}
   )
 endif ()
 

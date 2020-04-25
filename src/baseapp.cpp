@@ -356,6 +356,10 @@ bool BaseApp::createRoot()
       return false;
    }
    ogreRoot->setRenderSystem(renderSystem);
+
+#if OGRE_VERSION_MAJOR == 1
+   ogreRoot->loadPlugin(OGRE_CODEC_FREEIMAGE);
+#endif
    
    /* Init ogre, without loading from ogre.cfg */
    ogreRoot->initialise(false);
