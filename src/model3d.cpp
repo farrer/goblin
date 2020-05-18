@@ -28,6 +28,7 @@
    #include <OGRE/OgreSubMesh2.h>
    #include <OGRE/OgreMesh2.h>
    #include <OGRE/Vao/OgreAsyncTicket.h>
+   #include <OGRE/Vao/OgreIndexBufferPacked.h>
    #include <OGRE/OgreBitwise.h>
 #endif
 
