@@ -23,7 +23,7 @@
 #include "screeninfo.h"
 #include <kosound/sound.h>
 #include <kobold/userinfo.h>
-#include <kobold/i18n.h>
+#include <kobold/ogre3d/i18n.h>
 #include <kobold/log.h>
 #include <OGRE/OgrePrerequisites.h>
 
