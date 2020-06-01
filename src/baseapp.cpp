@@ -100,7 +100,7 @@ BaseApp::BaseApp(const CameraConfig& cameraConfig)
    updateTimer.reset();
 
    /* Init kobold log to use Ogre::Log */
-   Kobold::Log::init(true);
+   Kobold::Log::init(&log);
 }
 
 /***********************************************************************
@@ -243,7 +243,7 @@ void BaseApp::initAssetManager(JNIEnv* env, jobject assetManager,
    }
    else
    {
-      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+      Kobold::Log::add(Kobold::LOG_LEVEL_ERROR,
             "Error: Couldn't retrieve the asset manager from java!");
    }
 
@@ -351,7 +351,7 @@ bool BaseApp::createRoot()
 
    if(!renderSystem)
    {
-      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+      Kobold::Log::add(Kobold::LOG_LEVEL_ERROR,
             "FATAL: Couldn't define render system!");
       return false;
    }
@@ -374,7 +374,7 @@ bool BaseApp::createRoot()
  ***********************************************************************/
 bool BaseApp::initShaderSystem(const Ogre::String& cacheDir)
 {
-   Kobold::Log::add(Kobold::Log::LOG_LEVEL_NORMAL, "Initing shader system...");
+   Kobold::Log::add(Kobold::LOG_LEVEL_NORMAL, "Initing shader system...");
    if(Ogre::RTShader::ShaderGenerator::initialize())
    {
       shaderGenerator = Ogre::RTShader::ShaderGenerator::getSingletonPtr();
@@ -392,7 +392,7 @@ bool BaseApp::initShaderSystem(const Ogre::String& cacheDir)
       return true;
    }
    
-   Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR, 
+   Kobold::Log::add(Kobold::LOG_LEVEL_ERROR, 
          "Error: Couldn't init shader system!");
    return false;
 }
@@ -518,7 +518,7 @@ bool BaseApp::create(const Ogre::String& userHome, Ogre::uint32 wX,
    /* Initialize SDL */
    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS) < 0)
    {
-      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+      Kobold::Log::add(Kobold::LOG_LEVEL_ERROR,
             "FATAL: Couldn't init SDL: %s", SDL_GetError());
 
       return false;
@@ -547,7 +547,7 @@ bool BaseApp::create(const Ogre::String& userHome, Ogre::uint32 wX,
    SDL_VERSION( &wmInfo.version );
    if(SDL_GetWindowWMInfo(sdlWindow, &wmInfo ) == SDL_FALSE)
    {
-      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+      Kobold::Log::add(Kobold::LOG_LEVEL_ERROR,
             "FATAL: Couldn't get SDL WMinfo: %s", SDL_GetError());
       return false;
    }
@@ -711,7 +711,7 @@ bool BaseApp::create(const Ogre::String& userHome, Ogre::uint32 wX,
    /* Initialize the shader system */
    if(!initShaderSystem(Kobold::UserInfo::getCacheDirectory()))
    {
-      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+      Kobold::Log::add(Kobold::LOG_LEVEL_ERROR,
             "Error: Couldn't init shader System!");
       return false;
    }
@@ -727,7 +727,7 @@ bool BaseApp::create(const Ogre::String& userHome, Ogre::uint32 wX,
    //FIXME: when using mobile (metal), if we'll support.
    if(!registerHLMS(path))
    {
-      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+      Kobold::Log::add(Kobold::LOG_LEVEL_ERROR,
             "Error: Couldn't register HLMS to use!");
       return false;
    }

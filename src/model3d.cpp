@@ -134,7 +134,7 @@ bool Model3d::load(const Ogre::String& modelName,
 
    if(model != NULL)
    {
-      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR,
+      Kobold::Log::add(Kobold::LOG_LEVEL_ERROR,
             "Error: You should not reload a loaded Model3d!");
       return false;
    }
@@ -166,7 +166,7 @@ bool Model3d::load(const Ogre::String& modelName,
 #endif
    if(!this->model)
    {
-      Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR, 
+      Kobold::Log::add(Kobold::LOG_LEVEL_ERROR, 
             "Error: Couldn't create entity or item '%s' ('%s')!",
             modelFile.c_str(), modelName.c_str());
       return false;
@@ -698,7 +698,7 @@ void Model3d::updateCachedMeshInformation()
          }
          else
          {
-            Kobold::Log::add(Kobold::Log::LOG_LEVEL_ERROR, 
+            Kobold::Log::add(Kobold::LOG_LEVEL_ERROR, 
                   "Error: Vertex Buffer type not recognised!");
          }
          subMeshOffset += subMeshVerticiesNum;

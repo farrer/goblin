@@ -636,7 +636,7 @@ bool Camera::verifyKeyboardInput()
 
    if(Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_F5))
    {
-      Kobold::Log::add(Kobold::Log::LOG_LEVEL_NORMAL, 
+      Kobold::Log::add(Kobold::LOG_LEVEL_NORMAL, 
             "Center: (%.2f, %.2f, %.2f)\nPhi: %.2f Theta: %.2f Zoom: %.2f\n",
             state.center.x, state.center.y,state.center.z, 
             state.phi, state.theta, state.zoom);

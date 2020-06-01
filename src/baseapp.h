@@ -73,6 +73,8 @@
    #include <OGRE/Compositor/OgreCompositorWorkspace.h>
 #endif
 
+#include <kobold/ogre3d/ogrelog.h>
+
 namespace Goblin
 {
 
@@ -308,6 +310,8 @@ class BaseApp
       bool backRunning;               /**< If app is background */ 
       bool receivedCameraInput; /**< If camera received input on last check */
       unsigned long timeElapsed; /**< Time elapsed before new call to render. */
+
+      Kobold::OgreLog log; /**< The log to use */
 
    private:
       CameraConfig cameraConfig; /**< Camera config to initialize */
