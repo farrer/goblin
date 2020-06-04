@@ -23,6 +23,7 @@
     (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
 
 #include <kosound/sound.h>
+#include <kobold/ogre3d/ogrefilereader.h>
 
 using namespace Goblin;
 
@@ -176,7 +177,8 @@ int Ibutton::verifyEvents(int mouseX, int mouseY, bool leftButtonPressed)
             event = IBUTTON_EVENT_PRESSED;
             if(havePressedSound)
             {
-               Kosound::Sound::addSoundEffect(SOUND_NO_LOOP, pressedSound);
+               Kosound::Sound::addSoundEffect(SOUND_NO_LOOP, pressedSound,
+                     new Kobold::OgreFileReader());
             }
          }
          else
