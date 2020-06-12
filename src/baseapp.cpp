@@ -386,8 +386,11 @@ bool BaseApp::initShaderSystem(const Ogre::String& cacheDir)
       shaderGenerator->setShaderCachePath(cacheDir);
 
       /* create the material listener */
-      materialListener = new Goblin::MaterialListener(shaderGenerator);
-      Ogre::MaterialManager::getSingleton().addListener(materialListener);
+      if(useMaterialListerner())
+      {
+         materialListener = new Goblin::MaterialListener(shaderGenerator);
+         Ogre::MaterialManager::getSingleton().addListener(materialListener);
+      }
      
       return true;
    }

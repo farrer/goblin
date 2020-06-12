@@ -255,6 +255,8 @@ class BaseApp
     (OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 0)
       /*! Initialize the RTSS */
       bool initShaderSystem(const Ogre::String& userDir);
+
+      virtual bool useMaterialListerner() { return true; };
       
       Ogre::RTShader::ShaderGenerator* shaderGenerator; /**< RTSS */
       Goblin::MaterialListener* materialListener; /**< Material to shader */
