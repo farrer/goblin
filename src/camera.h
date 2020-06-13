@@ -41,6 +41,16 @@ namespace Goblin
 #define CAMERA_UNDEFINED                 -10000.0f
 #define CAMERA_MAX_TOUCHES_DISTANCE        5000.0f
 
+/*! Checker for camera changes */
+class CameraChecker
+{
+   public:
+      virtual ~CameraChecker() {};
+
+      /*! Verify if new camera position is a valid one, changing it if isn't.*/
+      virtual void verifyNewCameraPosition(Ogre::Vector3& newPos) = 0;
+};
+
 /*! Camera configuration values */
 class CameraConfig
 {
@@ -166,7 +176,7 @@ class Camera
        * (common OS) or on multitouch events on iOS
        * \return true if updated Camera with event, false otherwise */
       static bool doMove();
-      
+
       /*! Get the viewport ray from point x,y
        * \param x -> X coordinate on screen [0,1] 
        * \param y -> Y coordinate on screen [0,1] 
@@ -175,6 +185,7 @@ class Camera
             Ogre::Ray* outRay);
    
       static Ogre::Camera* getOgreCamera(){return ogreCamera;};
+      static Ogre::SceneNode* getOgreSceneNode(){return ogreSceneNode;};
 
       /*! Push current camera state
        * \note -> it only supports one push/pop (ie: no push-push-pop-pop) */
@@ -235,6 +246,9 @@ class Camera
 
       /*! \return current camera configuration */
       static CameraConfig getConfiguration();
+
+      /*! Set current camera checker. */
+      static void setChecker(CameraChecker* c);
       
    protected:
 
@@ -317,6 +331,7 @@ class Camera
       static Ogre::Vector3 maxArea; /**< Maximun valid camera positions */
 
       static CameraConfig config; /**< Current configuration */
+      static CameraChecker* checker; /**< Current checker, if one */
 
    private:
       /*! No instances are allowed. */ 

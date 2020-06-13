@@ -418,6 +418,10 @@ void Camera::lookAt()
    eye.y = state.center.y + state.zoom * sinTheta;
    eye.z = state.center.z + state.zoom * cosTheta * cosPhi;
 
+   if(checker != NULL)
+   {
+      checker->verifyNewCameraPosition(eye);
+   }
    ogreSceneNode->setPosition(eye);
    ogreCamera->lookAt(state.center);
 }
@@ -819,6 +823,14 @@ bool Camera::doMove()
 }
 
 /***********************************************************************
+ *                             setChecker                              *
+ ***********************************************************************/
+void Camera::setChecker(CameraChecker* c)
+{
+   checker = c;
+}
+
+/***********************************************************************
  *                       applyAccelerationAndMove                      *
  ***********************************************************************/
 bool Camera::applyAccelerationsAndMove()
@@ -1180,5 +1192,6 @@ Ogre::Vector3 Camera::minArea;
 Ogre::Vector3 Camera::maxArea;
 
 CameraConfig Camera::config;
+CameraChecker* Camera::checker = NULL;
 
 }
