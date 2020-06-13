@@ -33,6 +33,7 @@
 #include <OGRE/OgreRay.h>
 
 #include <kobold/target.h>
+#include <kobold/keycodes.h>
 
 namespace Goblin
 {
@@ -77,6 +78,30 @@ class CameraConfig
       Ogre::Real maxDistToTranslate;
       /*! Factor to apply when rotating with multitouch devices and mouse. */
       Ogre::Real rotateFactor;
+
+#if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
+    OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+      Kobold::KeyCodes keyLogValues; /**< Show current values on log */
+      /* Rotation Keys */
+      Kobold::KeyCodes keyRotateLeft; /**< Rotate left */
+      Kobold::KeyCodes keyRotateRight; /**< Rotate right */
+      Kobold::KeyCodes keyRotateUp; /**< Rotate up */
+      Kobold::KeyCodes keyRotateDown; /**< Rotate down */
+      Kobold::KeyCodes keyRotateBottom; /**< Set up/down angle to min */
+      Kobold::KeyCodes keyRotateTop; /**< Set up/down angle to max */
+
+      /* Zoom Keys */
+      Kobold::KeyCodes keyZoomIncrease; /**< Increase zoom */
+      Kobold::KeyCodes keyZoomDecrease; /**< Decrease zoom */
+      Kobold::KeyCodes keyZoomMin; /**< Set zoom to min */
+      Kobold::KeyCodes keyZoomMax; /**< Set zoom to max */
+
+      /* Movement keys */
+      Kobold::KeyCodes keyMoveForward; /**< Move forward */
+      Kobold::KeyCodes keyMoveBackward; /**< Move backward */
+      Kobold::KeyCodes keyMoveLeft; /**< Move left */
+      Kobold::KeyCodes keyMoveRight; /**< Move right */
+#endif
 };
 
 /*! The camera single state (position and angles) */

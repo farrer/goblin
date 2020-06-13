@@ -64,6 +64,27 @@ CameraConfig::CameraConfig()
    this->rotateFactor = 0.25f;
    this->thetaMax = 89.0f;
    this->thetaMin = 1.0f;
+
+#if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
+    OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+   this->keyLogValues = Kobold::KOBOLD_KEY_F5;
+   this->keyRotateLeft = Kobold::KOBOLD_KEY_LEFT;
+   this->keyRotateRight = Kobold::KOBOLD_KEY_RIGHT; 
+   this->keyRotateUp = Kobold::KOBOLD_KEY_PAGEUP; 
+   this->keyRotateDown = Kobold::KOBOLD_KEY_PAGEDOWN; 
+   this->keyRotateBottom = Kobold::KOBOLD_KEY_DELETE; 
+   this->keyRotateTop = Kobold::KOBOLD_KEY_INSERT; 
+
+   this->keyZoomIncrease = Kobold::KOBOLD_KEY_UP;
+   this->keyZoomDecrease = Kobold::KOBOLD_KEY_DOWN;
+   this->keyZoomMin = Kobold::KOBOLD_KEY_END;
+   this->keyZoomMax = Kobold::KOBOLD_KEY_HOME;
+   
+   this->keyMoveForward = Kobold::KOBOLD_KEY_KP_8;
+   this->keyMoveBackward = Kobold::KOBOLD_KEY_KP_2;
+   this->keyMoveLeft = Kobold::KOBOLD_KEY_KP_4;
+   this->keyMoveRight = Kobold::KOBOLD_KEY_KP_6;
+#endif
 }
 
 /***********************************************************************
@@ -85,6 +106,28 @@ CameraConfig& CameraConfig::operator=(CameraConfig conf)
    this->rotateFactor = conf.rotateFactor;
    this->thetaMax = conf.thetaMax;
    this->thetaMin = conf.thetaMin;
+
+#if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS &&\
+    OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
+   this->keyLogValues = conf.keyLogValues;
+
+   this->keyRotateLeft = conf.keyRotateLeft;
+   this->keyRotateRight = conf.keyRotateRight; 
+   this->keyRotateUp = conf.keyRotateUp; 
+   this->keyRotateDown = conf.keyRotateDown; 
+   this->keyRotateBottom = conf.keyRotateBottom; 
+   this->keyRotateTop = conf.keyRotateTop; 
+
+   this->keyZoomIncrease = conf.keyZoomIncrease; 
+   this->keyZoomDecrease = conf.keyZoomDecrease;
+   this->keyZoomMin = conf.keyZoomMin;
+   this->keyZoomMax = conf.keyZoomMax;
+   
+   this->keyMoveForward = conf.keyMoveForward;
+   this->keyMoveBackward = conf.keyMoveBackward;
+   this->keyMoveLeft = conf.keyMoveLeft;
+   this->keyMoveRight = conf.keyMoveRight;
+#endif
 
    return *this;
 }
@@ -586,13 +629,13 @@ bool Camera::verifyKeyboardInput()
       varCamera *= 2;
    }
 
-   if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_UP)) && (canZoom) )
+   if( (Kobold::Keyboard::isKeyPressed(config.keyZoomIncrease)) && (canZoom) )
    {
       /* Increase zoom */
       zoomAc = -varCamera * config.zoomVelocity;
       moved = true;
    }
-   else if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_DOWN)) && 
+   else if( (Kobold::Keyboard::isKeyPressed(config.keyZoomDecrease)) && 
             (canZoom) )
    {
       /* Decrease zoom */
@@ -600,16 +643,14 @@ bool Camera::verifyKeyboardInput()
       moved = true;
    }
 
-   if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_HOME)) ||
-         (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_7)) ) &&
-      (canZoom) ) 
+   if( (Kobold::Keyboard::isKeyPressed(config.keyZoomMax)) &&
+       (canZoom) ) 
    {
       /* Maximize zoom */
       zoomAc = -10 * config.zoomVelocity;
       moved = true;
    }
-   else if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_END)) ||
-              (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_1) ) ) &&
+   else if( (Kobold::Keyboard::isKeyPressed(config.keyZoomMin)) &&
             (canZoom) )
    {
       /* Minimize zoom */
@@ -617,24 +658,22 @@ bool Camera::verifyKeyboardInput()
       moved = true;
    }
 
-   if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_INSERT)) ||
-         (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_0)) ) &&
+   if( (Kobold::Keyboard::isKeyPressed(config.keyRotateTop)) &&
        (canRotate) )
    {
       /* Max Up */
       thetaAc = 10;
       moved = true;
    }
-   else if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_DELETE)) ||
-              (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_DECIMAL)) 
-            ) && (canRotate) )
+   else if( (Kobold::Keyboard::isKeyPressed(config.keyRotateBottom)) &&
+            (canRotate) )
    {
       /* Max Down */
       thetaAc = -10;
       moved = true;
    }
 
-   if(Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_F5))
+   if(Kobold::Keyboard::isKeyPressed(config.keyLogValues))
    {
       Kobold::Log::add(Kobold::LOG_LEVEL_NORMAL, 
             "Center: (%.2f, %.2f, %.2f)\nPhi: %.2f Theta: %.2f Zoom: %.2f\n",
@@ -642,14 +681,14 @@ bool Camera::verifyKeyboardInput()
             state.phi, state.theta, state.zoom);
    }
 
-   if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_LEFT)) && 
+   if( (Kobold::Keyboard::isKeyPressed(config.keyRotateLeft)) && 
        (canRotate) )
    {
       /* Rotate left */
       phiAc = varCamera * config.angularVelocity;
       moved = true;
    }
-   else if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_RIGHT)) && 
+   else if( (Kobold::Keyboard::isKeyPressed(config.keyRotateRight)) && 
             (canRotate) )
    {
       /* Rotate Right */
@@ -657,24 +696,22 @@ bool Camera::verifyKeyboardInput()
       moved = true;
    }
 
-   if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_PAGEUP)) ||
-         (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_9)) ) &&
+   if( (Kobold::Keyboard::isKeyPressed(config.keyRotateUp)) &&
        (canRotate) )
    {
       /* Rotate Up */
       thetaAc = varCamera * config.angularVelocity;
       moved = true;
    }
-   else if( ( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_PAGEDOWN)) ||
-         (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_3)) ) &&
-         (canRotate) )
+   else if( (Kobold::Keyboard::isKeyPressed(config.keyRotateDown)) &&
+            (canRotate) )
    {
       /* Rotate Down */
       thetaAc = -varCamera * config.angularVelocity;
       moved = true;
    }
 
-   if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_8)) && 
+   if( (Kobold::Keyboard::isKeyPressed(config.keyMoveForward)) && 
        (canTranslate) )
    {
       /* Move Forward */
@@ -684,7 +721,7 @@ bool Camera::verifyKeyboardInput()
                Ogre::Degree(state.phi)))*config.linearVelocity;
       moved = true;
    }
-   if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_2)) && 
+   if( (Kobold::Keyboard::isKeyPressed(config.keyMoveBackward)) && 
        (canTranslate) )
    {
       /* Move Backward */
@@ -695,7 +732,7 @@ bool Camera::verifyKeyboardInput()
       moved = true;
    }
 
-   if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_4)) && 
+   if( (Kobold::Keyboard::isKeyPressed(config.keyMoveLeft)) && 
        (canTranslate) )
    {
       /* Move Left */
@@ -705,7 +742,7 @@ bool Camera::verifyKeyboardInput()
                Ogre::Degree(state.phi+90)))*config.linearVelocity;
       moved = true;
    }
-   if( (Kobold::Keyboard::isKeyPressed(Kobold::KOBOLD_KEY_KP_6)) && 
+   if( (Kobold::Keyboard::isKeyPressed(config.keyMoveRight)) && 
        (canTranslate) )
    {
       /* Move Right */
