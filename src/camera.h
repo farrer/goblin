@@ -134,6 +134,9 @@ class Camera
             const CameraConfig& conf);
 #endif
 
+      /*! Finish camera use */
+      static void finish();
+
       /*! Instantaneous set Camera position/orientation */
       static void set(Ogre::Real x, Ogre::Real y, Ogre::Real z, 
             Ogre::Real p, Ogre::Real t, Ogre::Real zo);
@@ -278,6 +281,8 @@ class Camera
             Ogre::Real max);
    
       static Ogre::Camera* ogreCamera; /**< Pointer to the ogre Camera used */
+      static Ogre::SceneNode* ogreSceneNode; /**< Node where camera is */
+      static Ogre::SceneManager* ogreSceneManager; /**< Scene manager */
 
       static CameraState state;       /**< Current camera state */
       static CameraState prevState;   /**< State to push/pop */

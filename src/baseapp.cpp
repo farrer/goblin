@@ -109,6 +109,10 @@ BaseApp::BaseApp(const CameraConfig& cameraConfig)
 BaseApp::~BaseApp()
 {
    Kobold::Log::add("Finishing BaseApp...");
+   
+   Kobold::Log::add("   Finishing Camera...");
+   Camera::finish();
+
 #if OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS && \
     OGRE_PLATFORM != OGRE_PLATFORM_ANDROID
    Kobold::Log::add("   Finishing Kobold::Mouse...");

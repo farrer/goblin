@@ -151,6 +151,7 @@ void Camera::init(Ogre::SceneManager* ogreSceneManager,
       const CameraConfig& conf) 
 {
    config = conf;
+   Camera::ogreSceneManager = ogreSceneManager;
 
    state.phi = 0;
    state.theta = 55;
@@ -181,6 +182,16 @@ void Camera::init(Ogre::SceneManager* ogreSceneManager,
       
    /* Create the ogre Camera */
    ogreCamera = ogreSceneManager->createCamera("OGRE_Game_Camera");
+
+   /* Create the node and attach it to the camera */
+#if OGRE_VERSION_MAJOR == 1
+   ogreSceneNode = ogreSceneManager->getRootSceneNode()->createChildSceneNode();
+#else
+   ogreSceneNode = ogreSceneManager->getRootSceneNode()->createChildSceneNode(
+         Ogre::SCENE_DYNAMIC);
+#endif
+   ogreSceneNode->attachObject(ogreCamera);
+
    lookAt();
    ogreCamera->setNearClipDistance(config.nearClipDistance);
    ogreCamera->setFarClipDistance(config.farClipDistance);
@@ -217,6 +228,22 @@ void Camera::init(Ogre::SceneManager* ogreSceneManager,
 
 #endif
                                                       
+}
+
+/***********************************************************************
+ *                             finish                                  *
+ ***********************************************************************/
+void Camera::finish()
+{
+   if(ogreSceneNode != NULL)
+   {
+      if(ogreCamera != NULL)
+      {
+         ogreSceneNode->detachObject(ogreCamera);
+      }
+      ogreSceneManager->destroySceneNode(ogreSceneNode);
+      ogreSceneNode = NULL;
+   }
 }
 
 /***********************************************************************
@@ -391,7 +418,7 @@ void Camera::lookAt()
    eye.y = state.center.y + state.zoom * sinTheta;
    eye.z = state.center.z + state.zoom * cosTheta * cosPhi;
 
-   ogreCamera->setPosition(eye);
+   ogreSceneNode->setPosition(eye);
    ogreCamera->lookAt(state.center);
 }
 
@@ -1118,6 +1145,8 @@ CameraConfig Camera::getConfiguration()
  *                               Static Fields                         *
  ***********************************************************************/
 Ogre::Camera* Camera::ogreCamera=NULL;
+Ogre::SceneNode* Camera::ogreSceneNode=NULL;
+Ogre::SceneManager* Camera::ogreSceneManager=NULL;
 
 CameraState Camera::state;
 CameraState Camera::prevState;
