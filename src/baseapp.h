@@ -92,6 +92,16 @@ class BaseApp
       * On all others, this function is called internally at #create. */
       bool createRoot();
 
+      /*! Load/install render system plugins and create an Ogre::RenderSystem
+       * to use.
+       * By default, it will use OpenGL ES 2.0 for Mobile platforms,
+       * OpenGL 1.x for desktop Ogre 1.x and 2.0 and OpenGL3+ for
+       * Ogre 2.1+. Override this function to load other render system
+       * instead. 
+       * \note: no need to call root->setRenderSystem here, as it will be
+       * called latter. */
+      virtual Ogre::RenderSystem* loadRenderSystem();
+
 #if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
       /*! Init the APK asset manager for Android. 
        * \param env the used JNI enviroment 

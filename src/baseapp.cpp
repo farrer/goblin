@@ -330,14 +330,11 @@ void BaseApp::renderOneFrameForAndroid(JNIEnv* env, JavaVM *vm)
 #endif
 
 /***********************************************************************
- *                             createRoot                              *
+ *                          loadRenderSystem                           *
  ***********************************************************************/
-bool BaseApp::createRoot()
+Ogre::RenderSystem* BaseApp::loadRenderSystem()
 {
-   /* Create the root, without cfg files */
-   ogreRoot = new Ogre::Root("", "");
    Ogre::RenderSystem* renderSystem = NULL;
-
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS ||\
       OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
    ogreRoot->installPlugin(OGRE_NEW Ogre::GLES2Plugin());
@@ -352,6 +349,17 @@ bool BaseApp::createRoot()
    renderSystem = ogreRoot->getRenderSystemByName(
          "OpenGL 3+ Rendering Subsystem");
 #endif
+   return renderSystem;
+}
+
+/***********************************************************************
+ *                             createRoot                              *
+ ***********************************************************************/
+bool BaseApp::createRoot()
+{
+   /* Create the root, without cfg files */
+   ogreRoot = new Ogre::Root("", "");
+   Ogre::RenderSystem* renderSystem = loadRenderSystem();
 
    if(!renderSystem)
    {
