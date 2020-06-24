@@ -51,6 +51,11 @@ Ogre::Technique* MaterialListener::handleSchemeNotFound(
       Ogre::Material* originalMaterial, unsigned short lodIndex, 
       const Ogre::Renderable* rend)
 {
+   if(!shaderGenerator->hasRenderState(schemeName))
+   {
+      return NULL;
+   }
+
    /* Case this is the default shader generator scheme. */
    if (schemeName == Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME)
    {
@@ -82,11 +87,6 @@ Ogre::Technique* MaterialListener::handleSchemeNotFound(
          }            
       }
    }
-   Ogre::LogManager::getSingleton().getDefaultLog()->stream(
-         Ogre::LML_CRITICAL)
-      << "Couldn't : create shader technique for scheme '"
-      << schemeName << "' material '" << originalMaterial->getName()
-      << "'";
 
    return NULL;
 }
