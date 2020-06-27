@@ -186,11 +186,9 @@ void Camera::init(Ogre::SceneManager* ogreSceneManager,
    /* Create the node and attach it to the camera */
 #if OGRE_VERSION_MAJOR == 1
    ogreSceneNode = ogreSceneManager->getRootSceneNode()->createChildSceneNode();
-#else
-   ogreSceneNode = ogreSceneManager->getRootSceneNode()->createChildSceneNode(
-         Ogre::SCENE_DYNAMIC);
-#endif
    ogreSceneNode->attachObject(ogreCamera);
+#endif
+
 
    lookAt();
    ogreCamera->setNearClipDistance(config.nearClipDistance);
@@ -422,7 +420,11 @@ void Camera::lookAt()
    {
       checker->verifyNewCameraPosition(eye);
    }
+#if OGRE_VERSION_MAJOR == 1
    ogreSceneNode->setPosition(eye);
+#else
+   ogreCamera->setPosition(eye);
+#endif
    ogreCamera->lookAt(state.center);
 }
 
